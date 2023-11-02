@@ -12,6 +12,9 @@ const FirstPage = () => {
       <p className={styles.subtitle}>
         Will you find the NFTs around the world?
       </p>
+      <div className={styles.preli}>
+        <p>First Fully Homomorphic Encryption game based on EVM </p>
+      </div>
     </div>
   );
 };

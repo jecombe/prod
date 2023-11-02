@@ -7,7 +7,7 @@
 
 /* Styles pour le titre */
 .title {
-  font-size: 60px;
+  font-size: 90px;
   color: rgb(184, 65, 65); /* Couleur de texte de votre choix */
   text-align: center;
   font-family: "Bungee", sans-serif; /* Utilisation de la police personnalisée */
@@ -20,6 +20,14 @@
   font-family: "Bungee", sans-serif; /* Utilisation de la police personnalisée */
   text-align: center;
   color: rgb(184, 65, 65); /* Couleur de texte de votre choix */
+}
+
+.preli {
+  font-size: 40px; /* Taille du sous-titre */
+  font-family: "Bungee", sans-serif; /* Utilisation de la police personnalisée */
+  text-align: center;
+  color: rgb(6, 5, 9); /* Couleur de texte de votre choix */
+  height: auto;
 }
 
 .line {
