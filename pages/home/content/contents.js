@@ -29,20 +29,20 @@ export default function Contents() {
       content: (
         <div>
           <p>
-            Voici les étapes principales du
+            Here are the main steps from the
             <a href="https://support.metamask.io/hc/en-us/articles/360043227612-How-to-add-a-custom-network-RPC">
               {" "}
-              guide officiel{" "}
+              official guide{" "}
             </a>
-            fourni par Metamask
+            provided by Metamask:
           </p>
           <br />
           <div className={styles.one}>
             <Image src="/metamask.gif" alt="my gif" height={500} width={300} />
           </div>
           <p>
-            Depuis la page d'accueil de votre portefeuille, cliquez sur le
-            sélecteur de réseau en haut à gauche, puis sur 'Ajouter un réseau'
+            From the homepage of your wallet, click on the network selector in
+            the top left, and then on Add network
           </p>
           <div className={styles.two}>
             <Image src="/metamask2.gif" alt="my gif" height={500} width={600} />
@@ -70,15 +70,10 @@ export default function Contents() {
       content: (
         <div>
           <div className={styles.centerImage}>
-            <Image
-              src="/logo_metamask.png"
-              alt="metamask"
-              height={100}
-              width={100}
-            />
+            <Image src="/coins.png" alt="coin" height={100} width={100} />
           </div>
           <p>
-            Follow <a href="https://metamask.io/">this</a>
+            Get <a href="https://faucet.zama.ai/">HERE</a>
           </p>
         </div>
       ),
@@ -123,21 +118,22 @@ export default function Contents() {
           <div className={styles.blockTwo}>
             <h2>Earn NFT Geospace</h2>
             <p>
-              Mettez vos compétences à l'épreuve contre vos amis et votre
-              famille. Créez votre propre partie privée et jouez ensemble.
+              Win as many NFTs as possible to build a collection and gain
+              advantages in the future.
             </p>
           </div>
           <div className={styles.lineBlock}></div>
 
           <div className={styles.blockThree}>
-            <h2>Compétition contre les autres</h2>
+            <h2>Compete against others</h2>
             <p>
-              Testez vos compétences contre des joueurs du monde entier. Gagnez
-              des badges et participez à des tournois et événements !
+              Test your ability against players all across the world. Earn NFT
+              Geospace and compete against others in tournaments and events!
             </p>
           </div>
         </div>
       </section>
+      <div className={styles.lineSection}></div>
 
       <section
         id="howToPlay"

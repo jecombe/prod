@@ -1,37 +1,36 @@
-
-@import url('https://fonts.cdnfonts.com/css/cartoon-free');
-@import url('https://fonts.googleapis.com/css2?family=Chakra-Petch&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Bungee&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Play&display=swap');
+@import url("https://fonts.cdnfonts.com/css/cartoon-free");
+@import url("https://fonts.googleapis.com/css2?family=Chakra-Petch&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bungee&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Play&display=swap");
 
 @import url("https://fonts.google.com/specimen/Chakra+Petch?stroke=Sans+Serif");
 
 /* Styles pour le titre */
 .title {
-    font-size: 60px;
-    color: rgb(184, 65, 65); /* Couleur de texte de votre choix */
-    text-align: center;
-    font-family: 'Bungee', sans-serif; /* Utilisation de la police personnalisée */
-  
-    margin: 0; /* Supprime la marge par défaut du titre */
-  }
-  .titleGame {
-    border: 2px solid #9b2583; /* Épaisseur de 2 pixels, style de bordure solide, couleur rouge (#ff0000) */
+  font-size: 60px;
+  color: rgb(184, 65, 65); /* Couleur de texte de votre choix */
+  text-align: center;
+  font-family: "Bungee", sans-serif; /* Utilisation de la police personnalisée */
 
-  }
+  margin: 0; /* Supprime la marge par défaut du titre */
+}
 
-  .subtitle {
-    font-size: 30px; /* Taille du sous-titre */
-    font-family: 'Bungee', sans-serif; /* Utilisation de la police personnalisée */
-    text-align: center;
-    color: rgb(184, 65, 65); /* Couleur de texte de votre choix */
-  }
+.subtitle {
+  font-size: 30px; /* Taille du sous-titre */
+  font-family: "Bungee", sans-serif; /* Utilisation de la police personnalisée */
+  text-align: center;
+  color: rgb(184, 65, 65); /* Couleur de texte de votre choix */
+}
 
-  .line {
-    width: 500px; /* Ajustez la largeur souhaitée */
-    height: 2px; /* Épaisseur du trait */
-    /* background: linear-gradient(90deg, transparent, rgb(154, 85, 17)); Couleur du trait de votre choix */
-    margin: 10px auto; /* Marge pour centrer le trait */
-    background: linear-gradient(to right, transparent, #000, transparent); /* Dégradé linéaire de la couleur transparente à #000 (noir) */
-
-  }
+.line {
+  width: 500px; /* Ajustez la largeur souhaitée */
+  height: 2px; /* Épaisseur du trait */
+  /* background: linear-gradient(90deg, transparent, rgb(154, 85, 17)); Couleur du trait de votre choix */
+  margin: 10px auto; /* Marge pour centrer le trait */
+  background: linear-gradient(
+    to right,
+    transparent,
+    #000,
+    transparent
+  ); /* Dégradé linéaire de la couleur transparente à #000 (noir) */
+}

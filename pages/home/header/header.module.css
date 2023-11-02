@@ -1,8 +1,6 @@
 @import url("https://fonts.googleapis.com/css?family=Press+Start+2P");
 
 .menu {
-  border: 2px solid #8d8b99; /* Épaisseur de 2 pixels, style de bordure solide, couleur rouge (#ff0000) */
-
   top: 0;
   left: 0;
   right: 0;
@@ -57,8 +55,7 @@
   background-position: 0 100%;
   transition: background-position 0.3s;
   padding: 5px 10px;
-  border: 2px solid #00bfff;
-  border-radius: 5px;
+
   cursor: pointer;
   margin-right: 20px;
 }

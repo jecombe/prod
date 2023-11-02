@@ -155,6 +155,10 @@
   border-top: 1px solid #000; /* Couleur de la ligne (noir) */
   width: 100%; /* Largeur de la ligne (100% de la largeur du conteneur) */
 }
+.lineSection {
+  border-top: 1px solid #000; /* Couleur de la ligne (noir) */
+  width: 100%; /* Largeur de la ligne (100% de la largeur du conteneur) */
+}
 /* Style pour le trait brillant */
 .line {
   width: 100px; /* Ajustez la largeur souhaitée */
@@ -190,7 +194,6 @@
 
 .section {
   display: flex;
-  border: 2px solid #dde53b;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -205,10 +208,6 @@
 .presentation {
   padding: 20px;
   overflow-y: auto; /* Ajoutez une barre de défilement si le contenu dépasse la hauteur */
-}
-
-.reglesDuJeu {
-  border: 2px solid #26a951; /* Épaisseur de 2 pixels, style de bordure solide, couleur rouge (#ff0000) */
 }
 
 .centerImage {
