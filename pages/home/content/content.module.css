@@ -1,0 +1,218 @@
+.blockAll {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Centrer verticalement */
+  align-items: center; /* Centrer horizontalement */
+  text-align: center; /* Centrer le texte horizontalement */
+  min-height: 100vh; /* Hauteur minimale de 100% de la hauteur de la fenêtre */
+}
+.blockAll h2 {
+  font-size: 50px;
+}
+.blockAll p {
+  font-size: 20px;
+}
+
+.button {
+  background-color: #26a951; /* Couleur de fond du bouton */
+  color: #fff; /* Couleur du texte */
+  font-size: 18px; /* Taille de la police */
+  padding: 10px 20px; /* Remplissage intérieur du bouton */
+  margin: 10px; /* Marge autour du bouton pour l'espacement */
+  border: none; /* Supprime la bordure du bouton */
+  border-radius: 10px; /* Coins arrondis */
+  cursor: pointer; /* Curseur en forme de main au survol */
+  transition: background-color 0.3s; /* Transition de couleur au survol */
+}
+
+.button:hover {
+  background-color: #1f8e41; /* Couleur de fond au survol */
+}
+
+.blockPlay {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Centrer verticalement */
+  align-items: center; /* Centrer horizontalement */
+  text-align: center; /* Centrer le texte horizontalement */
+  min-height: 50vh; /* Hauteur minimale de 50% de la hauteur de la fenêtre */
+}
+.blockPlay h1 {
+  font-size: 60px;
+}
+.blockPlay h2 {
+  font-size: 25px;
+}
+
+.box {
+  /* Vos styles pour l'image de la terre */
+  background: url(https://cdn.rawgit.com/ManzDev/cursos-assets/gh-pages/css3/earth-2.jpg);
+  background-size: cover;
+  border: 2px solid #000;
+  border-radius: 50%;
+
+  width: 200px;
+  height: 200px;
+  animation: movimiento 20s linear 0s infinite;
+  box-shadow: 0 0 25px RGBA(255, 255, 255, 0.1), -8px -8px 15px #000 inset,
+    2px 2px 25px #000 inset, -45px -45px 25px RGBA(0, 0, 0, 0.5) inset,
+    25px 25px 45px RGBA(0, 0, 0, 0.45) inset;
+  margin: 6em 0; /* Supprimez la marge auto et ajoutez 0 pour l'espacement vertical */
+  transform: rotateX(6deg) rotateY(6deg) rotateZ(6deg);
+}
+
+/* Pour les écrans de taille inférieure ou égale à 600 pixels (ajustez la largeur en conséquence) */
+@media (max-width: 1000px) {
+  .box {
+    display: none; /* Masquer la terre lorsque la taille de l'écran est réduite */
+  }
+
+  .mobile-image {
+    width: 100%; /* La nouvelle image occupera la largeur complète de son conteneur */
+    height: auto; /* Ajustement de la hauteur automatique pour conserver les proportions */
+    /* Ajoutez votre nouvelle image de remplacement ici */
+  }
+}
+@media (max-width: 570px) {
+  .one img {
+    height: 300px;
+    width: auto;
+  }
+  .two img {
+    height: 350px;
+    width: auto;
+  }
+  .three img {
+    height: 150px;
+    width: 300px;
+  }
+  .four img {
+    height: 150px;
+    width: auto;
+  }
+  .centerImage {
+    height: 100px;
+    width: auto;
+  }
+  .blockAll h2 {
+    font-size: 20px;
+  }
+  .blockAll p {
+    font-size: 15px;
+  }
+  .blockPlay p {
+    font-size: 15px;
+  }
+}
+
+@keyframes movimiento {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 355px 0;
+  }
+}
+
+@keyframes stars {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 100%;
+  }
+}
+.blockOne {
+  display: flex; /* Utilisation de flex pour les éléments enfants */
+  flex-direction: row; /* Affichage en ligne des éléments */
+  align-items: center; /* Centrer verticalement */
+  justify-content: space-between; /* Espacement entre les éléments */
+  text-align: left; /* Aligner le texte à gauche */
+  margin-right: 10px; /* Espacement entre blockOne et blockTwo */
+  color: #fff;
+  font-family: "Montserrat", sans-serif;
+  line-height: 1.5;
+}
+
+.blockTwo {
+  flex: 1;
+  text-align: right; /* Aligner le texte à droite */
+  margin-left: 10px; /* Ajouter un espace entre blockTwo et blockThree */
+  line-height: 1.5;
+  color: #fff; /* Couleur du texte (blanc) */
+  font-family: "Montserrat", sans-serif; /* Police de caractères */
+}
+
+.blockThree {
+  flex: 1;
+  text-align: left; /* Aligner le texte à gauche */
+  line-height: 1.5;
+
+  color: #fff; /* Couleur du texte (blanc) */
+  font-family: "Montserrat", sans-serif; /* Police de caractères */
+}
+.lineBlock {
+  border-top: 1px solid #000; /* Couleur de la ligne (noir) */
+  width: 100%; /* Largeur de la ligne (100% de la largeur du conteneur) */
+}
+/* Style pour le trait brillant */
+.line {
+  width: 100px; /* Ajustez la largeur souhaitée */
+  height: 2px; /* Épaisseur du trait */
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #f0f
+  ); /* Couleur du trait de votre choix */
+  margin: 10px auto; /* Marge pour centrer le trait */
+}
+
+/* content.module.css */
+.parallaxContainer {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.parallax {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.firstBackground {
+  background-image: url("../../../public/road.jpeg");
+}
+
+.section {
+  display: flex;
+  border: 2px solid #dde53b;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: #fff;
+}
+
+#howToPlay {
+  max-height: 300px; /* Ajustez la hauteur maximale selon vos besoins */
+  overflow-y: auto; /* Active la barre de défilement si le contenu dépasse la hauteur maximale */
+}
+.presentation {
+  padding: 20px;
+  overflow-y: auto; /* Ajoutez une barre de défilement si le contenu dépasse la hauteur */
+}
+
+.reglesDuJeu {
+  border: 2px solid #26a951; /* Épaisseur de 2 pixels, style de bordure solide, couleur rouge (#ff0000) */
+}
+
+.centerImage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

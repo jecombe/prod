@@ -1,0 +1,10 @@
+.footer {
+  height: 80px; /* Ajustez la hauteur selon vos besoins */
+  z-index: 2;
+  background-color: rgb(86, 9, 95);
+}
+.footer a {
+}
+
+.footerText {
+}

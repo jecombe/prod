@@ -1,0 +1,76 @@
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Ajoutez ceci à votre fichier de styles CSS (home.module.css) */
+.communityButton:hover {
+  background-color: #ff0000; /* Fond rouge au survol */
+  color: #fff; /* Texte en blanc */
+  cursor: pointer; /* Curseur en forme de main */
+}
+.dropdown-menu {
+  background: #fff;
+  box-shadow: 0px 10px 30px 0px rgba(82, 63, 105, 0.05);
+  transition: all linear 0.3s;
+}
+
+.space {
+  width: 20px; /* Ajustez la largeur de l'espace selon vos besoins */
+}
+
+/* Pour réinitialiser les styles du menu déroulant lorsque ce n'est pas survolé */
+.communityLinks {
+  display: none;
+}
+
+.communityButton:hover + .communityLinks,
+.communityLinks:hover {
+  display: block;
+}
+
+.logo {
+  width: 1px; /* Remplacez 100px par la largeur souhaitée pour votre logo */
+  height: auto; /* Hauteur automatique pour maintenir le ratio */
+
+  margin-right: auto; /* Pousse le logo vers la droite du menu */
+}
+
+.first {
+  background-image: url("../../public/road.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  height: 100vh; /* Hauteur de 100% de la hauteur de la fenêtre visible */
+}
+
+.content {
+  background-image: url("../../public/road3.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  position: relative;
+  background-color: transparent; /* Couleur de fond transparente pour .content */
+}
+
+.container {
+  height: 100%;
+  overflow: hidden; /* Pour empêcher le défilement par défaut de la container */
+}
+.link {
+  color: beige;
+}
+
+/* === HEADING STYLE #5 === */
+
+/* Styles pour le conteneur du titre, du trait et du sous-titre */
+.titleGame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}

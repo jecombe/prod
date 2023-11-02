@@ -1,0 +1,95 @@
+@import url("https://fonts.googleapis.com/css?family=Press+Start+2P");
+
+.menu {
+  border: 2px solid #8d8b99; /* Épaisseur de 2 pixels, style de bordure solide, couleur rouge (#ff0000) */
+
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  z-index: 1000; /* Assure que le menu est au-dessus du reste du contenu */
+}
+
+.menu a {
+  color: #fbfdfd;
+  font-size: large;
+}
+
+.menu img {
+  width: 100px;
+  height: 100px;
+  border-radius: 2%;
+  object-fit: cover;
+}
+
+.playButton {
+  background-color: #141e30; /* Couleur de fond sombre */
+  color: #ffffff; /* Couleur du texte en blanc */
+  border: 2px solid #00bfff; /* Bordure bleue */
+  border-radius: 10px; /* Coins arrondis */
+  padding: 15px 30px; /* Rembourrage pour la taille du bouton */
+  font-size: 20px; /* Taille de la police */
+  font-weight: bold; /* Texte en gras */
+  cursor: pointer;
+  text-transform: uppercase; /* Texte en majuscules */
+  transition: background-color 0.3s, transform 0.2s;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Ombre douce */
+  display: block;
+}
+
+.playButton:hover {
+  background-color: #00bfff; /* Couleur de fond bleue au survol */
+  transform: scale(1.05); /* Légère mise à l'échelle au survol */
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2); /* Ombre plus prononcée au survol */
+}
+
+.howToPlayButton {
+  /* Utilisez la police style cartoon 3D de votre choix */
+
+  /* Créez un aspect en relief */
+  text-transform: uppercase;
+  text-decoration: none;
+  background: linear-gradient(to top, #c8861c 0%, #c8861c 50%, transparent 50%);
+  background-size: 100% 200%;
+  background-position: 0 100%;
+  transition: background-position 0.3s;
+  padding: 5px 10px;
+  border: 2px solid #00bfff;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 20px;
+}
+/* Styles au survol */
+/* Lorsque survolé, l'effet 3D apparaît */
+.howToPlayButton:hover {
+  background-position: 0 0;
+}
+.menuItems {
+  display: flex;
+  flex-direction: row; /* Pour les afficher horizontalement */
+  justify-content: space-between; /* Pour les espacer horizontalement */
+}
+.aboutDiv {
+  margin-bottom: 10px; /* Ajoutez une marge inférieure pour espacer les div */
+}
+.howToPlayDiv {
+}
+/* Réactivité */
+@media (max-width: 570px) {
+  /* Styles pour la réactivité si nécessaire */
+  .logo {
+    display: none;
+  }
+  .playButton {
+    display: none;
+  }
+  .menuItems {
+    flex-direction: column; /* Passer à l'affichage vertical */
+  }
+  .howToPlayDiv {
+    margin-top: 10px; /* Ajouter une marge entre les éléments */
+  }
+}
