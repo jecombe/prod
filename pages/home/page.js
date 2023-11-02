@@ -5,15 +5,8 @@ import Header from "./header/header";
 import Footer from "./footer/footer";
 import Contents from "./content/contents";
 import FirstPage from "./firstPage/page";
-import { useState } from "react";
 
 export default function HomeView() {
-  const [menuVisible, setMenuVisible] = useState(false);
-
-  const toggleMenu = () => {
-    setMenuVisible(!menuVisible);
-  };
-
   return (
     <div className={styles.container}>
       <div className={styles.first}>
