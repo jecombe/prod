@@ -4,7 +4,6 @@ import styles from "./home.module.css";
 import Header from "./header/header";
 import Footer from "./footer/footer";
 import Contents from "./content/contents";
-import ParallaxPage from "./content/parallax";
 import FirstPage from "./firstPage/page";
 import { useState } from "react";
 

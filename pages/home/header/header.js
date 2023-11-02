@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styles from "./header.module.css";
+import Image from "next/image";
 
 const Header = () => {
   const [isDropdownVisible, setDropdownVisible] = useState(false);
@@ -29,7 +30,7 @@ const Header = () => {
   return (
     <header className={styles.menu}>
       <div className={styles.logo}>
-        <img src="./profil.jpeg" alt="NftGuessr" />
+        <Image src="/profil.jpeg" alt="nftguessr" height={500} width={400} />
       </div>
       <div className={styles.menuItems}>
         <div className={styles.aboutDiv}>
