@@ -3,10 +3,10 @@ import { useState, useEffect } from "react";
 import {
   GoogleMap,
   LoadScript,
+  Marker,
   StreetViewPanorama,
 } from "@react-google-maps/api";
 import style from "./map.module.css";
-import { MiniMap } from "./minimap/minimap";
 import { ethers } from "ethers";
 import abi from "../../utils/abi/abi";
 import { getFhevmInstance } from "../../utils/fhevmInstance";
@@ -217,11 +217,28 @@ export default function GamePage() {
             zIndex: 1,
           }}
         >
-          <MiniMap
+          {/* <MiniMap
             markers={markers}
             onMiniMapClick={isLoading ? null : handleMiniMapClick}
             position={lastPosition}
-          />
+          /> */}
+
+          <GoogleMap
+            mapContainerStyle={{
+              width: "100%",
+              height: "100%",
+            }}
+            center={position}
+            zoom={2}
+            options={{
+              disableDefaultUI: true,
+            }}
+            onClick={handleMiniMapClick}
+          >
+            {markers.map((marker, index) => (
+              <Marker key={index} position={marker} />
+            ))}
+          </GoogleMap>
           {isLoading && (
             <div className={style.loadingIndicator}>Chargement en cours...</div>
           )}
