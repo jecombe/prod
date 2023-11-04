@@ -30,7 +30,7 @@ const Footer = () => {
           Telegram
         </a>
       </div>
-      <div className={styles.footerText}>@Jérémy Combe</div>
+      <div className={styles.footerText}>made by Jérémy Combe.</div>
     </footer>
   );
 };

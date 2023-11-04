@@ -1,0 +1,15 @@
+/* components/map.module.css */
+.map {
+  width: 100%;
+  height: 90vh;
+}
+
+/* components/mini-map.module.css */
+.miniMapContainer {
+  width: 300px;
+  height: 300px;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  z-index: 1;
+}

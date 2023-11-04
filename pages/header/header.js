@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styles from "./header.module.css";
 import Image from "next/image";
+import Link from "next/link";
 
 const Header = () => {
   const [isDropdownVisible, setDropdownVisible] = useState(false);
@@ -30,7 +31,7 @@ const Header = () => {
   return (
     <header className={styles.menu}>
       <div className={styles.logo}>
-        <Image src="/profil.jpeg" alt="nftguessr" height={500} width={400} />
+        <Image src="/profil.jpeg" alt="nftguessr" height={10} width={10} />
       </div>
       <div className={styles.menuItems}>
         <div className={styles.aboutDiv}>
@@ -44,8 +45,9 @@ const Header = () => {
           </a>
         </div>
       </div>
-
-      <button className={styles.playButton}>Play</button>
+      <Link href="/game/game">
+        <button className={styles.playButton}>Play</button>
+      </Link>
     </header>
   );
 };

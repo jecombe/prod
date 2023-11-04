@@ -16,22 +16,16 @@ body {
 } */
 
 a {
-  color: black;
-}
-
-ul {
-list-style: none;
-padding: unset;
-margin: unset;
+  color: rgb(142, 215, 201);
 }
 
 li {
-padding: 14px;
-transition: all linear 0.3s;
+  padding: 14px;
+  transition: all linear 0.3s;
 }
 
 li:hover {
-background: gray;
-cursor: pointer;
-color: #fff;
+  background: gray;
+  cursor: pointer;
+  color: #fff;
 }

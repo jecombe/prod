@@ -139,6 +139,7 @@
   text-align: right; /* Aligner le texte à droite */
   margin-left: 10px; /* Ajouter un espace entre blockTwo et blockThree */
   line-height: 1.5;
+
   color: #fff; /* Couleur du texte (blanc) */
   font-family: "Montserrat", sans-serif; /* Police de caractères */
 }
@@ -189,7 +190,7 @@
 }
 
 .firstBackground {
-  background-image: url("../../../public/road.jpeg");
+  background-image: url("../../public/road.jpeg");
 }
 
 .section {

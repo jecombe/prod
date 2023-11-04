@@ -1,0 +1,115 @@
+.miniMapContainer {
+  transition: transform 0.2s; /* Ajoute une transition sur la propriété "transform" */
+  position: relative; /* Position relative pour positionner la pseudo-élément */
+}
+
+.miniMapContainer::before {
+  content: '';
+  position: absolute;
+  width: 10px; /* Largeur de l'agrandissement sur le côté gauche */
+  height: 100%;
+  background: linear-gradient(to right, transparent, rgba(171, 29, 29, 0.6)); /* Dégradé de lumière */
+  top: 0;
+  left: -10px; /* Ajustez cette valeur pour agrandir vers la gauche */
+  transform: scaleX(0); /* Transformation initiale pour l'effet de zoom à gauche */
+  transform-origin: left; /* Zoom depuis la gauche */
+  transition: transform 0.2s; /* Transition pour le zoom */
+}
+
+.miniMapContainer:hover {
+  transform: scale(1.1); /* Applique un effet de zoom de 10% lors du survol */
+  cursor: crosshair; /* Curseur en forme de croix */
+}
+
+.miniMapContainer:hover::before {
+  transform: scaleX(1.1); /* Zoom du pseudo-élément sur l'axe X (gauche) */
+}
+
+.loadingIndicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  z-index: 2;
+}
+.overlay {
+  position: absolute;
+  top: 0; /* Position relative au haut de la minimap */
+  left: 0; /* Position relative à gauche de la minimap */
+  width: 100%; /* Prend la largeur totale de l'écran */
+  height: 100%; /* Prend la hauteur totale de l'écran */
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  z-index: 2;
+}
+
+/* Ajoutez ces styles à votre fichier CSS ou CSS-in-JS */
+/* Ajoutez ces styles dans votre fichier CSS */
+
+/* Style pour cacher le menu par défaut */
+
+/* Dans votre fichier CSS */
+/* Dans votre fichier CSS */
+
+
+.center-left-button {
+  position: absolute;
+  top: 50%;
+  left: 10px; /* Ajustez la valeur "left" pour contrôler la position horizontale */
+  transform: translateY(-50%); /* Centrer verticalement */
+  z-index: 2; /* Pour afficher le bouton au-dessus de la carte */
+  background: transparent; /* Rend le bouton transparent */
+  border: none; /* Supprime la bordure du bouton */
+  color: white; /* Couleur du texte en blanc */
+}
+
+.center-left-button:hover {
+  background: rgba(0, 0, 0, 0.5); /* Arrière-plan semi-transparent au survol */
+}
+
+/* Style pour le message de victoire */
+.successMessage {
+  background-color: rgba(0, 255, 0, 0.9); /* Couleur de fond verte pour le message de victoire */
+  color: white; /* Couleur du texte en blanc */
+  padding: 16px; /* Espace de remplissage autour du message */
+  border-radius: 8px; /* Coins arrondis */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Ombre légère */
+  text-align: center; /* Centrer le texte */
+  z-index: 2; /* Mettez-le au-dessus des autres éléments */
+}
+
+/* Style pour le message de défaite */
+.failureMessage {
+  background-color: rgba(255, 0, 0, 0.9); /* Couleur de fond rouge pour le message de défaite */
+  color: white; /* Couleur du texte en blanc */
+  padding: 16px; /* Espace de remplissage autour du message */
+  border-radius: 8px; /* Coins arrondis */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Ombre légère */
+  text-align: center; /* Centrer le texte */
+  z-index: 2; /* Mettez-le au-dessus des autres éléments */
+}
+
+/* Style pour la superposition */
+.overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%; /* Remplissez tout l'écran */
+  height: 100%; /* Remplissez tout l'écran */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 3; /* Mettez-le au-dessus de tout */
+  background: rgba(0, 0, 0, 0.5); /* Arrière-plan sombre semi-transparent */
+}
+
+

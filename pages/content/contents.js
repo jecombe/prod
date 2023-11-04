@@ -73,7 +73,7 @@ export default function Contents() {
             <Image src="/coins.png" alt="coin" height={100} width={100} />
           </div>
           <p>
-            Get <a href="https://faucet.zama.ai/">HERE</a>
+            Get <a href="https://faucet.zama.ai/">here</a>
           </p>
         </div>
       ),

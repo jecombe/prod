@@ -1,10 +1,10 @@
 "use client";
 import Head from "next/head";
 import styles from "./home.module.css";
-import Header from "./header/header";
-import Footer from "./footer/footer";
-import Contents from "./content/contents";
-import FirstPage from "./firstPage/page";
+import Header from "../header/header";
+import Footer from "../footer/footer";
+import Contents from "../content/contents";
+import FirstPage from "../firstPage/page";
 
 export default function HomeView() {
   return (
