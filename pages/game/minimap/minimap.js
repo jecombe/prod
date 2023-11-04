@@ -1,7 +1,7 @@
 // components/MiniMap.js
 import { GoogleMap, Marker } from "@react-google-maps/api";
 
-export default function MiniMap({ markers, onMiniMapClick, position }) {
+export function MiniMap({ markers, onMiniMapClick, position }) {
   return (
     <GoogleMap
       mapContainerStyle={{
