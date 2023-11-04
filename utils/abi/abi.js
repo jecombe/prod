@@ -1,5 +1,29 @@
 const abi = [
   {
+    inputs: [],
+    stateMutability: "nonpayable",
+    type: "constructor",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "user",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "bool",
+        name: "result",
+        type: "bool",
+      },
+    ],
+    name: "GpsCheckResult",
+    type: "event",
+  },
+  {
     inputs: [
       {
         internalType: "uint256",
@@ -97,27 +121,16 @@ const abi = [
   },
   {
     inputs: [],
-    stateMutability: "nonpayable",
-    type: "constructor",
-  },
-  {
-    anonymous: false,
-    inputs: [
+    name: "fees",
+    outputs: [
       {
-        indexed: true,
-        internalType: "address",
-        name: "user",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "bool",
-        name: "result",
-        type: "bool",
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
       },
     ],
-    name: "GpsCheckResult",
-    type: "event",
+    stateMutability: "view",
+    type: "function",
   },
   {
     inputs: [],
@@ -136,19 +149,6 @@ const abi = [
   {
     stateMutability: "payable",
     type: "receive",
-  },
-  {
-    inputs: [],
-    name: "fees",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
   },
 ];
 export default abi;
