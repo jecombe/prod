@@ -48,7 +48,9 @@ export default function GamePage() {
   useEffect(() => {
     async function fetchGpsData() {
       try {
-        const response = await fetch(`http://localhost:8000/api/get-gps`);
+        const response = await fetch(
+          `${process.env.SERVER}${process.env.ROUTE}`
+        );
         const data = await response.json();
         setPosition({
           lat: data.latitude,
