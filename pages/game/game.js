@@ -6,7 +6,7 @@ import {
   StreetViewPanorama,
 } from "@react-google-maps/api";
 import style from "./map.module.css";
-import { MiniMap } from "./minimap/minimap";
+import MiniMap from "./minimap/minimap";
 import { ethers } from "ethers";
 import abi from "../../utils/abi/abi";
 import { getFhevmInstance } from "../../utils/fhevmInstance";
