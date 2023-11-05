@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import Web3 from "web3";
 import {
   GoogleMap,
   LoadScript,
@@ -44,6 +45,44 @@ export default function GamePage() {
   const [contract, setContract] = useState(null);
   const [fhevm, setFhevm] = useState(null);
   const [isFetchingCoordinates, setIsFetchingCoordinates] = useState(false);
+
+  const [accountAddress, setAccountAddress] = useState("Loading...");
+  const [accountBalance, setAccountBalance] = useState("Loading...");
+  const [addr, setAddress] = useState(init);
+
+  const updateAccountInfo = async () => {
+    if (typeof window !== "undefined" && window.ethereum) {
+      const web3 = new Web3(window.ethereum);
+      try {
+        const accounts = await window.ethereum.request({
+          method: "eth_requestAccounts",
+        });
+        const address = accounts[0];
+        setAccountAddress(`Address : ${address}`);
+        setAddress(address);
+
+        const balance = await web3.eth.getBalance(address);
+        const etherBalance = web3.utils.fromWei(balance, "ether");
+        setAccountBalance(`Balance : ${etherBalance} ZAMA`);
+      } catch (error) {
+        console.error("error upadte account :", error);
+      }
+    } else {
+      setAccountAddress("Metamask is not install");
+    }
+  };
+
+  useEffect(() => {
+    updateAccountInfo();
+
+    // Écoutez l'événement accountsChanged pour détecter les changements de compte
+    window.ethereum.on("accountsChanged", updateAccountInfo);
+
+    // Nettoyez l'écouteur d'événements lorsque le composant est démonté
+    return () => {
+      window.ethereum.removeListener("accountsChanged", updateAccountInfo);
+    };
+  }, []);
 
   useEffect(() => {
     async function fetchGpsData() {
@@ -122,7 +161,6 @@ export default function GamePage() {
     if (isMiniMapDisabled) {
       return; // Ne rien faire si la mini-map est désactivée
     }
-
     const newMarker = {
       lat: e.latLng.lat(),
       lng: e.latLng.lng(),
@@ -140,13 +178,26 @@ export default function GamePage() {
 
       const value = ethers.utils.parseEther("1");
       //const gasPrice = ethers.utils.parseUnits("50", "gwei"); // Spécifiez le prix du gaz (20 Gwei dans cet exemple)
+      const signer = await initMetaMask(); // Initialisez MetaMask
+      const gasLimit = 9000000; // Vous pouvez personnaliser la limite de gaz selon vos besoins
 
-      const rep = await contract.checkGps(lat, lng, {
-        value,
-        gasPrice: 5000000, // Spécifiez le prix du gaz dans l'objet de transaction
-      });
+      const gasPrice = await signer.provider.getGasPrice();
+      const maxPriorityFeePerGas = await signer.provider.getFeeData();
 
-      await rep.wait();
+      // // Créez votre transaction avec les détails nécessaires (à personnaliser selon vos besoins)
+      const transaction = {
+        from: addr, // Adresse de l'expéditeur
+        to: contract.address, // Adresse du contrat
+        gasLimit: "5000000", // Limite de gaz (à personnaliser)
+        maxFeePerGas: ethers.utils.parseUnits("100", "gwei"), // Max Fee Per Gas (à personnaliser)
+        maxPriorityFeePerGas: ethers.utils.parseUnits("10", "gwei"), // Max Priority Fee Per Gas (à personnaliser)
+        value: ethers.utils.parseEther("1"), // Montant à envoyer (à personnaliser)
+        data: contract.interface.encodeFunctionData("checkGps", [lat, lng]), // Encodage de la fonction du contrat et de ses paramètres
+      };
+
+      const tx = await signer.sendTransaction(transaction);
+
+      await tx.wait();
     } catch (error) {
       console.error("Erreur lors de l'envoi de la transaction :", error);
       setIsLoading(false);
@@ -182,16 +233,29 @@ export default function GamePage() {
       googleMapsApiKey="AIzaSyD0ZKYS4E9Sl1izucojjOl3nErVLN2ixVQ"
       libraries={lib}
     >
-      <div style={style.map}>
+      <div className={style.headerContainer}>
+        <button
+          onClick={() => {
+            // Gérer la navigation vers l'accueil ici
+          }}
+          className={`${style.newCoordinate} center-left-button`}
+        >
+          Back Home
+        </button>
+
+        <div className={style.accountInfo}>
+          <div>{accountAddress}</div>
+          <div>{accountBalance}</div>
+        </div>
         <button
           onClick={fetchNewCoordinates}
-          className={`${style.fetchButton} center-left-button`}
+          className={`${style.newCoordinate} center-left-button`}
           disabled={isFetchingCoordinates}
         >
-          {isFetchingCoordinates
-            ? "Chargement..."
-            : "Nouvelles coordonnées GPS"}
+          {isFetchingCoordinates ? "Loading..." : "New coordinates"}
         </button>
+      </div>
+      <div style={style.map}>
         <GoogleMap
           mapContainerStyle={containerStyle}
           center={position}
@@ -228,7 +292,7 @@ export default function GamePage() {
               width: "100%",
               height: "100%",
             }}
-            center={position}
+            center={lastPosition}
             zoom={2}
             options={{
               disableDefaultUI: true,

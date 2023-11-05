@@ -80,16 +80,13 @@
   .logo {
     display: none;
   }
-
+  .playButton {
+    display: none;
+  }
   .menuItems {
     flex-direction: column; /* Passer à l'affichage vertical */
   }
   .howToPlayDiv {
     margin-top: 10px; /* Ajouter une marge entre les éléments */
-  }
-
-  /* Ajoutez ces styles pour déplacer le bouton "Play" en dessous de "menuItems" */
-  .playButton {
-    margin-top: 10px; /* Ajoute une marge en haut du bouton */
   }
 }

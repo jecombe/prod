@@ -2,16 +2,52 @@
   transition: transform 0.2s; /* Ajoute une transition sur la propriété "transform" */
   position: relative; /* Position relative pour positionner la pseudo-élément */
 }
+.newCoordinate {
+  background-color: #141e30; /* Couleur de fond sombre */
+  color: #ffffff; /* Couleur du texte en blanc */
+  border: 2px solid #00bfff; /* Bordure bleue */
+  border-radius: 10px; /* Coins arrondis */
+  padding: 15px 30px; /* Rembourrage pour la taille du bouton */
+  font-size: 20px; /* Taille de la police */
+  font-weight: bold; /* Texte en gras */
+  cursor: pointer;
+  text-transform: uppercase; /* Texte en majuscules */
+  transition: background-color 0.3s, transform 0.2s;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Ombre douce */
+  display: block;
+}
+
+.newCoordinate:hover {
+  background-color: #00bfff; /* Couleur de fond bleue au survol */
+  transform: scale(1.05); /* Légère mise à l'échelle au survol */
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2); /* Ombre plus prononcée au survol */
+}
+.accountInfo {
+  color: #ffffff;
+}
+.headerContainer {
+  display: flex;
+  justify-content: space-between; /* Place le bouton à droite du header */
+  align-items: center; /* Centre verticalement le contenu du header et du bouton */
+  padding: 10px; /* Ajoutez de la marge autour du contenu si nécessaire */
+  background-color: #2c2525;
+}
 
 .miniMapContainer::before {
-  content: '';
+  content: "";
   position: absolute;
   width: 10px; /* Largeur de l'agrandissement sur le côté gauche */
   height: 100%;
-  background: linear-gradient(to right, transparent, rgba(171, 29, 29, 0.6)); /* Dégradé de lumière */
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(171, 29, 29, 0.6)
+  ); /* Dégradé de lumière */
   top: 0;
   left: -10px; /* Ajustez cette valeur pour agrandir vers la gauche */
-  transform: scaleX(0); /* Transformation initiale pour l'effet de zoom à gauche */
+  transform: scaleX(
+    0
+  ); /* Transformation initiale pour l'effet de zoom à gauche */
   transform-origin: left; /* Zoom depuis la gauche */
   transition: transform 0.2s; /* Transition pour le zoom */
 }
@@ -59,7 +95,6 @@
 /* Dans votre fichier CSS */
 /* Dans votre fichier CSS */
 
-
 .center-left-button {
   position: absolute;
   top: 50%;
@@ -77,7 +112,12 @@
 
 /* Style pour le message de victoire */
 .successMessage {
-  background-color: rgba(0, 255, 0, 0.9); /* Couleur de fond verte pour le message de victoire */
+  background-color: rgba(
+    0,
+    255,
+    0,
+    0.9
+  ); /* Couleur de fond verte pour le message de victoire */
   color: white; /* Couleur du texte en blanc */
   padding: 16px; /* Espace de remplissage autour du message */
   border-radius: 8px; /* Coins arrondis */
@@ -88,7 +128,12 @@
 
 /* Style pour le message de défaite */
 .failureMessage {
-  background-color: rgba(255, 0, 0, 0.9); /* Couleur de fond rouge pour le message de défaite */
+  background-color: rgba(
+    255,
+    0,
+    0,
+    0.9
+  ); /* Couleur de fond rouge pour le message de défaite */
   color: white; /* Couleur du texte en blanc */
   padding: 16px; /* Espace de remplissage autour du message */
   border-radius: 8px; /* Coins arrondis */
@@ -111,5 +156,3 @@
   z-index: 3; /* Mettez-le au-dessus de tout */
   background: rgba(0, 0, 0, 0.5); /* Arrière-plan sombre semi-transparent */
 }
-
-

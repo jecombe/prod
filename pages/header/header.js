@@ -30,9 +30,9 @@ const Header = () => {
 
   return (
     <header className={styles.menu}>
-      <div className={styles.logo}>
+      {/* <div className={styles.logo}>
         <Image src="/profil.jpeg" alt="nftguessr" height={10} width={10} />
-      </div>
+      </div> */}
       <div className={styles.menuItems}>
         <div className={styles.aboutDiv}>
           <a onClick={scrollToAbout} className={styles.howToPlayButton}>
