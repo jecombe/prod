@@ -1,25 +1,21 @@
-@import url("https://fonts.googleapis.com/css?family=Luckiest+Guy&display=swap");
-
 /* Styles pour le titre */
+
 .title {
   font-size: 90px;
   color: rgb(184, 65, 65); /* Couleur de texte de votre choix */
   text-align: center;
-  font-family: "Luckiest Guy", cursive;
 
   margin: 0; /* Supprime la marge par défaut du titre */
 }
 
 .subtitle {
   font-size: 30px; /* Taille du sous-titre */
-  font-family: "Luckiest Guy", cursive;
   text-align: center;
   color: rgb(184, 65, 65); /* Couleur de texte de votre choix */
 }
 
 .preli {
   font-size: 40px; /* Taille du sous-titre */
-  font-family: "Luckiest Guy", cursive;
   text-align: center;
   color: rgb(6, 5, 9); /* Couleur de texte de votre choix */
   height: auto;

@@ -5,12 +5,11 @@ import styles from "./footer.module.css";
 const Footer = () => {
   return (
     <footer className={styles.footer}>
-      <div>
+      <div className={styles.footerLinks}>
         <a
           href="https://twitter.com/NftGuessr"
           target="_blank"
           rel="noopener noreferrer"
-          style={{ marginRight: "10px" }} // Ajoutez une marge droite à Discord
         >
           Twitter
         </a>
@@ -18,7 +17,6 @@ const Footer = () => {
           href="https://discord.gg/DJb73wHR"
           target="_blank"
           rel="noopener noreferrer"
-          style={{ marginRight: "10px" }} // Ajoutez une marge droite à Discord
         >
           Discord
         </a>
@@ -30,7 +28,9 @@ const Footer = () => {
           Telegram
         </a>
       </div>
-      <div className={styles.footerText}>made by Jérémy Combe.</div>
+      <div className={styles.footerText}>
+        <a>Made by Jérémy Combe</a>
+      </div>
     </footer>
   );
 };

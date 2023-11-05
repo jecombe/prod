@@ -6,7 +6,7 @@
   text-align: center; /* Centrer le texte horizontalement */
   min-height: 100vh; /* Hauteur minimale de 100% de la hauteur de la fenêtre */
 }
-.blockAll h2 {
+.blockAll h1 {
   font-size: 50px;
 }
 .blockAll p {

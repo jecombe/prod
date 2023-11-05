@@ -1,10 +1,25 @@
+/* footer.module.css */
 .footer {
+  display: flex; /* Utilisez flexbox */
+  justify-content: space-between; /* Placez les éléments à l'extrémité de chaque côté */
+  align-items: center; /* Centrez verticalement */
   height: 80px; /* Ajustez la hauteur selon vos besoins */
   z-index: 2;
   background-color: rgb(86, 9, 95);
 }
+
 .footer a {
+  /* Styles pour les liens */
+  font-size: 16px;
+  margin-right: 10px; /* Ajoutez une marge droite entre les liens */
+}
+
+.footerLinks {
+  font-size: 16px;
+  /* Styles pour la div contenant les liens */
 }
 
 .footerText {
+  flex: 1; /* Faites en sorte que le texte "made by" prenne tout l'espace disponible au milieu */
+  text-align: right; /* Centrez le texte horizontalement */
 }

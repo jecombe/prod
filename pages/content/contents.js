@@ -102,7 +102,7 @@ export default function Contents() {
         <div className={styles.blockAll}>
           <div className={styles.blockOne}>
             <div className={styles.discover}>
-              <h2>Discover the world</h2>
+              <h1>Discover the world</h1>
               <p>
                 Discover the world in your own pace and earn NFT Geospace in our
                 single player mode.
@@ -116,7 +116,7 @@ export default function Contents() {
           <div className={styles.lineBlock}></div>
 
           <div className={styles.blockTwo}>
-            <h2>Earn NFT Geospace</h2>
+            <h1>Earn NFT Geospace</h1>
             <p>
               Win as many NFTs as possible to build a collection and gain
               advantages in the future.
@@ -125,7 +125,7 @@ export default function Contents() {
           <div className={styles.lineBlock}></div>
 
           <div className={styles.blockThree}>
-            <h2>Compete against others</h2>
+            <h1>Compete against others</h1>
             <p>
               Test your ability against players all across the world. Earn NFT
               Geospace and compete against others in tournaments and events!
