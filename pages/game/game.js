@@ -12,6 +12,7 @@ import { ethers } from "ethers";
 import abi from "../../utils/abi/abi";
 import { getFhevmInstance } from "../../utils/fhevmInstance";
 import initMetaMask from "../../utils/metamask";
+import Link from "next/link";
 const lib = ["places"];
 
 export default function GamePage() {
@@ -121,7 +122,7 @@ export default function GamePage() {
             // Mettez à jour l'état de votre composant en conséquence
             if (result) {
               setIsTransactionSuccessful(true);
-              setSuccessMessage("Félicitations ! Vous avez gagné.");
+              setSuccessMessage("You Win NFT");
               setIsTransactionFailed(false);
               setIsLoading(false);
 
@@ -132,7 +133,7 @@ export default function GamePage() {
               }, 5000);
             } else {
               setIsTransactionFailed(true);
-              setFailureMessage("Désolé, vous avez perdu.");
+              setFailureMessage("Sorry, you lost.");
               setIsTransactionSuccessful(false);
               setIsLoading(false);
 
@@ -145,14 +146,13 @@ export default function GamePage() {
           }
         });
       } catch (error) {
-        console.error("Erreur lors de l'initialisation du contrat :", error);
+        console.error("Erorr initialize contract :", error);
         setIsLoading(false);
         setIsTransactionSuccessful(false);
         setIsTransactionFailed(false); // Réinitialisez isTransactionFailed ici
         setIsMiniMapDisabled(false);
       }
     }
-
     fetchGpsData();
     initializeContract();
   }, []);
@@ -176,7 +176,6 @@ export default function GamePage() {
       const lat = fhevm.encrypt32(attConvert);
       const lng = fhevm.encrypt32(lngConvert);
 
-      const value = ethers.utils.parseEther("1");
       //const gasPrice = ethers.utils.parseUnits("50", "gwei"); // Spécifiez le prix du gaz (20 Gwei dans cet exemple)
       const signer = await initMetaMask(); // Initialisez MetaMask
       const gasLimit = 9000000; // Vous pouvez personnaliser la limite de gaz selon vos besoins
@@ -199,7 +198,7 @@ export default function GamePage() {
 
       await tx.wait();
     } catch (error) {
-      console.error("Erreur lors de l'envoi de la transaction :", error);
+      console.error("Error send transaction :", error);
       setIsLoading(false);
       setIsMiniMapDisabled(false); // Désactiver la mini-map pendant le chargement
       setMarkers([]);
@@ -219,29 +218,20 @@ export default function GamePage() {
         lng: data.longitude,
       });
     } catch (error) {
-      console.error(
-        "Erreur lors de la récupération des nouvelles coordonnées :",
-        error
-      );
+      console.error("Error new coordinates :", error);
     } finally {
       setIsFetchingCoordinates(false);
     }
   };
 
   return (
-    <LoadScript
-      googleMapsApiKey="AIzaSyD0ZKYS4E9Sl1izucojjOl3nErVLN2ixVQ"
-      libraries={lib}
-    >
+    <LoadScript googleMapsApiKey={process.env.API_MAP} libraries={lib}>
       <div className={style.headerContainer}>
-        <button
-          onClick={() => {
-            // Gérer la navigation vers l'accueil ici
-          }}
-          className={`${style.newCoordinate} center-left-button`}
-        >
-          Back Home
-        </button>
+        <Link href="/home/page">
+          <button className={`${style.newCoordinate} center-left-button`}>
+            Back Home
+          </button>
+        </Link>
 
         <div className={style.accountInfo}>
           <div>{accountAddress}</div>
@@ -304,7 +294,7 @@ export default function GamePage() {
             ))}
           </GoogleMap>
           {isLoading && (
-            <div className={style.loadingIndicator}>Chargement en cours...</div>
+            <div className={style.loadingIndicator}>Loading...</div>
           )}
 
           {isTransactionSuccessful && (
