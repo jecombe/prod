@@ -182,7 +182,7 @@ export default function GamePage() {
 
       const gasPrice = await signer.provider.getGasPrice();
       const maxPriorityFeePerGas = await signer.provider.getFeeData();
-
+      console.log(attConvert, lngConvert);
       // // Créez votre transaction avec les détails nécessaires (à personnaliser selon vos besoins)
       const transaction = {
         from: addr, // Adresse de l'expéditeur
@@ -227,7 +227,7 @@ export default function GamePage() {
   return (
     <LoadScript googleMapsApiKey={process.env.API_MAP} libraries={lib}>
       <div className={style.headerContainer}>
-        <Link href="/home/page">
+        <Link href="/">
           <button className={`${style.newCoordinate} center-left-button`}>
             Back Home
           </button>
@@ -283,7 +283,7 @@ export default function GamePage() {
               height: "100%",
             }}
             center={lastPosition}
-            zoom={2}
+            zoom={1}
             options={{
               disableDefaultUI: true,
             }}

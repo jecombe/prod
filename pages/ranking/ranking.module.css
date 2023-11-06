@@ -1,0 +1,57 @@
+.rankingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin: 0 auto;
+  padding: 2rem;
+  max-width: 800px; /* Ajustez la largeur maximale selon vos besoins */
+  background-color: #2c2525; /* Ajout du background-color */
+}
+
+.rankingTable {
+  margin-bottom: 2rem; /* Augmentation de la marge pour espacer davantage le tableau */
+  color: #ffffff; /* Couleur du texte */
+  border-collapse: collapse;
+  font-size: 25px;
+  width: 100%;
+}
+
+.headerContainer {
+  display: flex;
+  justify-content: space-between; /* Place le bouton à droite du header */
+  align-items: center; /* Centre verticalement le contenu du header et du bouton */
+  padding: 10px; /* Ajoutez de la marge autour du contenu si nécessaire */
+}
+
+.backHome {
+  background-color: #141e30; /* Couleur de fond sombre */
+  color: #ffffff; /* Couleur du texte en blanc */
+  border: 2px solid #00bfff; /* Bordure bleue */
+  border-radius: 10px; /* Coins arrondis */
+  padding: 15px 30px; /* Rembourrage pour la taille du bouton */
+  font-size: 20px; /* Taille de la police */
+  font-weight: bold; /* Texte en gras */
+  cursor: pointer;
+  text-transform: uppercase; /* Texte en majuscules */
+  transition: background-color 0.3s, transform 0.2s;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Ombre douce */
+  display: block;
+}
+
+.backHome:hover {
+  background-color: #00bfff; /* Couleur de fond bleue au survol */
+  transform: scale(1.05); /* Légère mise à l'échelle au survol */
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2); /* Ombre plus prononcée au survol */
+}
+
+.rankingTable th,
+.rankingTable td {
+  padding: 8px;
+  text-align: center;
+}
+
+.rankingContainer h1 {
+  color: #ffffff; /* Couleur du texte pour le titre */
+  font-size: 40px;
+}

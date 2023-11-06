@@ -8,7 +8,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 20px;
-  z-index: 1000; /* Assure que le menu est au-dessus du reste du contenu */
+  z-index: 1000;
 }
 
 .menu a {
@@ -64,6 +64,28 @@
 .howToPlayButton:hover {
   background-position: 0 0;
 }
+
+.rankingLink {
+  /* Utilisez la police style cartoon 3D de votre choix */
+
+  /* Créez un aspect en relief */
+  text-transform: uppercase;
+  text-decoration: none;
+  background: linear-gradient(to top, #921717 0%, #921717 50%, transparent 50%);
+  background-size: 100% 200%;
+  background-position: 0 100%;
+  transition: background-position 0.3s;
+  padding: 5px 10px;
+
+  cursor: pointer;
+  margin-right: 20px;
+}
+/* Styles au survol */
+/* Lorsque survolé, l'effet 3D apparaît */
+.rankingLink:hover {
+  background-position: 0 0;
+}
+
 .menuItems {
   display: flex;
   flex-direction: row; /* Pour les afficher horizontalement */
@@ -72,8 +94,7 @@
 .aboutDiv {
   margin-bottom: 10px; /* Ajoutez une marge inférieure pour espacer les div */
 }
-.howToPlayDiv {
-}
+
 /* Réactivité */
 @media (max-width: 570px) {
   /* Styles pour la réactivité si nécessaire */

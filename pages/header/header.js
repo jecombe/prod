@@ -1,19 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import styles from "./header.module.css";
-import Image from "next/image";
 import Link from "next/link";
 
 const Header = () => {
-  const [isDropdownVisible, setDropdownVisible] = useState(false);
-
-  const handleMouseEnter = () => {
-    setDropdownVisible(true);
-  };
-
-  const handleMouseLeave = () => {
-    setDropdownVisible(false);
-  };
-
   const scrollToHowToPlay = () => {
     const howToPlaySection = document.getElementById("howToPlay");
     if (howToPlaySection) {
@@ -43,6 +32,9 @@ const Header = () => {
           <a onClick={scrollToHowToPlay} className={styles.howToPlayButton}>
             How to Play
           </a>
+          <Link href="/ranking/ranking">
+            <a className={styles.rankingLink}>Ranking</a>
+          </Link>
         </div>
       </div>
       <Link href="/game/game">

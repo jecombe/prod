@@ -30,7 +30,6 @@
   justify-content: space-between; /* Place le bouton à droite du header */
   align-items: center; /* Centre verticalement le contenu du header et du bouton */
   padding: 10px; /* Ajoutez de la marge autour du contenu si nécessaire */
-  background-color: #2c2525;
 }
 
 .miniMapContainer::before {
