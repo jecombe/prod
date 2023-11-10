@@ -9,6 +9,12 @@ module.exports = {
     CONTRACT: process.env.CONTRACT,
     ROUTE: process.env.ROUTE,
     PROVIDER: process.env.PROVIDER,
+    ROUTE_GET_NFT: process.env.ROUTE_GET_NFT,
+    ROUTE_GET_HOLDER_ID: process.env.ROUTE_GET_HOLDER_ID,
+    ROUTE_GET_NFT_STAKE: process.env.ROUTE_GET_NFT_STAKE,
+    KEY: process.env.KEY,
+    ROUTE_GET_NFT_RESET: process.env.ROUTE_GET_NFT_RESET,
+    ROUTE_NFT_RESET: process.env.ROUTE_NFT_RESET,
   },
   webpack: (config) => {
     // Ajoutez ici la configuration de résolution pour 'tfhe_bg.wasm'

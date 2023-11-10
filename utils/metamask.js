@@ -19,6 +19,7 @@ async function initMetaMask() {
       throw error;
     }
   } else {
+    alert("please install metamask");
     throw new Error("MetaMask n'a pas été détecté dans la fenêtre.");
   }
 }

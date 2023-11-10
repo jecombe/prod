@@ -1,27 +1,62 @@
-.rankingContainer {
+.pagination {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  margin: 0 auto;
-  padding: 2rem;
-  max-width: 800px; /* Ajustez la largeur maximale selon vos besoins */
-  background-color: #2c2525; /* Ajout du background-color */
+  justify-content: center;
+  margin-top: 20px;
 }
 
-.rankingTable {
-  margin-bottom: 2rem; /* Augmentation de la marge pour espacer davantage le tableau */
-  color: #ffffff; /* Couleur du texte */
+.pagination button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  margin: 0 5px;
+  cursor: pointer;
+}
+.fieldContainer {
+  max-width: 200px; /* Vous pouvez ajuster la largeur en fonction de vos besoins */
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.pagination button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+/* profil.css */
+.containerInfos {
+  text-align: center; /* Pour centrer le texte à l'intérieur */
+  margin: 0 auto; /* Pour centrer horizontalement */
+}
+.containerInfos h1,
+.containerInfos h2 {
+  color: #ffffff;
+}
+/* ranking2.module.css */
+
+.tableContainer {
+  overflow: hidden; /* Ajoutez cette ligne pour masquer la barre de défilement */
+  display: flex;
+}
+
+.tableContainer table {
   border-collapse: collapse;
-  font-size: 25px;
   width: 100%;
 }
 
-.headerContainer {
-  display: flex;
-  justify-content: space-between; /* Place le bouton à droite du header */
-  align-items: center; /* Centre verticalement le contenu du header et du bouton */
-  padding: 10px; /* Ajoutez de la marge autour du contenu si nécessaire */
+.tableContainer th,
+.tableContainer td {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 10px;
+}
+
+/* Styles pour les colonnes avec contenu variable */
+.tokenIds {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 150px; /* Ajustez la largeur maximale en fonction de vos besoins */
 }
 
 .backHome {
@@ -36,7 +71,18 @@
   text-transform: uppercase; /* Texte en majuscules */
   transition: background-color 0.3s, transform 0.2s;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Ombre douce */
+  text-align: left; /* Alignez le texte à gauche */
   display: block;
+}
+.containerInfos h1 {
+  font-size: 40px;
+  color: #fbfdfd;
+}
+.headerContainer {
+  display: flex;
+  justify-content: flex-start; /* Place le bouton à gauche du header */
+  align-items: center; /* Centre verticalement le contenu du header et du bouton */
+  padding: 10px; /* Ajoutez de la marge autour du contenu si nécessaire */
 }
 
 .backHome:hover {
@@ -44,14 +90,44 @@
   transform: scale(1.05); /* Légère mise à l'échelle au survol */
   box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2); /* Ombre plus prononcée au survol */
 }
+/* Ajoutez ces styles pour rendre le tableau responsive */
+@media (max-width: 600px) {
+  .table {
+    display: block;
+  }
+  .thead {
+    display: block;
+  }
+  .thead {
+    display: none;
+  }
 
-.rankingTable th,
-.rankingTable td {
-  padding: 8px;
-  text-align: center;
-}
+  .tbody {
+    display: block;
+  }
+  .tr {
+    display: block;
+    margin-bottom: 1rem;
+  }
 
-.rankingContainer h1 {
-  color: #ffffff; /* Couleur du texte pour le titre */
-  font-size: 40px;
+  .th {
+    display: block;
+  }
+  .td {
+    display: block;
+    padding-left: 150px;
+    position: relative;
+  }
+  .td:before {
+    content: attr(data-label);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 130px;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    font-weight: bold;
+  }
 }

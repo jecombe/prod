@@ -1,0 +1,187 @@
+/* Dans profil.module.css */
+/* Style pour les div "Your Owned NFTs" et "Staked NFTs" */
+
+.yourNFTs,
+.yourStakedNft,
+.yourResetNft {
+  padding: auto;
+  width: 400px; /* Set the width to 100% or adjust as needed */
+  font-size: 14px;
+}
+.firstContainer,
+.balanceAndAddress {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+/* Appliquer la rotation lorsqu'un élément est survolé */
+
+.headerContainer {
+  display: flex;
+  justify-content: space-between; /* Place le bouton à droite du header */
+  align-items: center; /* Centre verticalement le contenu du header et du bouton */
+}
+
+.balanceAndAddress {
+  display: flex;
+  justify-content: space-between;
+}
+.needToPlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.headerAddress,
+.headerItemAddress {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Alignez le texte au centre verticalement dans chaque colonne */
+}
+
+.headerItemAddress h3,
+.headerItemAddress p {
+  margin: 0; /* Supprimez la marge par défaut pour un espacement propre */
+}
+
+.backHome {
+  background-color: #141e30; /* Couleur de fond sombre */
+  color: #ffffff; /* Couleur du texte en blanc */
+  border: 2px solid #00bfff; /* Bordure bleue */
+  border-radius: 10px; /* Coins arrondis */
+  padding: 15px 30px; /* Rembourrage pour la taille du bouton */
+  font-size: 20px; /* Taille de la police */
+  font-weight: bold; /* Texte en gras */
+  cursor: pointer;
+  text-transform: uppercase; /* Texte en majuscules */
+  transition: background-color 0.3s, transform 0.2s;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Ombre douce */
+  display: block;
+}
+
+.backHome:hover {
+  background-color: #00bfff; /* Couleur de fond bleue au survol */
+  transform: scale(1.05); /* Légère mise à l'échelle au survol */
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2); /* Ombre plus prononcée au survol */
+}
+
+/* profil.css */
+.containerInfos {
+  margin: 0 auto; /* Pour centrer horizontalement */
+}
+
+.container a {
+  color: #fbfdfd;
+  font-size: medium;
+}
+.container h1,
+.container h3,
+.container h2 {
+  color: #fbfdfd;
+}
+/* Styles pour les boutons */
+
+/* Style de bouton vert pour "Stake" */
+.red2Button {
+  text-transform: uppercase;
+  text-decoration: none;
+  background: linear-gradient(to top, #107a20 0%, #107a20 50%, transparent 50%);
+  background-size: 100% 200%;
+  background-position: 0 100%;
+  transition: background-position 0.3s;
+  padding: 5px 10px;
+
+  cursor: pointer;
+  margin-right: 20px;
+}
+.red2Button:hover {
+  background-position: 0 0;
+}
+/* Styles au survol */
+/* Lorsque survolé, l'effet 3D apparaît */
+
+.containerAccess {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  margin-top: 20px; /* Ajoute une marge au besoin */
+}
+
+/* Style de bouton rouge pour "Unstake" */
+.redButton {
+  text-transform: uppercase;
+  text-decoration: none;
+  background: linear-gradient(to top, #a81419 0%, #a81419 50%, transparent 50%);
+  background-size: 100% 200%;
+  background-position: 0 100%;
+  transition: background-position 0.3s;
+  padding: 5px 10px;
+
+  cursor: pointer;
+  margin-right: 20px;
+}
+.redButton:hover {
+  background-position: 0 0;
+}
+.accessButton {
+  text-transform: uppercase;
+  text-decoration: none;
+  background: linear-gradient(to top, #a88314 0%, #a88314 50%, transparent 50%);
+  background-size: 100% 200%;
+  background-position: 0 100%;
+  transition: background-position 0.3s;
+  padding: 5px 10px;
+
+  cursor: pointer;
+  margin-right: 20px;
+}
+.accessButton:hover {
+  background-position: 0 0;
+}
+.createGpsButton {
+  background-color: #4caf50; /* Couleur de fond pour le bouton */
+  color: white; /* Couleur du texte pour le bouton */
+  padding: 10px 20px; /* Espacement intérieur du bouton */
+  border: none; /* Supprimer la bordure du bouton */
+  border-radius: 5px; /* Coins arrondis */
+  cursor: pointer; /* Curseur de la souris en forme de main */
+  /* Autres styles CSS personnalisés si nécessaire */
+}
+
+/* Style de bouton violet pour "Create GPS" */
+.purpleButton {
+  text-transform: uppercase;
+  text-decoration: none;
+  background: linear-gradient(to top, #7f1285 0%, #7f1285 50%, transparent 50%);
+  background-size: 100% 200%;
+  background-position: 0 100%;
+  transition: background-position 0.3s;
+  padding: 5px 10px;
+
+  cursor: pointer;
+  margin-right: 20px;
+}
+
+/* Animation au survol */
+.button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+@media screen and (max-width: 570px) {
+  .yourNFTs,
+  .yourStakedNft {
+    width: 100%; /* Réglez la largeur à 100% pour qu'ils occupent toute la largeur */
+    margin-top: 10px; /* Ajoutez une marge en haut pour un espacement */
+    background-color: initial; /* Retirez les couleurs de fond définies précédemment */
+  }
+
+  .yourNFTs {
+    order: 1; /* Changez l'ordre d'affichage pour que yourNFTs apparaisse en premier */
+  }
+
+  .yourStakedNft {
+    order: 2; /* Changez l'ordre d'affichage pour que yourStakedNft apparaisse en second */
+  }
+}

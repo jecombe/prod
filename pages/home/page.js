@@ -5,25 +5,22 @@ import Header from "../header/header";
 import Footer from "../footer/footer";
 import Contents from "../content/contents";
 import FirstPage from "../firstPage/page";
+import initMetaMask from "../../utils/metamask";
+import { useDispatch, useSelector } from "react-redux";
+import { getFhevmInstance } from "../../utils/fhevmInstance";
+import { useEffect, useState } from "react";
+import { initMetaMaskAction } from "../../action/metamaskActions";
 
 export default function HomeView() {
   return (
-    <div className={styles.container}>
+    <div>
       <div className={styles.first}>
-        <Head>
-          <link rel="icon" href="/profil.jpeg" />{" "}
-          {/* Chemin vers votre icône */}
-          <title>NFTGuessr</title>
-        </Head>
-
         <Header />
         <FirstPage />
       </div>
       <main className={`${styles.content}`}>
-        {/* <ParallaxPage /> */}
         <Contents />
       </main>
-
       <Footer />
     </div>
   );

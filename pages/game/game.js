@@ -13,6 +13,9 @@ import abi from "../../utils/abi/abi";
 import { getFhevmInstance } from "../../utils/fhevmInstance";
 import initMetaMask from "../../utils/metamask";
 import Link from "next/link";
+import ErrorMetamask from "../errorPage/metamask";
+import CryptoJS from "crypto-js";
+
 const lib = ["places"];
 
 export default function GamePage() {
@@ -33,26 +36,34 @@ export default function GamePage() {
     lat: 0,
     lng: 0,
   };
+  //const { addressUser, balance } = useSelector((state) => state.metamask);
+  // const dispatch = useDispatch();
 
   const [position, setPosition] = useState(init);
   const [markers, setMarkers] = useState([]); // État pour stocker les marqueurs
   const [lastPosition, setLastPosition] = useState(init); // État pour stocker les marqueurs
   const [isLoading, setIsLoading] = useState(false); // État pour suivre l'état de chargement
+  const [isLoadingMeta, setIsLoadingMeta] = useState(false); // État pour suivre l'état de chargement
+
   const [isTransactionSuccessful, setIsTransactionSuccessful] = useState(false);
   const [isTransactionFailed, setIsTransactionFailed] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [failureMessage, setFailureMessage] = useState("");
   const [isMiniMapDisabled, setIsMiniMapDisabled] = useState(false);
-  const [contract, setContract] = useState(null);
   const [fhevm, setFhevm] = useState(null);
   const [isFetchingCoordinates, setIsFetchingCoordinates] = useState(false);
+  const [contract, setContract] = useState(null); // État pour suivre l'état de chargement
+  const [signer, setSigner] = useState(null); // État pour suivre l'état de chargement
+  const [nft, setNft] = useState({});
+  const [isMounted, setIsMounted] = useState(true);
 
-  const [accountAddress, setAccountAddress] = useState("Loading...");
-  const [accountBalance, setAccountBalance] = useState("Loading...");
+  const [accountAddress, setAccountAddress] = useState("");
+  const [accountBalance, setAccountBalance] = useState("");
   const [addr, setAddress] = useState(init);
+  const [isMetaMaskInitialized, setIsMetaMaskInitialized] = useState(false);
 
   const updateAccountInfo = async () => {
-    if (typeof window !== "undefined" && window.ethereum) {
+    if (typeof window !== "undefined" && window.ethereum && isMounted) {
       const web3 = new Web3(window.ethereum);
       try {
         const accounts = await window.ethereum.request({
@@ -66,46 +77,35 @@ export default function GamePage() {
         const etherBalance = web3.utils.fromWei(balance, "ether");
         setAccountBalance(`Balance : ${etherBalance} ZAMA`);
       } catch (error) {
-        console.error("error upadte account :", error);
+        console.error("error updating account info:", error);
       }
     } else {
-      setAccountAddress("Metamask is not install");
+      setAccountAddress("MetaMask is not installed");
     }
   };
 
   useEffect(() => {
-    updateAccountInfo();
-
-    // Écoutez l'événement accountsChanged pour détecter les changements de compte
-    window.ethereum.on("accountsChanged", updateAccountInfo);
-
-    // Nettoyez l'écouteur d'événements lorsque le composant est démonté
-    return () => {
-      window.ethereum.removeListener("accountsChanged", updateAccountInfo);
-    };
-  }, []);
+    if (isMetaMaskInitialized && isMounted) {
+      updateAccountInfo();
+    }
+  }, [isMetaMaskInitialized, isMounted]);
 
   useEffect(() => {
-    async function fetchGpsData() {
-      try {
-        const response = await fetch(
-          `${process.env.SERVER}${process.env.ROUTE}`
-        );
-        const data = await response.json();
-        setPosition({
-          lat: data.latitude,
-          lng: data.longitude,
-        });
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    }
+    setIsMounted(true);
 
+    return () => {
+      setIsMounted(false);
+    };
+  }, []);
+  useEffect(() => {
     async function initializeContract() {
       try {
+        setIsLoadingMeta(true);
+        const signer = await initMetaMask();
+
         const fhevmInstance = await getFhevmInstance();
 
-        const signer = await initMetaMask();
+        setSigner(signer);
         const contract = new ethers.Contract(
           process.env.CONTRACT, // Adresse de votre contrat
           abi, // ABI de votre contrat
@@ -115,6 +115,13 @@ export default function GamePage() {
 
         // Enregistrez le contrat dans l'état
         setContract(contract);
+        setIsMetaMaskInitialized(true);
+
+        if (window.ethereum) {
+          window.ethereum.on("accountsChanged", updateAccountInfo);
+        }
+        setIsLoadingMeta(false);
+
         // Écoutez l'événement "Result" du contrat
         contract.on("GpsCheckResult", async (userAddress, result) => {
           const addrSigner = await signer.getAddress();
@@ -146,19 +153,29 @@ export default function GamePage() {
           }
         });
       } catch (error) {
-        console.error("Erorr initialize contract :", error);
-        setIsLoading(false);
-        setIsTransactionSuccessful(false);
-        setIsTransactionFailed(false); // Réinitialisez isTransactionFailed ici
-        setIsMiniMapDisabled(false);
+        console.error("Error initialize contract :", error);
+
+        if (isMounted) {
+          console.error("Error initialize contract mounted:", error);
+          setIsLoading(false);
+          setIsLoadingMeta(false);
+          setIsTransactionSuccessful(false);
+          setIsTransactionFailed(false);
+          setIsMiniMapDisabled(false);
+        }
       }
     }
-    fetchGpsData();
     initializeContract();
-  }, []);
+    fetchGpsData();
+
+    return () => {
+      setIsMounted(false);
+      //setIsLoadingMeta(false);
+    };
+  }, [isMounted]);
 
   const handleMiniMapClick = async (e) => {
-    if (isMiniMapDisabled) {
+    if (isMiniMapDisabled || !signer) {
       return; // Ne rien faire si la mini-map est désactivée
     }
     const newMarker = {
@@ -177,22 +194,28 @@ export default function GamePage() {
       const lng = fhevm.encrypt32(lngConvert);
 
       //const gasPrice = ethers.utils.parseUnits("50", "gwei"); // Spécifiez le prix du gaz (20 Gwei dans cet exemple)
-      const signer = await initMetaMask(); // Initialisez MetaMask
+      // const signer = await initMetaMask(); // Initialisez MetaMask
       const gasLimit = 9000000; // Vous pouvez personnaliser la limite de gaz selon vos besoins
 
-      const gasPrice = await signer.provider.getGasPrice();
-      const maxPriorityFeePerGas = await signer.provider.getFeeData();
-      console.log(attConvert, lngConvert);
+      const value = 1 + nft.tax;
+      const feeData = await signer.provider.getFeeData();
+      //const maxPriorityFeePerGas = maxFeePerGas.div(2); // Exemple, vous pouvez ajuster le facteur selon vos besoins
+
       // // Créez votre transaction avec les détails nécessaires (à personnaliser selon vos besoins)
       const transaction = {
         from: addr, // Adresse de l'expéditeur
         to: contract.address, // Adresse du contrat
-        gasLimit: "5000000", // Limite de gaz (à personnaliser)
-        maxFeePerGas: ethers.utils.parseUnits("100", "gwei"), // Max Fee Per Gas (à personnaliser)
-        maxPriorityFeePerGas: ethers.utils.parseUnits("10", "gwei"), // Max Priority Fee Per Gas (à personnaliser)
-        value: ethers.utils.parseEther("1"), // Montant à envoyer (à personnaliser)
+        gasLimit: "3000000", // Limite de gaz (à personnaliser)
+        maxFeePerGas: feeData.maxFeePerGas,
+        maxPriorityFeePerGas: feeData.maxPriorityFeePerGas, // Max Priority Fee Per Gas (à personnaliser)
+        value: ethers.utils.parseEther(`${value}`), // Montant à envoyer (à personnaliser)
         data: contract.interface.encodeFunctionData("checkGps", [lat, lng]), // Encodage de la fonction du contrat et de ses paramètres
       };
+      // Estimez le gaz nécessaire
+      const estimatedGas = await signer.estimateGas(transaction);
+
+      // Ajoutez la limite de gaz estimée à la transaction avec une marge de sécurité
+      transaction.gasLimit = estimatedGas.add(10000);
 
       const tx = await signer.sendTransaction(transaction);
 
@@ -206,23 +229,31 @@ export default function GamePage() {
     }
   };
 
-  const fetchNewCoordinates = async () => {
-    setIsFetchingCoordinates(true);
-
+  async function fetchGpsData() {
     try {
       const response = await fetch(`${process.env.SERVER}${process.env.ROUTE}`);
       const data = await response.json();
-
+      var bytes = CryptoJS.AES.decrypt(data, process.env.KEY);
+      var decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
       setPosition({
-        lat: data.latitude,
-        lng: data.longitude,
+        lat: decryptedData.latitude,
+        lng: decryptedData.longitude,
+      });
+      setNft({
+        tokenId: decryptedData.tokenId,
+        tax: decryptedData.tax,
       });
     } catch (error) {
-      console.error("Error new coordinates :", error);
-    } finally {
-      setIsFetchingCoordinates(false);
+      console.error("Error:", error);
     }
-  };
+  }
+  if (isLoadingMeta)
+    return (
+      <div>
+        <h1>Loading...</h1>
+      </div>
+    );
+  if (!signer) return <ErrorMetamask />;
 
   return (
     <LoadScript googleMapsApiKey={process.env.API_MAP} libraries={lib}>
@@ -238,12 +269,15 @@ export default function GamePage() {
           <div>{accountBalance}</div>
         </div>
         <button
-          onClick={fetchNewCoordinates}
+          onClick={fetchGpsData}
           className={`${style.newCoordinate} center-left-button`}
-          disabled={isFetchingCoordinates}
         >
-          {isFetchingCoordinates ? "Loading..." : "New coordinates"}
+          New coordinates
         </button>
+        <div>
+          <p>TokenId: {nft.tokenId}</p>
+          <p>Tax: {nft.tax + 1} ZAMA</p>
+        </div>
       </div>
       <div style={style.map}>
         <GoogleMap

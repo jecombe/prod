@@ -65,26 +65,6 @@
   background-position: 0 0;
 }
 
-.profilStat {
-  /* Utilisez la police style cartoon 3D de votre choix */
-
-  /* Créez un aspect en relief */
-  text-transform: uppercase;
-  text-decoration: none;
-  background: linear-gradient(to top, #a81419 0%, #a81419 50%, transparent 50%);
-  background-size: 100% 200%;
-  background-position: 0 100%;
-  transition: background-position 0.3s;
-  padding: 5px 10px;
-
-  cursor: pointer;
-  margin-right: 20px;
-}
-/* Styles au survol */
-/* Lorsque survolé, l'effet 3D apparaît */
-.profilStat:hover {
-  background-position: 0 0;
-}
 .rankingLink {
   /* Utilisez la police style cartoon 3D de votre choix */
 
