@@ -240,7 +240,7 @@ export default function GamePage() {
         lng: decryptedData.longitude,
       });
       setNft({
-        tokenId: decryptedData.tokenId,
+        tokenId: decryptedData.id,
         tax: decryptedData.tax,
       });
     } catch (error) {

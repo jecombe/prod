@@ -196,25 +196,6 @@ const abi = [
     inputs: [
       {
         internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    name: "addressesOwner",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
         name: "_fees",
         type: "uint256",
       },
@@ -291,26 +272,24 @@ const abi = [
     inputs: [
       {
         internalType: "bytes[]",
-        name: "_northLat",
-        type: "bytes[]",
-      },
-      {
-        internalType: "bytes[]",
-        name: "_southLat",
-        type: "bytes[]",
-      },
-      {
-        internalType: "bytes[]",
-        name: "_eastLon",
-        type: "bytes[]",
-      },
-      {
-        internalType: "bytes[]",
-        name: "_westLon",
+        name: "data",
         type: "bytes[]",
       },
     ],
     name: "createNFT",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes[]",
+        name: "data",
+        type: "bytes[]",
+      },
+    ],
+    name: "createNftForOwner",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -323,19 +302,6 @@ const abi = [
         internalType: "uint256",
         name: "",
         type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "getAddressesOwner",
-    outputs: [
-      {
-        internalType: "address[]",
-        name: "",
-        type: "address[]",
       },
     ],
     stateMutability: "view",
@@ -355,6 +321,45 @@ const abi = [
         internalType: "bool",
         name: "",
         type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+    ],
+    name: "getNFTLocation",
+    outputs: [
+      {
+        internalType: "uint32",
+        name: "northLat",
+        type: "uint32",
+      },
+      {
+        internalType: "uint32",
+        name: "southLat",
+        type: "uint32",
+      },
+      {
+        internalType: "uint32",
+        name: "eastLon",
+        type: "uint32",
+      },
+      {
+        internalType: "uint32",
+        name: "westLon",
+        type: "uint32",
+      },
+      {
+        internalType: "uint256",
+        name: "tax",
+        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -443,6 +448,19 @@ const abi = [
         internalType: "string",
         name: "",
         type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getNextTokenId",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -593,6 +611,16 @@ const abi = [
           {
             internalType: "euint32",
             name: "westLon",
+            type: "uint256",
+          },
+          {
+            internalType: "euint32",
+            name: "lat",
+            type: "uint256",
+          },
+          {
+            internalType: "euint32",
+            name: "lng",
             type: "uint256",
           },
         ],

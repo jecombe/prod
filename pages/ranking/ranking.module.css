@@ -1,63 +1,6 @@
-.pagination {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-}
+/* ranking.module.css */
 
-.pagination button {
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  padding: 5px 10px;
-  margin: 0 5px;
-  cursor: pointer;
-}
-.fieldContainer {
-  max-width: 200px; /* Vous pouvez ajuster la largeur en fonction de vos besoins */
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.pagination button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-/* profil.css */
-.containerInfos {
-  text-align: center; /* Pour centrer le texte à l'intérieur */
-  margin: 0 auto; /* Pour centrer horizontalement */
-}
-.containerInfos h1,
-.containerInfos h2 {
-  color: #ffffff;
-}
-/* ranking2.module.css */
-
-.tableContainer {
-  overflow: hidden; /* Ajoutez cette ligne pour masquer la barre de défilement */
-  display: flex;
-}
-
-.tableContainer table {
-  border-collapse: collapse;
-  width: 100%;
-}
-
-.tableContainer th,
-.tableContainer td {
-  border: 1px solid #dddddd;
-  text-align: left;
-  padding: 10px;
-}
-
-/* Styles pour les colonnes avec contenu variable */
-.tokenIds {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  max-width: 150px; /* Ajustez la largeur maximale en fonction de vos besoins */
-}
+/* Styles pour le tableau */
 
 .backHome {
   background-color: #141e30; /* Couleur de fond sombre */
@@ -71,18 +14,7 @@
   text-transform: uppercase; /* Texte en majuscules */
   transition: background-color 0.3s, transform 0.2s;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Ombre douce */
-  text-align: left; /* Alignez le texte à gauche */
   display: block;
-}
-.containerInfos h1 {
-  font-size: 40px;
-  color: #fbfdfd;
-}
-.headerContainer {
-  display: flex;
-  justify-content: flex-start; /* Place le bouton à gauche du header */
-  align-items: center; /* Centre verticalement le contenu du header et du bouton */
-  padding: 10px; /* Ajoutez de la marge autour du contenu si nécessaire */
 }
 
 .backHome:hover {
@@ -90,44 +22,80 @@
   transform: scale(1.05); /* Légère mise à l'échelle au survol */
   box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2); /* Ombre plus prononcée au survol */
 }
-/* Ajoutez ces styles pour rendre le tableau responsive */
-@media (max-width: 600px) {
-  .table {
-    display: block;
-  }
-  .thead {
-    display: block;
-  }
-  .thead {
-    display: none;
-  }
+.tableContainer {
+  overflow: auto;
+}
+.statsContainer {
+  /* Vos styles généraux pour statsContainer */
+}
 
-  .tbody {
-    display: block;
-  }
-  .tr {
-    display: block;
-    margin-bottom: 1rem;
-  }
+.contract,
+.fees,
+.totalNft,
+.totalStake,
+.totalReset,
+.minimumStake {
+  color: white; /* Couleur du texte pour les libellés */
+}
 
+.dynamicValue {
+  color: black; /* Couleur du texte pour les valeurs dynamiques */
+}
+.containerInfos {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centrer le contenu horizontalement */
+  text-align: center; /* Centrer le texte horizontalement */
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px; /* Ajout de marge pour une meilleure apparence */
+}
+.th {
+  color: #ffffff;
+}
+
+.thead,
+.tbody,
+.tr,
+.th,
+.td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.th {
+  font-weight: bold;
+}
+
+.containerInfos h1,
+.containerInfos h2 {
+  color: #ffffff;
+}
+
+/* En mode responsive */
+@media (max-width: 570px) {
   .th {
-    display: block;
+    display: none; /* Cacher les th en mode responsive */
   }
+
+  .tr {
+    margin-bottom: 10px;
+    border-color: bisque;
+  }
+
   .td {
     display: block;
-    padding-left: 150px;
-    position: relative;
+    width: 100%;
+    box-sizing: border-box;
   }
+
   .td:before {
     content: attr(data-label);
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 130px;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-    padding: 10px;
+    display: block;
     font-weight: bold;
+    margin-bottom: 5px;
   }
 }

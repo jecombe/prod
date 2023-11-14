@@ -23,22 +23,18 @@ const Header = () => {
         <Image src="/profil.jpeg" alt="nftguessr" height={10} width={10} />
       </div> */}
       <div className={styles.menuItems}>
-        <div className={styles.aboutDiv}>
-          <a onClick={scrollToAbout} className={styles.howToPlayButton}>
-            About
-          </a>
-        </div>
-        <div className={styles.howToPlayDiv}>
-          <a onClick={scrollToHowToPlay} className={styles.howToPlayButton}>
-            How to Play
-          </a>
-          <Link href="/ranking/rank">
-            <a className={styles.profilStat}>Game Stats</a>
-          </Link>
-          <Link href="/profil/profil">
-            <a className={styles.profilStat}>My profil</a>
-          </Link>
-        </div>
+        <a onClick={scrollToAbout} className={styles.howToPlayButton}>
+          About
+        </a>
+        <a onClick={scrollToHowToPlay} className={styles.howToPlayButton}>
+          How to Play
+        </a>
+        <Link href="/ranking/rank">
+          <a className={styles.profilStat}>Game Stats</a>
+        </Link>
+        <Link href="/profil/profil">
+          <a className={styles.profilStat}>My profil</a>
+        </Link>
       </div>
       <Link href="/game/game">
         <button className={styles.playButton}>Play</button>

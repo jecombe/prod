@@ -116,19 +116,20 @@ export default function Contents() {
           <div className={styles.lineBlock}></div>
 
           <div className={styles.blockTwo}>
-            <h1>Earn NFT Geospace</h1>
+            <h1>Earn Geospace</h1>
             <p>
-              Win as many NFTs as possible to build a collection and gain
-              advantages in the future.
+              Win an NFT and unlock the right to put it back into play with your
+              own tax.
             </p>
           </div>
           <div className={styles.lineBlock}></div>
 
           <div className={styles.blockThree}>
-            <h1>Compete against others</h1>
+            <h1>Stake GeoSpace</h1>
             <p>
-              Test your ability against players all across the world. Earn NFT
-              Geospace and compete against others in tournaments and events!
+              Once you have 3 NFTs, you can stake them to unlock the right to
+              create a Geospace NFT with a valid GPS point (i.e., with an
+              available Google Street View). This includes your tax.
             </p>
           </div>
         </div>

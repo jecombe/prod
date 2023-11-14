@@ -6,7 +6,42 @@ import styles from "./profil.module.css";
 import ErrorMetamask from "../errorPage/metamask";
 import Link from "next/link";
 import axios from "axios";
+import { getFhevmInstance } from "../../utils/fhevmInstance";
 
+function createSquareAroundPointWithDecimals(
+  latitude,
+  longitude,
+  distanceInKilometers
+) {
+  // Convertissez la distance en degrés en fonction de la latitude
+  const degreesPerKilometer = 1 / 111.32; // En supposant une latitude proche de l'équateur
+
+  // Calculez la taille du carré en degrés
+  const degreesDelta = distanceInKilometers * degreesPerKilometer;
+
+  // Coordonnées du coin nord-ouest du carré
+  const northLat = latitude + degreesDelta / 2;
+  const westLon = longitude - degreesDelta / 2;
+
+  // Coordonnées du coin sud-est du carré
+  const southLat = latitude - degreesDelta / 2;
+  const eastLon = longitude + degreesDelta / 2;
+
+  // Conversion en coordonnées sans décimales
+  const scaledNorthLat = Math.trunc(northLat * 1e5);
+  const scaledWestLon = Math.trunc(westLon * 1e5);
+  const scaledSouthLat = Math.trunc(southLat * 1e5);
+  const scaledEastLon = Math.trunc(eastLon * 1e5);
+
+  return {
+    northLat: scaledNorthLat,
+    southLat: scaledSouthLat,
+    eastLon: scaledEastLon,
+    westLon: scaledWestLon,
+    lat: Math.trunc(latitude * 1e5),
+    lng: Math.trunc(longitude * 1e5),
+  };
+}
 const Profil = () => {
   const [account, setAccount] = useState("");
   const [balance, setBalance] = useState(0);
@@ -18,10 +53,38 @@ const Profil = () => {
   const [selectedNFTs, setSelectedNFTs] = useState([]);
   const [selectedStakedNFTs, setSelectedStakedNFTs] = useState([]);
   const [selectedResetNFTs, setSelectedResetNFTs] = useState([]);
-
+  const [fhevm, setFhevm] = useState(null);
+  const [numberInput, setNumberInput] = useState(0);
+  const [latitudeInput, setLatitudeInput] = useState("");
+  const [longitudeInput, setLongitudeInput] = useState("");
   const [resetNFT, setResetNFT] = useState([]);
 
   const [isMetaMaskInitialized, setIsMetaMaskInitialized] = useState(false);
+
+  const checkIfMessageIsSigned = async (message) => {
+    try {
+      const signature = await signer.signMessage(
+        ethers.utils.toUtf8Bytes(message)
+      );
+      await axios.post(
+        `${process.env.SERVER}${process.env.ROUTE_PROFIL_SAVE_SIGNATURE}`,
+        { signature, id: message }
+      );
+      return signature;
+      //console.log(response);
+      // Stockez la signature dans l'état local ou envoyez-la à votre serveur pour vérification
+      //setSignature(signature);
+    } catch (error) {
+      console.log(erreur);
+      // La signature a échoué, l'utilisateur n'a pas signé le message
+    }
+  };
+
+  useEffect(() => {
+    if (isMetaMaskInitialized && signer) {
+      fetchData();
+    }
+  }, [isMetaMaskInitialized, signer]);
 
   useEffect(() => {
     const initializeMetaMask = async () => {
@@ -34,6 +97,10 @@ const Profil = () => {
           abi, // ABI de votre contrat
           signer
         );
+
+        const fhevmInstance = await getFhevmInstance();
+
+        setFhevm(fhevmInstance);
 
         setSigner(signer);
         setContract(contract);
@@ -202,7 +269,7 @@ const Profil = () => {
       // Appelez la fonction `unstakeNFT` du contrat intelligent pour dé-staker les NFTs stakés.
       const rep = await contract.claimNFT(selectedResetNFTs);
       await rep.wait();
-      await axios.post(`${process.env.SERVER}api/reset-nft`, {
+      await axios.post(`${process.env.SERVER}${process.env.ROUTE_NFT_RESET}`, {
         selectedNFTs: selectedResetNFTs,
         feesArray: Array(selectedResetNFTs.length).fill(0),
       });
@@ -221,8 +288,61 @@ const Profil = () => {
   };
 
   const createGps = async () => {
-    console.log("create GPS");
+    try {
+      // Appelez la fonction `unstakeNFT` du contrat intelligent pour dé-staker les NFTs stakés.
+
+      const number = numberInput;
+
+      const latitude = parseFloat(latitudeInput.replace(",", "."));
+      const longitude = parseFloat(longitudeInput.replace(",", "."));
+      if (isNaN(number) || isNaN(latitude) || isNaN(longitude)) {
+        // Vérifiez que les valeurs saisies sont des nombres valides
+        console.error("Invalid input");
+        return;
+      }
+      const rep = await axios.post(
+        `${process.env.SERVER}${process.env.ROUTE_PROFIL_CHECK_NEW_GPS}`,
+        {
+          latitude,
+          longitude,
+        }
+      );
+      const amountInWei = ethers.utils.parseUnits(number.toString(), "ether");
+
+      if (rep.data.success) {
+        const location = createSquareAroundPointWithDecimals(
+          latitude,
+          longitude,
+          5
+        );
+        const obj = [];
+        const amt = Number(amountInWei.toString());
+        obj.push(
+          fhevm.encrypt32(location.northLat),
+          fhevm.encrypt32(location.southLat),
+          fhevm.encrypt32(location.eastLon),
+          fhevm.encrypt32(location.westLon),
+          fhevm.encrypt32(location.lat),
+          fhevm.encrypt32(location.lng),
+          fhevm.encrypt32(amt)
+        );
+        const id = await contract.getNextTokenId();
+        const signature = await checkIfMessageIsSigned(id.toString()); // Vérifiez si le message a déjà été signé
+        const rep = await contract.createNftForOwner(obj);
+        await rep.wait();
+        await axios.post(
+          `${process.env.SERVER}${process.env.ROUTE_PROFIL_NEW_GPS}`,
+          {
+            nftId: Number(id.toString()),
+            signature,
+          }
+        );
+      }
+    } catch (error) {
+      console.error("Error unstaking NFTs:", error);
+    }
   };
+
   if (isLoading)
     return (
       <div>
@@ -261,7 +381,6 @@ const Profil = () => {
           <p>{balance} ZAMA</p>
         </div>
       </div>
-
       {ownedNFTs.length === 0 &&
       resetNFT.length === 0 &&
       stakedNFTs.length === 0 ? (
@@ -405,9 +524,40 @@ const Profil = () => {
       )}
       <div className={styles.containerAccess}>
         {stakedNFTs.length >= 3 && ( // Condition pour afficher le bouton si le nombre de NFTs stakés est supérieur à 3
-          <a className={styles.accessButton} onClick={unstakeNFTs}>
-            Create Gps
-          </a>
+          <>
+            <form>
+              <label>
+                Number:
+                <input
+                  type="number"
+                  value={numberInput}
+                  onChange={(e) =>
+                    setNumberInput(Math.max(0, parseInt(e.target.value)))
+                  }
+                  min="0"
+                />
+              </label>
+              <label>
+                Latitude:
+                <input
+                  type="number"
+                  value={latitudeInput}
+                  onChange={(e) => setLatitudeInput(e.target.value)}
+                />
+              </label>
+              <label>
+                Longitude:
+                <input
+                  type="number"
+                  value={longitudeInput}
+                  onChange={(e) => setLongitudeInput(e.target.value)}
+                />
+              </label>
+            </form>
+            <a className={styles.accessButton} onClick={createGps}>
+              Create Gps
+            </a>
+          </>
         )}
 
         {ownedNFTs.length === 0 &&

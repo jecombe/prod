@@ -1,35 +1,75 @@
-/* Styles pour le titre */
+/* Ajoutez ces styles à votre fichier firstPage.module.css */
+
+.titleGame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh; /* Ajustez la hauteur en fonction de vos besoins */
+}
 
 .title {
   font-size: 90px;
-  color: rgb(184, 65, 65); /* Couleur de texte de votre choix */
+  color: rgb(158, 105, 6);
   text-align: center;
-
-  margin: 0; /* Supprime la marge par défaut du titre */
+  margin: 0;
 }
 
 .subtitle {
-  font-size: 30px; /* Taille du sous-titre */
+  font-size: 30px;
   text-align: center;
-  color: rgb(184, 65, 65); /* Couleur de texte de votre choix */
+  color: rgb(13, 61, 165);
+}
+
+.playButton {
+  background-color: #141e30;
+  color: #ffffff;
+  border: 2px solid #00bfff;
+  border-radius: 10px;
+  padding: 15px 30px;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: background-color 0.3s, transform 0.2s;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  display: block;
+  margin-bottom: 100px;
+  margin-top: 20px; /* Ajoutez une marge au-dessus du bouton */
+}
+
+.playButton:hover {
+  background-color: #00bfff;
+  transform: scale(1.05);
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2);
 }
 
 .preli {
-  font-size: 40px; /* Taille du sous-titre */
+  font-size: 40px;
   text-align: center;
-  color: rgb(6, 5, 9); /* Couleur de texte de votre choix */
+  color: rgb(118, 20, 20);
   height: auto;
 }
 
 .line {
-  width: 500px; /* Ajustez la largeur souhaitée */
-  height: 2px; /* Épaisseur du trait */
-  /* background: linear-gradient(90deg, transparent, rgb(154, 85, 17)); Couleur du trait de votre choix */
-  margin: 10px auto; /* Marge pour centrer le trait */
-  background: linear-gradient(
-    to right,
-    transparent,
-    #000,
-    transparent
-  ); /* Dégradé linéaire de la couleur transparente à #000 (noir) */
+  width: 500px;
+  height: 2px;
+  margin: 10px auto;
+  background: linear-gradient(to right, transparent, #000, transparent);
+}
+
+@media (max-width: 570px) {
+  /* Styles pour la réactivité si nécessaire */
+  .title {
+    font-size: 60px;
+  }
+
+  .subtitle,
+  .preli {
+    text-align: center;
+    font-size: 20px;
+  }
+  .playButton {
+    font-size: 10px;
+  }
 }

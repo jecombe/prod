@@ -127,4 +127,7 @@
   .menuItems {
     flex-direction: column; /* Passer à l'affichage vertical */
   }
+  .menuItems a {
+    margin-bottom: 10px;
+  }
 }

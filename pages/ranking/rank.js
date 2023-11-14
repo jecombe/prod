@@ -45,7 +45,7 @@ const Ranking = () => {
     async function fetchMinimumStakeFromBackend() {
       try {
         const response = await fetch(
-          `${process.env.SERVER}api/get-minimum-nft-stake`
+          `${process.env.SERVER}${process.env.ROUTE_NFT_MINI_STAKE}`
         );
         if (!response.ok) {
           throw new Error("Error fetching minimum stake");
@@ -59,7 +59,9 @@ const Ranking = () => {
 
     async function fetchFeesFromBackend() {
       try {
-        const response = await fetch(`${process.env.SERVER}api/get-fees`);
+        const response = await fetch(
+          `${process.env.SERVER}${process.env.ROUTE_NFT_GET_FEES}`
+        );
         if (!response.ok) {
           throw new Error("Error fetching fees");
         }
@@ -129,38 +131,46 @@ const Ranking = () => {
             <thead className={styles.thead}>
               <tr className={styles.tr}>
                 <th className={styles.th}>Holder</th>
-                <th className={styles.th}>Owned Ids</th>
-                <th className={styles.th}>Staked Ids</th>
-                <th className={styles.th}>Ids back in game</th>
+                <th className={styles.th}>GeoSpace Owned</th>
+                <th className={styles.th}>GeoSpace Staked</th>
+                <th className={styles.th}>GeoSpace Back in game</th>
               </tr>
             </thead>
             <tbody className={styles.tbody}>
               {Object.keys(holders).map((address, index) => (
                 <tr className={styles.tr} key={index}>
-                  <td data-label="address" className={styles.td}>
-                    {address === process.env.CONTRACT.toLowerCase()
-                      ? "NFTGuessr smart contract"
-                      : address}
+                  <td data-label="Holder" className={styles.td}>
+                    <p>
+                      {address === process.env.CONTRACT.toLowerCase()
+                        ? "NFTGuessr smart contract"
+                        : address}
+                    </p>
                   </td>
-                  <td data-label="nfts" className={styles.td}>
+                  <td data-label="GeoSpace Owned" className={styles.td}>
                     <div className={styles.fieldContainer}>
-                      {holders[address].nfts.length > 0
-                        ? holders[address].nfts.join(", ")
-                        : "0"}
+                      <p>
+                        {holders[address].nfts.length > 0
+                          ? holders[address].nfts.join(", ")
+                          : "0"}
+                      </p>
                     </div>
                   </td>
-                  <td data-label="nftsStaked" className={styles.td}>
+                  <td data-label="GeoSpace Staked" className={styles.td}>
                     <div className={styles.fieldContainer}>
-                      {holders[address].nftsStaked.length > 0
-                        ? holders[address].nftsStaked.join(", ")
-                        : "0"}
+                      <p>
+                        {holders[address].nftsStaked.length > 0
+                          ? holders[address].nftsStaked.join(", ")
+                          : "0"}
+                      </p>
                     </div>
                   </td>
-                  <td data-label="nftsReset" className={styles.td}>
+                  <td data-label="GeoSpace Back in game" className={styles.td}>
                     <div className={styles.fieldContainer}>
-                      {holders[address].nftsReset.length > 0
-                        ? holders[address].nftsReset.join(", ")
-                        : "0"}
+                      <p>
+                        {holders[address].nftsReset.length > 0
+                          ? holders[address].nftsReset.join(", ")
+                          : "0"}
+                      </p>
                     </div>
                   </td>
                 </tr>
@@ -171,13 +181,30 @@ const Ranking = () => {
 
         <h2>Game Statistics</h2>
         <div className={styles.statsContainer}>
-          <p>NFTGuessr smart contract: {process.env.CONTRACT}</p>
-          <p>fees NFTGuessr: {fees} ZAMA</p>
-
-          <p>Total Number of NFTs: {numberNft}</p>
-          <p>Total Number of NFTs staking: {numberNftStake}</p>
-          <p>Total Number of NFTs back in game: {numberNftReset}</p>
-          <p>Minimum stake access: {numberNftStakeMinimum}</p>
+          <p className={styles.contract}>
+            NFTGuessr smart contract:{" "}
+            <span className={styles.dynamicValue}>{process.env.CONTRACT}</span>
+          </p>
+          <p className={styles.fees}>
+            fees NFTGuessr:{" "}
+            <span className={styles.dynamicValue}>{fees} ZAMA</span>
+          </p>
+          <p className={styles.totalNft}>
+            Total Number of NFTs:{" "}
+            <span className={styles.dynamicValue}>{numberNft}</span>
+          </p>
+          <p className={styles.totalStake}>
+            Total Number of NFTs staking:{" "}
+            <span className={styles.dynamicValue}>{numberNftStake}</span>
+          </p>
+          <p className={styles.totalReset}>
+            Total Number of NFTs back in game:{" "}
+            <span className={styles.dynamicValue}>{numberNftReset}</span>
+          </p>
+          <p className={styles.minimumStake}>
+            Minimum stake access:{" "}
+            <span className={styles.dynamicValue}>{numberNftStakeMinimum}</span>
+          </p>
         </div>
       </div>
     </div>

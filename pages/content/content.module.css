@@ -92,7 +92,8 @@
   }
   .centerImage {
     height: 100px;
-    width: auto;
+
+    width: 150px;
   }
   .blockAll h2 {
     font-size: 20px;

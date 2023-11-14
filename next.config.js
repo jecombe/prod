@@ -15,6 +15,12 @@ module.exports = {
     KEY: process.env.KEY,
     ROUTE_GET_NFT_RESET: process.env.ROUTE_GET_NFT_RESET,
     ROUTE_NFT_RESET: process.env.ROUTE_NFT_RESET,
+    ROUTE_NFT_RESET: process.env.ROUTE_NFT_RESET,
+    ROUTE_NFT_GET_FEES: process.env.ROUTE_NFT_GET_FEES,
+    ROUTE_NFT_MINI_STAKE: process.env.ROUTE_NFT_MINI_STAKE,
+    ROUTE_PROFIL_NEW_GPS: process.env.ROUTE_PROFIL_NEW_GPS,
+    ROUTE_PROFIL_CHECK_NEW_GPS: process.env.ROUTE_PROFIL_CHECK_NEW_GPS,
+    ROUTE_PROFIL_SAVE_SIGNATURE: process.env.ROUTE_PROFIL_SAVE_SIGNATURE,
   },
   webpack: (config) => {
     // Ajoutez ici la configuration de résolution pour 'tfhe_bg.wasm'
