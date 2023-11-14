@@ -97,7 +97,6 @@ const Ranking = () => {
           throw new Error("Error fetching holders and tokenIds");
         }
         const data = await response.json();
-        console.log("YOOOOOOOOOOOOOOOOOOo", data);
 
         setHolders(data);
       } catch (error) {
