@@ -194,13 +194,23 @@ export default function GamePage() {
       //const maxPriorityFeePerGas = maxFeePerGas.div(2); // Exemple, vous pouvez ajuster le facteur selon vos besoins
 
       // // Créez votre transaction avec les détails nécessaires (à personnaliser selon vos besoins)
+      // const transaction = {
+      //   from: addr, // Adresse de l'expéditeur
+      //   to: contract.address, // Adresse du contrat
+      //   gasLimit: "5000000", // Limite de gaz (à personnaliser)
+      //   maxFeePerGas: feeData.maxFeePerGas,
+      //   maxPriorityFeePerGas: feeData.maxPriorityFeePerGas, // Max Priority Fee Per Gas (à personnaliser)
+      //   value: ethers.utils.parseEther(`${value}`), // Montant à envoyer (à personnaliser)
+      //   data: contract.interface.encodeFunctionData("checkGps", [lat, lng]), // Encodage de la fonction du contrat et de ses paramètres
+      // };
+
       const transaction = {
         from: addr, // Adresse de l'expéditeur
         to: contract.address, // Adresse du contrat
-        gasLimit: "3000000", // Limite de gaz (à personnaliser)
-        maxFeePerGas: feeData.maxFeePerGas,
-        maxPriorityFeePerGas: feeData.maxPriorityFeePerGas, // Max Priority Fee Per Gas (à personnaliser)
-        value: ethers.utils.parseEther(`${value}`), // Montant à envoyer (à personnaliser)
+        gasLimit: "10000000", // Limite de gaz (à personnaliser)
+        maxFeePerGas: ethers.utils.parseUnits("500", "gwei"), // Max Fee Per Gas (à personnaliser)
+        maxPriorityFeePerGas: ethers.utils.parseUnits("50", "gwei"), // Max Priority Fee Per Gas (à personnaliser)
+        value: ethers.utils.parseEther("1"), // Montant à envoyer (à personnaliser)
         data: contract.interface.encodeFunctionData("checkGps", [lat, lng]), // Encodage de la fonction du contrat et de ses paramètres
       };
       // Estimez le gaz nécessaire
