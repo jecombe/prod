@@ -106,6 +106,13 @@ export default function Contents() {
               <p>
                 Discover the world in your own pace and earn NFT Geospace in our
                 single player mode.
+                <br />
+                It&#39;s A Web3 GeoGuessr. The smart contract records GPS points
+                in an encrypted manner.
+                <br /> To request location verification, it costs you 1 ZAMA.
+                <br />
+                If you are within a 5 km radius, you win the GeoSpace NFT
+                associated with that location.
               </p>
             </div>
 
