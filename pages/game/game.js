@@ -23,15 +23,7 @@ export default function GamePage() {
     width: "100%",
     height: "90vh",
   };
-  const panoramaOptions = {
-    addressControl: false,
-    linksControl: false,
-    panControl: false,
-    zoomControl: false,
-    showRoadLabels: false,
 
-    enableCloseButton: false,
-  };
   const init = {
     lat: 0,
     lng: 0,
@@ -247,6 +239,24 @@ export default function GamePage() {
       console.error("Error:", error);
     }
   }
+
+  const getOption = () => {
+    return {
+      addressControl: false,
+      linksControl: false,
+      panControl: true,
+      zoomControl: false,
+      showRoadLabels: false,
+
+      enableCloseButton: false,
+      panControlOptions: {
+        position:
+          window.google && window.google.maps
+            ? window.google.maps.ControlPosition.LEFT_TOP
+            : undefined,
+      },
+    };
+  };
   if (isLoadingMeta)
     return (
       <div>
@@ -256,7 +266,11 @@ export default function GamePage() {
   if (!signer) return <ErrorMetamask />;
 
   return (
-    <LoadScript googleMapsApiKey={process.env.API_MAP} libraries={lib}>
+    <LoadScript
+      googleMapsApiKey={process.env.API_MAP}
+      libraries={lib}
+      onLoad={() => console.log("Google Maps loaded successfully.")}
+    >
       <div className={style.headerContainer}>
         <Link href="/">
           <button className={`${style.newCoordinate} center-left-button`}>
@@ -288,7 +302,7 @@ export default function GamePage() {
           <StreetViewPanorama
             id="street-view"
             containerStyle={containerStyle}
-            options={panoramaOptions}
+            options={getOption()}
             position={position}
             visible={true}
           />
