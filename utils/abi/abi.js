@@ -209,6 +209,24 @@ const abi = [
     inputs: [
       {
         internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "newTax",
+        type: "uint256",
+      },
+    ],
+    name: "changeNFTTax",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
         name: "_nb",
         type: "uint256",
       },
@@ -337,29 +355,46 @@ const abi = [
     name: "getNFTLocation",
     outputs: [
       {
-        internalType: "uint32",
-        name: "northLat",
-        type: "uint32",
-      },
-      {
-        internalType: "uint32",
-        name: "southLat",
-        type: "uint32",
-      },
-      {
-        internalType: "uint32",
-        name: "eastLon",
-        type: "uint32",
-      },
-      {
-        internalType: "uint32",
-        name: "westLon",
-        type: "uint32",
-      },
-      {
-        internalType: "uint256",
-        name: "tax",
-        type: "uint256",
+        components: [
+          {
+            internalType: "uint32",
+            name: "northLat",
+            type: "uint32",
+          },
+          {
+            internalType: "uint32",
+            name: "southLat",
+            type: "uint32",
+          },
+          {
+            internalType: "uint32",
+            name: "eastLon",
+            type: "uint32",
+          },
+          {
+            internalType: "uint32",
+            name: "westLon",
+            type: "uint32",
+          },
+          {
+            internalType: "uint256",
+            name: "tax",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "lat",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "lng",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct NftGuessr.NFTLocation",
+        name: "",
+        type: "tuple",
       },
     ],
     stateMutability: "view",
@@ -652,6 +687,11 @@ const abi = [
         internalType: "uint256",
         name: "tax",
         type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "creator",
+        type: "address",
       },
     ],
     stateMutability: "view",
