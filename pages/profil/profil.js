@@ -8,26 +8,18 @@ import Link from "next/link";
 import axios from "axios";
 import { getFhevmInstance } from "../../utils/fhevmInstance";
 
+// Fonction utilitaire pour créer un carré autour d'un point avec des décimales
 function createSquareAroundPointWithDecimals(
   latitude,
   longitude,
   distanceInKilometers
 ) {
-  // Convertissez la distance en degrés en fonction de la latitude
-  const degreesPerKilometer = 1 / 111.32; // En supposant une latitude proche de l'équateur
-
-  // Calculez la taille du carré en degrés
+  const degreesPerKilometer = 1 / 111.32;
   const degreesDelta = distanceInKilometers * degreesPerKilometer;
-
-  // Coordonnées du coin nord-ouest du carré
   const northLat = latitude + degreesDelta / 2;
   const westLon = longitude - degreesDelta / 2;
-
-  // Coordonnées du coin sud-est du carré
   const southLat = latitude - degreesDelta / 2;
   const eastLon = longitude + degreesDelta / 2;
-
-  // Conversion en coordonnées sans décimales
   const scaledNorthLat = Math.trunc(northLat * 1e5);
   const scaledWestLon = Math.trunc(westLon * 1e5);
   const scaledSouthLat = Math.trunc(southLat * 1e5);
@@ -42,11 +34,14 @@ function createSquareAroundPointWithDecimals(
     lng: Math.trunc(longitude * 1e5),
   };
 }
+
+// Composant Profil
 const Profil = () => {
+  // États
   const [account, setAccount] = useState("");
   const [balance, setBalance] = useState(0);
   const [ownedNFTs, setOwnedNFTs] = useState([]);
-  const [stakedNFTs, setStakedNFTs] = useState([]); // Ajout de l'état pour les NFTs stakés
+  const [stakedNFTs, setStakedNFTs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [signer, setSigner] = useState(null);
   const [contract, setContract] = useState(null);
@@ -58,28 +53,9 @@ const Profil = () => {
   const [latitudeInput, setLatitudeInput] = useState("");
   const [longitudeInput, setLongitudeInput] = useState("");
   const [resetNFT, setResetNFT] = useState([]);
-
   const [isMetaMaskInitialized, setIsMetaMaskInitialized] = useState(false);
 
-  const checkIfMessageIsSigned = async (message) => {
-    try {
-      const signature = await signer.signMessage(
-        ethers.utils.toUtf8Bytes(message)
-      );
-      await axios.post(
-        `${process.env.SERVER}${process.env.ROUTE_PROFIL_SAVE_SIGNATURE}`,
-        { signature, id: message }
-      );
-      return signature;
-      //console.log(response);
-      // Stockez la signature dans l'état local ou envoyez-la à votre serveur pour vérification
-      //setSignature(signature);
-    } catch (error) {
-      console.log(erreur);
-      // La signature a échoué, l'utilisateur n'a pas signé le message
-    }
-  };
-
+  // Effets
   useEffect(() => {
     if (isMetaMaskInitialized && signer) {
       fetchData();
@@ -90,21 +66,16 @@ const Profil = () => {
     const initializeMetaMask = async () => {
       try {
         setIsLoading(true);
-
         const signer = await initMetaMask();
-        const contract = new ethers.Contract(
-          process.env.CONTRACT, // Adresse de votre contrat
-          abi, // ABI de votre contrat
-          signer
-        );
+        const contract = new ethers.Contract(process.env.CONTRACT, abi, signer);
 
         const fhevmInstance = await getFhevmInstance();
-
         setFhevm(fhevmInstance);
 
         setSigner(signer);
         setContract(contract);
         setIsMetaMaskInitialized(true);
+
         if (window.ethereum) {
           window.ethereum.on("accountsChanged", handleAccountsChanged);
         }
@@ -123,28 +94,31 @@ const Profil = () => {
     }
   }, [isMetaMaskInitialized, signer, contract]);
 
+  // Fonction fetchData optimisée
   const fetchData = async () => {
     try {
       if (signer) {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const userAddress = await signer.getAddress();
-        const ownedNFTIds = await contract.getNFTsByOwner(userAddress);
-        const resetNfts = await contract.getNFTsResetByOwner(userAddress);
-        const stakedNFTIds = await contract.getNFTsStakedByOwner(userAddress);
-        const balanceWei = await provider.getBalance(userAddress); // Récupère le solde en wei
-        const balanceEther = ethers.utils.formatUnits(balanceWei, "ether"); // Convertit le solde en ethers
+        const [ownedNFTIds, resetNfts, stakedNFTIds] = await Promise.all([
+          contract.getNFTsByOwner(userAddress),
+          contract.getNFTsResetByOwner(userAddress),
+          contract.getNFTsStakedByOwner(userAddress),
+        ]);
+        const balanceWei = await provider.getBalance(userAddress);
+        const balanceEther = ethers.utils.formatUnits(balanceWei, "ether");
         const ownedNFTs = ownedNFTIds.map((tokenId) => tokenId.toNumber());
         const stakedNFTs = stakedNFTIds.map((tokenId) => tokenId.toNumber());
         const resetNFTs = resetNfts.map((tokenId) => tokenId.toNumber());
 
-        // Utilisez la méthode filter pour exclure les NFTs qui sont également dans resetNFTs
         const filteredOwnedNFTs = ownedNFTs.filter(
           (tokenId) =>
             !resetNFTs.includes(tokenId) && !stakedNFTs.includes(tokenId)
         );
+
         setOwnedNFTs(filteredOwnedNFTs);
         setAccount(userAddress);
-        setBalance(balanceEther); // Met à jour le solde au format ether
+        setBalance(balanceEther);
         setStakedNFTs(stakedNFTs);
         setResetNFT(resetNFTs);
         setIsLoading(false);
@@ -153,42 +127,33 @@ const Profil = () => {
       console.error("Error fetching data:", error);
     }
   };
+
   const handleAccountsChanged = async (accounts) => {
     const newAccount = accounts[0];
     setAccount(newAccount);
     const signer = await initMetaMask();
-
     setSigner(signer);
 
-    // Réinitialisez les données lorsque le compte change
     setBalance(0);
     setOwnedNFTs([]);
     setStakedNFTs([]);
-    // Appelez fetchData pour mettre à jour les données
     fetchData();
   };
 
   const stakeSelectedNFTs = async () => {
-    if (selectedNFTs.length === 0) {
-      // Aucun NFT sélectionné pour staker
-      return;
-    }
+    if (selectedNFTs.length === 0) return;
 
     try {
-      // Appelez la fonction `stakeNFT` du contrat intelligent pour staker les NFTs sélectionnés.
       const rep = await contract.stakeNFT(selectedNFTs);
       await rep.wait();
 
-      // Mise à jour de l'état pour refléter les NFTs stakés.
       setStakedNFTs((prevStakedNFTs) => [...prevStakedNFTs, ...selectedNFTs]);
 
-      // Mise à jour de l'état pour exclure les NFTs stakés de la liste des NFTs possédés
       const updatedOwnedNFTs = ownedNFTs.filter(
         (tokenId) => !selectedNFTs.includes(tokenId)
       );
       setOwnedNFTs(updatedOwnedNFTs);
 
-      // Réinitialisez la liste des NFTs sélectionnés
       setSelectedNFTs([]);
     } catch (error) {
       console.error("Error staking NFTs:", error);
@@ -196,26 +161,27 @@ const Profil = () => {
   };
 
   const resetNFTs = async () => {
-    if (selectedNFTs.length === 0) {
-      // Aucun NFT sélectionné pour réinitialiser
-      return;
-    }
+    if (selectedNFTs.length === 0) return;
 
     try {
       const feesArray = [];
       const ffes = [];
+
       for (const tokenId of selectedNFTs) {
         const feeInput = document.querySelector(`#feeInput-${tokenId}`);
-        const feeValue = feeInput.value || 0; // Use a default value if the user didn't enter anything
+        const feeValue = feeInput.value || 0;
         ffes.push(feeValue);
+
         const amountInWei = ethers.utils.parseUnits(
           feeValue.toString(),
           "ether"
         );
         feesArray.push(amountInWei);
       }
+
       const rep = await contract.resetNFT(selectedNFTs, feesArray);
       await rep.wait();
+
       const updatedOwnedNFTs = ownedNFTs.filter(
         (tokenId) => !selectedNFTs.includes(tokenId)
       );
@@ -225,10 +191,7 @@ const Profil = () => {
       });
 
       setOwnedNFTs(updatedOwnedNFTs);
-
-      // Mise à jour de l'état pour refléter les NFTs réinitialisés.
       setResetNFT((prevResetNFTs) => [...prevResetNFTs, ...selectedNFTs]);
-
       setSelectedNFTs([]);
     } catch (error) {
       console.error("Error resetting NFTs:", error);
@@ -236,16 +199,13 @@ const Profil = () => {
   };
 
   const unstakeNFTs = async () => {
-    if (selectedStakedNFTs.length === 0) {
-      // Aucun NFT staké à dé-staker
-      return;
-    }
+    if (selectedStakedNFTs.length === 0) return;
 
     try {
-      // Appelez la fonction `unstakeNFT` du contrat intelligent pour dé-staker les NFTs stakés.
       const rep = await contract.unstakeNFT(selectedStakedNFTs);
       await rep.wait();
-      setSelectedStakedNFTs([]); // Réinitialisez la liste des NFTs stakés sélectionnés
+
+      setSelectedStakedNFTs([]);
       const updatedStakedNFTs = stakedNFTs.filter(
         (tokenId) => !selectedStakedNFTs.includes(tokenId)
       );
@@ -260,27 +220,21 @@ const Profil = () => {
   };
 
   const claimNft = async () => {
-    if (selectedResetNFTs.length === 0) {
-      // Aucun NFT staké à dé-staker
-      return;
-    }
+    if (selectedResetNFTs.length === 0) return;
 
     try {
-      // Appelez la fonction `unstakeNFT` du contrat intelligent pour dé-staker les NFTs stakés.
       const rep = await contract.claimNFT(selectedResetNFTs);
       await rep.wait();
       await axios.post(`${process.env.SERVER}${process.env.ROUTE_NFT_RESET}`, {
         selectedNFTs: selectedResetNFTs,
         feesArray: Array(selectedResetNFTs.length).fill(0),
       });
-      // Mettez à jour l'état pour exclure les NFTs réclamés de la liste resetNFT
+
       const updatedResetNFTs = resetNFT.filter(
         (tokenId) => !selectedResetNFTs.includes(tokenId)
       );
       setResetNFT(updatedResetNFTs);
-      // Ajoutez les NFTs réclamés à la liste des NFTs disponibles
       setOwnedNFTs((prevOwnedNFTs) => [...prevOwnedNFTs, ...selectedResetNFTs]);
-      // Réinitialisez la liste des NFTs sélectionnés
       setSelectedResetNFTs([]);
     } catch (error) {
       console.error("Error unstaking NFTs:", error);
@@ -289,17 +243,15 @@ const Profil = () => {
 
   const createGps = async () => {
     try {
-      // Appelez la fonction `unstakeNFT` du contrat intelligent pour dé-staker les NFTs stakés.
-
       const number = numberInput;
-
       const latitude = parseFloat(latitudeInput.replace(",", "."));
       const longitude = parseFloat(longitudeInput.replace(",", "."));
+
       if (isNaN(number) || isNaN(latitude) || isNaN(longitude)) {
-        // Vérifiez que les valeurs saisies sont des nombres valides
         console.error("Invalid input");
         return;
       }
+
       const rep = await axios.post(
         `${process.env.SERVER}${process.env.ROUTE_PROFIL_CHECK_NEW_GPS}`,
         {
@@ -307,6 +259,7 @@ const Profil = () => {
           longitude,
         }
       );
+
       const amountInWei = ethers.utils.parseUnits(number.toString(), "ether");
 
       if (rep.data.success) {
@@ -315,19 +268,19 @@ const Profil = () => {
           longitude,
           5
         );
-        const obj = [];
-        const amt = Number(amountInWei.toString());
-        obj.push(
+        const obj = [
           fhevm.encrypt32(location.northLat),
           fhevm.encrypt32(location.southLat),
           fhevm.encrypt32(location.eastLon),
           fhevm.encrypt32(location.westLon),
           fhevm.encrypt32(location.lat),
           fhevm.encrypt32(location.lng),
-          fhevm.encrypt32(amt)
-        );
+          fhevm.encrypt32(Number(amountInWei.toString())),
+        ];
+
         const id = await contract.getNextTokenId();
-        const signature = await checkIfMessageIsSigned(id.toString()); // Vérifiez si le message a déjà été signé
+        const signature = await checkIfMessageIsSigned(id.toString());
+
         const rep = await contract.createNftForOwner(obj);
         await rep.wait();
         await axios.post(
@@ -339,23 +292,22 @@ const Profil = () => {
         );
       }
     } catch (error) {
-      console.error("Error unstaking NFTs:", error);
+      console.error("Error creating GPS NFT:", error);
     }
   };
 
+  // Rendu du composant
   if (isLoading)
     return (
       <div>
         <h1>Loading...</h1>
       </div>
     );
-  if (!signer) return <ErrorMetamask />;
 
-  let shorterListClass = "";
-  if (ownedNFTs.length < stakedNFTs.length) {
-    shorterListClass = styles.shorterList;
-  } else if (stakedNFTs.length < ownedNFTs.length) {
-    shorterListClass = styles.shorterList;
+  if (!signer) {
+    return (
+      <ErrorMetamask message="Please connect to MetaMask and go to zama devnet" />
+    );
   }
   // Fonction pour récupérer les données
   return (

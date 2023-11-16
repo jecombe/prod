@@ -1,10 +1,43 @@
+"use client";
 import styles from "./content.module.css";
 import Image from "next/image";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function Contents() {
   const [currentStep, setCurrentStep] = useState(0);
 
+  const connectToZamaDevnet = async () => {
+    try {
+      if (window.ethereum) {
+        const networkId = await window.ethereum.request({
+          method: "eth_chainId",
+        });
+
+        if (networkId === "0x1f49") {
+          window.alert("You're already connect on zama devnet");
+        } else {
+          await window.ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: [
+              {
+                chainId: "0x1f49",
+                chainName: "Zama Network",
+                nativeCurrency: {
+                  name: "ZAMA",
+                  symbol: "ZAMA",
+                  decimals: 18,
+                },
+                rpcUrls: ["https://devnet.zama.ai"],
+                blockExplorerUrls: ["https://main.explorer.zama.ai"],
+              },
+            ],
+          });
+        }
+      } else window.alert("You don't have metamask, please install metamask");
+    } catch (error) {
+      console.error("Error connecting to Zama Devnet:", error);
+    }
+  };
   const contentSteps = [
     {
       title: "Install Metamask",
@@ -36,6 +69,10 @@ export default function Contents() {
             </a>
             provided by Metamask:
           </p>
+          <p>Or connect direclty if you have metamask.</p>
+          <button className={styles.button} onClick={connectToZamaDevnet}>
+            Connect to Zama Devnet
+          </button>
           <br />
           <div className={styles.one}>
             <Image src="/metamask.gif" alt="my gif" height={500} width={300} />

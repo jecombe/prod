@@ -2,7 +2,7 @@
 import Link from "next/link";
 import React from "react";
 import styles from "./errorMetamask.module.css";
-const ErrorMetamask = () => {
+const ErrorMetamask = ({ message }) => {
   return (
     <div>
       <header className={styles.menu}>
@@ -14,7 +14,7 @@ const ErrorMetamask = () => {
           </div>
         </div>
       </header>
-      <h1>Please install metamask</h1>
+      <h1>{message}</h1>
     </div>
   );
 };

@@ -3,115 +3,86 @@ import Link from "next/link";
 import styles from "./ranking.module.css";
 
 const Ranking = () => {
+  // const [holders, setHolders] = useState([]);
+  // const [numberNft, setNumberNft] = useState([]);
+  // const [numberNftStake, setNumberNftStake] = useState(0);
+  // const [numberNftReset, setNumberNftReset] = useState(0);
+
+  // const [fees, setFees] = useState(0); // Added state for fees
+  // const [numberNftStakeMinimum, setNumberNftStakeMinimum] = useState(0);
+
   const [holders, setHolders] = useState([]);
   const [numberNft, setNumberNft] = useState([]);
   const [numberNftStake, setNumberNftStake] = useState(0);
   const [numberNftReset, setNumberNftReset] = useState(0);
-
-  const [fees, setFees] = useState(0); // Added state for fees
+  const [fees, setFees] = useState(0);
   const [numberNftStakeMinimum, setNumberNftStakeMinimum] = useState(0);
+  const [isLoading, setIsLoading] = useState(true); // New state for loading
+
+  const fetchData = async (url, setter, errorMessage) => {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Error fetching ${errorMessage}`);
+      }
+      const data = await response.json();
+      setter(data);
+    } catch (error) {
+      console.error(`Error fetching ${errorMessage}: `, error);
+    }
+  };
 
   useEffect(() => {
-    // Function to fetch holders and their tokenIds from the backend
-    async function fetchTotalNftFromBackend() {
+    const fetchAllData = async () => {
       try {
-        const response = await fetch(
-          `${process.env.SERVER}${process.env.ROUTE_GET_NFT}`
-        );
-        if (!response.ok) {
-          throw new Error("Error fetching total NFTs");
-        }
-        const data = await response.json();
-        setNumberNft(data);
+        await Promise.all([
+          fetchData(
+            `${process.env.SERVER}${process.env.ROUTE_GET_NFT}`,
+            setNumberNft,
+            "total NFTs"
+          ),
+          fetchData(
+            `${process.env.SERVER}${process.env.ROUTE_GET_NFT_STAKE}`,
+            setNumberNftStake,
+            "total staked NFTs"
+          ),
+          fetchData(
+            `${process.env.SERVER}${process.env.ROUTE_NFT_MINI_STAKE}`,
+            setNumberNftStakeMinimum,
+            "minimum stake"
+          ),
+          fetchData(
+            `${process.env.SERVER}${process.env.ROUTE_NFT_GET_FEES}`,
+            setFees,
+            "fees"
+          ),
+          fetchData(
+            `${process.env.SERVER}${process.env.ROUTE_GET_NFT_RESET}`,
+            setNumberNftReset,
+            "total reset NFTs"
+          ),
+          fetchData(
+            `${process.env.SERVER}${process.env.ROUTE_GET_HOLDER_ID}`,
+            setHolders,
+            "holders and tokenIds"
+          ),
+        ]);
+
+        setIsLoading(false); // Set loading to false once all data is fetched
       } catch (error) {
-        console.error("Error fetching total NFTs: ", error);
+        console.error("Error fetching data: ", error);
+        setIsLoading(false); // Set loading to false in case of an error
       }
-    }
-    async function fetchTotalNftResetFromBackend() {
-      try {
-        const response = await fetch(
-          `${process.env.SERVER}${process.env.ROUTE_GET_NFT_RESET}`
-        );
-        if (!response.ok) {
-          throw new Error("Error fetching total reset NFTs");
-        }
-        const data = await response.json();
-        setNumberNftReset(data);
-      } catch (error) {
-        console.error("Error fetching total reset NFTs: ", error);
-      }
-    }
-
-    async function fetchMinimumStakeFromBackend() {
-      try {
-        const response = await fetch(
-          `${process.env.SERVER}${process.env.ROUTE_NFT_MINI_STAKE}`
-        );
-        if (!response.ok) {
-          throw new Error("Error fetching minimum stake");
-        }
-        const data = await response.json();
-        setNumberNftStakeMinimum(data);
-      } catch (error) {
-        console.error("Error fetching minimum stake: ", error);
-      }
-    }
-
-    async function fetchFeesFromBackend() {
-      try {
-        const response = await fetch(
-          `${process.env.SERVER}${process.env.ROUTE_NFT_GET_FEES}`
-        );
-        if (!response.ok) {
-          throw new Error("Error fetching fees");
-        }
-        const data = await response.json();
-        setFees(data);
-      } catch (error) {
-        console.error("Error fetching fees: ", error);
-      }
-    }
-
-    async function fetchTotalNftStakeFromBackend() {
-      try {
-        const response = await fetch(
-          `${process.env.SERVER}${process.env.ROUTE_GET_NFT_STAKE}`
-        );
-        if (!response.ok) {
-          throw new Error("Error fetching total staked NFTs");
-        }
-        const data = await response.json();
-        setNumberNftStake(data);
-      } catch (error) {
-        console.error("Error fetching holders: ", error);
-      }
-    }
-
-    async function fetchHoldersFromBackend() {
-      try {
-        const response = await fetch(
-          `${process.env.SERVER}${process.env.ROUTE_GET_HOLDER_ID}`
-        );
-
-        if (!response.ok) {
-          throw new Error("Error fetching holders and tokenIds");
-        }
-        const data = await response.json();
-
-        setHolders(data);
-      } catch (error) {
-        console.error("Error fetching holders and tokenIds: ", error);
-      }
-    }
-
-    fetchHoldersFromBackend();
-    // Call the function to fetch holders from the backend
-    fetchTotalNftFromBackend();
-    fetchTotalNftStakeFromBackend();
-    fetchMinimumStakeFromBackend();
-    fetchFeesFromBackend();
-    fetchTotalNftResetFromBackend();
+    };
+    fetchAllData();
   }, []);
+
+  if (isLoading)
+    return (
+      <div>
+        <h1>Loading...</h1>
+      </div>
+    );
 
   return (
     <div>

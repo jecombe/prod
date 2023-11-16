@@ -1,4 +1,3 @@
-"use client";
 import { useState, useEffect } from "react";
 import Web3 from "web3";
 import {
@@ -24,34 +23,25 @@ export default function GamePage() {
     height: "90vh",
   };
 
-  const init = {
-    lat: 0,
-    lng: 0,
-  };
-  //const { addressUser, balance } = useSelector((state) => state.metamask);
-  // const dispatch = useDispatch();
+  const init = { lat: 0, lng: 0 };
 
   const [position, setPosition] = useState(init);
-  const [markers, setMarkers] = useState([]); // État pour stocker les marqueurs
-  const [lastPosition, setLastPosition] = useState(init); // État pour stocker les marqueurs
-  const [isLoading, setIsLoading] = useState(false); // État pour suivre l'état de chargement
-  const [isLoadingMeta, setIsLoadingMeta] = useState(false); // État pour suivre l'état de chargement
-
+  const [markers, setMarkers] = useState([]);
+  const [lastPosition, setLastPosition] = useState(init);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMeta, setIsLoadingMeta] = useState(false);
   const [isTransactionSuccessful, setIsTransactionSuccessful] = useState(false);
   const [isTransactionFailed, setIsTransactionFailed] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [failureMessage, setFailureMessage] = useState("");
   const [isMiniMapDisabled, setIsMiniMapDisabled] = useState(false);
   const [fhevm, setFhevm] = useState(null);
-  const [isFetchingCoordinates, setIsFetchingCoordinates] = useState(false);
-  const [contract, setContract] = useState(null); // État pour suivre l'état de chargement
-  const [signer, setSigner] = useState(null); // État pour suivre l'état de chargement
+  const [contract, setContract] = useState(null);
+  const [signer, setSigner] = useState(null);
   const [nft, setNft] = useState({});
   const [isMounted, setIsMounted] = useState(true);
-
   const [accountAddress, setAccountAddress] = useState("");
   const [accountBalance, setAccountBalance] = useState("");
-  const [addr, setAddress] = useState(init);
   const [isMetaMaskInitialized, setIsMetaMaskInitialized] = useState(false);
 
   const updateAccountInfo = async () => {
@@ -63,7 +53,6 @@ export default function GamePage() {
         });
         const address = accounts[0];
         setAccountAddress(`Address : ${address}`);
-        setAddress(address);
 
         const balance = await web3.eth.getBalance(address);
         const etherBalance = web3.utils.fromWei(balance, "ether");
@@ -75,6 +64,121 @@ export default function GamePage() {
       setAccountAddress("MetaMask is not installed");
     }
   };
+
+  const connectToZamaDevnet = async () => {
+    try {
+      await window.ethereum.request({
+        method: "wallet_addEthereumChain",
+        params: [
+          {
+            chainId: "0x1f49",
+            chainName: "Zama Network",
+            nativeCurrency: {
+              name: "ZAMA",
+              symbol: "ZAMA",
+              decimals: 18,
+            },
+            rpcUrls: ["https://devnet.zama.ai"],
+            blockExplorerUrls: ["https://main.explorer.zama.ai"],
+          },
+        ],
+      });
+
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      setContract(null);
+      setSigner(null);
+
+      await initializeContract();
+      await updateAccountInfo();
+    } catch (error) {
+      console.error("Error connecting to Zama Devnet:", error);
+    }
+  };
+  async function initializeContract() {
+    try {
+      setIsLoadingMeta(true);
+      const signer = await initMetaMask();
+      const fhevmInstance = await getFhevmInstance();
+
+      setSigner(signer);
+      const contract = new ethers.Contract(process.env.CONTRACT, abi, signer);
+      setFhevm(fhevmInstance);
+      setContract(contract);
+      setIsMetaMaskInitialized(true);
+
+      if (window.ethereum) {
+        window.ethereum.on("accountsChanged", updateAccountInfo);
+      }
+      setIsLoadingMeta(false);
+
+      contract.on("GpsCheckResult", async (userAddress, result) => {
+        const addrSigner = await signer.getAddress();
+        if (userAddress === addrSigner) {
+          if (result) {
+            setIsTransactionSuccessful(true);
+            setSuccessMessage("You Win NFT");
+            setIsTransactionFailed(false);
+            setIsLoading(false);
+
+            setTimeout(() => {
+              setIsTransactionSuccessful(false);
+              setIsTransactionFailed(false);
+              setIsMiniMapDisabled(false);
+            }, 5000);
+          } else {
+            setIsTransactionFailed(true);
+            setFailureMessage("Sorry, you lost.");
+            setIsTransactionSuccessful(false);
+            setIsLoading(false);
+
+            setTimeout(() => {
+              setIsTransactionSuccessful(false);
+              setIsTransactionFailed(false);
+              setIsMiniMapDisabled(false);
+            }, 5000);
+          }
+        }
+      });
+    } catch (error) {
+      console.error("Error initialize contract:", error);
+
+      if (isMounted) {
+        console.error("Error initialize contract mounted:", error);
+        setIsLoading(false);
+        setIsLoadingMeta(false);
+        setIsTransactionSuccessful(false);
+        setIsTransactionFailed(false);
+        setIsMiniMapDisabled(false);
+      }
+    }
+  }
+
+  const checkNetwork = async () => {
+    if (window.ethereum) {
+      try {
+        const networkId = await window.ethereum.request({
+          method: "eth_chainId",
+        });
+
+        if (networkId !== "0x1f49") {
+          const userResponse = window.confirm(
+            "Please switch to Zama Devnet network to use this application. Do you want to switch now?"
+          );
+
+          if (userResponse) {
+            await connectToZamaDevnet();
+          }
+        }
+      } catch (error) {
+        console.error("Error checking network:", error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    checkNetwork();
+  }, []);
 
   useEffect(() => {
     if (isMetaMaskInitialized && isMounted) {
@@ -89,176 +193,47 @@ export default function GamePage() {
       setIsMounted(false);
     };
   }, []);
+
   useEffect(() => {
-    async function initializeContract() {
-      try {
-        setIsLoadingMeta(true);
-        const signer = await initMetaMask();
-
-        const fhevmInstance = await getFhevmInstance();
-
-        setSigner(signer);
-        const contract = new ethers.Contract(
-          process.env.CONTRACT, // Adresse de votre contrat
-          abi, // ABI de votre contrat
-          signer
-        );
-        setFhevm(fhevmInstance);
-
-        // Enregistrez le contrat dans l'état
-        setContract(contract);
-        setIsMetaMaskInitialized(true);
-
-        if (window.ethereum) {
-          window.ethereum.on("accountsChanged", updateAccountInfo);
-        }
-        setIsLoadingMeta(false);
-
-        // Écoutez l'événement "Result" du contrat
-        contract.on("GpsCheckResult", async (userAddress, result) => {
-          const addrSigner = await signer.getAddress();
-          if (userAddress === addrSigner) {
-            // Mettez à jour l'état de votre composant en conséquence
-            if (result) {
-              setIsTransactionSuccessful(true);
-              setSuccessMessage("You Win NFT");
-              setIsTransactionFailed(false);
-              setIsLoading(false);
-
-              setTimeout(() => {
-                setIsTransactionSuccessful(false);
-                setIsTransactionFailed(false); // Réinitialisez isTransactionFailed ici
-                setIsMiniMapDisabled(false);
-              }, 5000);
-            } else {
-              setIsTransactionFailed(true);
-              setFailureMessage("Sorry, you lost.");
-              setIsTransactionSuccessful(false);
-              setIsLoading(false);
-
-              setTimeout(() => {
-                setIsTransactionSuccessful(false);
-                setIsTransactionFailed(false); // Réinitialisez isTransactionFailed ici
-                setIsMiniMapDisabled(false);
-              }, 5000);
-            }
-          }
-        });
-      } catch (error) {
-        console.error("Error initialize contract :", error);
-
-        if (isMounted) {
-          console.error("Error initialize contract mounted:", error);
-          setIsLoading(false);
-          setIsLoadingMeta(false);
-          setIsTransactionSuccessful(false);
-          setIsTransactionFailed(false);
-          setIsMiniMapDisabled(false);
-        }
-      }
-    }
     initializeContract();
     fetchGpsData();
 
     return () => {
       setIsMounted(false);
-      //setIsLoadingMeta(false);
     };
   }, [isMounted]);
 
   const handleMiniMapClick = async (e) => {
     if (isMiniMapDisabled || !signer) {
-      return; // Ne rien faire si la mini-map est désactivée
+      return;
     }
     const newMarker = {
       lat: e.latLng.lat(),
       lng: e.latLng.lng(),
     };
-    console.log(newMarker);
     setIsLoading(true);
-    setIsMiniMapDisabled(true); // Désactiver la mini-map pendant le chargement
+    setIsMiniMapDisabled(true);
 
     setMarkers([...markers, newMarker]);
     setLastPosition(newMarker);
     try {
       const attConvert = Math.trunc(newMarker.lat * 1e5);
       const lngConvert = Math.trunc(newMarker.lng * 1e5);
-      //  console.log(attConvert, lngConvert);
       const lat = fhevm.encrypt32(attConvert);
       const lng = fhevm.encrypt32(lngConvert);
-      //const lat = attConvert;
-      //const lng = lngConvert;
-      //const gasPrice = ethers.utils.parseUnits("50", "gwei"); // Spécifiez le prix du gaz (20 Gwei dans cet exemple)
-      // const signer = await initMetaMask(); // Initialisez MetaMask
-      //  const gasLimit = 9000000; // Vous pouvez personnaliser la limite de gaz selon vos besoins
 
       const value = 1 + nft.tax;
-      //const feeData = await signer.provider.getFeeData();
-      //console.log(process.env.CONTRACT);
-      //const maxPriorityFeePerGas = maxFeePerGas.div(2); // Exemple, vous pouvez ajuster le facteur selon vos besoins
 
-      // // Créez votre transaction avec les détails nécessaires (à personnaliser selon vos besoins)
-      // const transaction = {
-      //   from: addr, // Adresse de l'expéditeur
-      //   to: contract.address, // Adresse du contrat
-      //   gasLimit: "100000000", // Limite de gaz (à personnaliser)
-      //   maxFeePerGas: feeData.maxFeePerGas,
-      //   maxPriorityFeePerGas: feeData.maxPriorityFeePerGas, // Max Priority Fee Per Gas (à personnaliser)
-      //   value: ethers.utils.parseEther(`${value}`), // Montant à envoyer (à personnaliser)
-      //   data: contract.interface.encodeFunctionData("checkGps", [lat, lng]), // Encodage de la fonction du contrat et de ses paramètres
-      // };
+      const transaction = await contract["checkGps(bytes,bytes)"](lat, lng, {
+        value: ethers.utils.parseEther(`${value}`),
+        gasLimit: 10000000,
+      });
 
-      // const feeConfig = {
-      //   maxFeePerGas: ethers.utils.parseUnits("2000", "gwei"),
-      //   maxPriorityFeePerGas: ethers.utils.parseUnits("2000", "gwei"),
-      // };
-
-      // const transaction = {
-      //   from: addr, // Adresse de l'expéditeur
-      //   to: contract.address,
-      //   gasLimit: "12000000000", // Limite de gaz (à personnaliser)
-      //   maxFeePerGas: feeConfig.maxFeePerGas,
-      //   maxPriorityFeePerGas: feeConfig.maxPriorityFeePerGas, // Max Priority Fee Per Gas (à personnaliser)
-      //   // value: ethers.utils.parseEther(`${value}`), // Montant à envoyer (à personnaliser)
-      //   data: contract.interface.encodeFunctionData("checkGps", [lat, lng]), // Encodage de la fonction du contrat et de ses paramètres
-      // };
-      // // Estimez le gaz nécessaire
-      // const estimatedGas = await signer.estimateGas(transaction);
-
-      // // Ajoutez la limite de gaz estimée à la transaction avec une marge de sécurité
-      // transaction.gasLimit = estimatedGas.add(10000);
-
-      // const tx = await signer.sendTransaction(transaction);
-
-      const transaction = await contract["checkGps(bytes,bytes)"](
-        lat,
-        lng,
-        {
-          value: ethers.utils.parseEther(`${value}`),
-          gasLimit: 10000000,
-        } // Spécifiez la valeur à envoyer
-      );
-
-      // const transaction = {
-      //   from: addr, // Adresse de l'expéditeur
-      //   to: contract.address, // Adresse du contrat
-      //   gasLimit: "50000000000", // Limite de gaz (à personnaliser)
-      //   maxFeePerGas: feeConfig.maxFeePerGas,
-      //   maxPriorityFeePerGas: feeConfig.maxPriorityFeePerGas, // Max Priority Fee Per Gas (à personnaliser)
-      //   value: ethers.utils.parseEther(`${value}`), // Montant à envoyer (à personnaliser)
-      //   data: contract.interface.encodeFunctionData("checkGps", [lat, lng]), // Encodage de la fonction du contrat et de ses paramètres
-      // };
-      // // Estimez le gaz nécessaire
-      // const estimatedGas = await signer.estimateGas(transaction);
-
-      // // Ajoutez la limite de gaz estimée à la transaction avec une marge de sécurité
-      // transaction.gasLimit = estimatedGas.add(10000);
-
-      const rep = await transaction.wait();
+      await transaction.wait();
     } catch (error) {
-      console.error("Error send transaction :", error);
+      console.error("Error send transaction:", error);
       setIsLoading(false);
-      setIsMiniMapDisabled(false); // Désactiver la mini-map pendant le chargement
+      setIsMiniMapDisabled(false);
       setMarkers([]);
       setLastPosition(init);
     }
@@ -290,7 +265,6 @@ export default function GamePage() {
       panControl: true,
       zoomControl: false,
       showRoadLabels: false,
-
       enableCloseButton: false,
       panControlOptions: {
         position:
@@ -300,13 +274,18 @@ export default function GamePage() {
       },
     };
   };
+
+  if (!signer && !isLoadingMeta) {
+    return (
+      <ErrorMetamask message="Please connect to MetaMask and go to zama devnet" />
+    );
+  }
   if (isLoadingMeta)
     return (
       <div>
         <h1>Loading...</h1>
       </div>
     );
-  if (!signer) return <ErrorMetamask />;
 
   return (
     <LoadScript
@@ -362,12 +341,6 @@ export default function GamePage() {
             zIndex: 1,
           }}
         >
-          {/* <MiniMap
-            markers={markers}
-            onMiniMapClick={isLoading ? null : handleMiniMapClick}
-            position={lastPosition}
-          /> */}
-
           <GoogleMap
             mapContainerStyle={{
               width: "100%",
