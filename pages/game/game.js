@@ -43,6 +43,7 @@ export default function GamePage() {
   const [accountAddress, setAccountAddress] = useState("");
   const [accountBalance, setAccountBalance] = useState("");
   const [isMetaMaskInitialized, setIsMetaMaskInitialized] = useState(false);
+  const [showWinMessage, setShowWinMessage] = useState(false);
 
   const updateAccountInfo = async () => {
     if (typeof window !== "undefined" && window.ethereum && isMounted) {
@@ -92,7 +93,7 @@ export default function GamePage() {
       await initializeContract();
       await updateAccountInfo();
     } catch (error) {
-      console.error("Error connecting to Zama Devnet:", error);
+      console.error("Error connecting to Fhenix Devnet:", error);
     }
   };
   async function initializeContract() {
@@ -116,12 +117,15 @@ export default function GamePage() {
         const addrSigner = await signer.getAddress();
         if (userAddress === addrSigner) {
           if (result) {
+            setShowWinMessage(true);
+
             setIsTransactionSuccessful(true);
             setSuccessMessage("You Win NFT");
             setIsTransactionFailed(false);
             setIsLoading(false);
 
             setTimeout(() => {
+              setShowWinMessage(false);
               setIsTransactionSuccessful(false);
               setIsTransactionFailed(false);
               setIsMiniMapDisabled(false);
@@ -160,7 +164,6 @@ export default function GamePage() {
         const networkId = await window.ethereum.request({
           method: "eth_chainId",
         });
-
         if (networkId !== "0x1f49") {
           const userResponse = window.confirm(
             "Please switch to Zama Devnet network to use this application. Do you want to switch now?"
@@ -177,6 +180,8 @@ export default function GamePage() {
   };
 
   useEffect(() => {
+    alert("Attention: The game is under development, and bugs may occur.");
+
     checkNetwork();
   }, []);
 
@@ -223,7 +228,6 @@ export default function GamePage() {
       const lng = fhevm.encrypt32(lngConvert);
 
       const value = 1 + nft.tax;
-
       const transaction = await contract["checkGps(bytes,bytes)"](lat, lng, {
         value: ethers.utils.parseEther(`${value}`),
         gasLimit: 10000000,
@@ -315,6 +319,13 @@ export default function GamePage() {
           <p>Tax: {nft.tax + 1} ZAMA</p>
         </div>
       </div>
+      {showWinMessage && (
+        <div className={style.overlay}>
+          <div className={style.winMessage}>
+            You Win Geospace! Go to your profile...
+          </div>
+        </div>
+      )}
       <div style={style.map}>
         <GoogleMap
           mapContainerStyle={containerStyle}

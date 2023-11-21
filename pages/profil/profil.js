@@ -53,6 +53,9 @@ const Profil = () => {
   const [latitudeInput, setLatitudeInput] = useState("");
   const [longitudeInput, setLongitudeInput] = useState("");
   const [resetNFT, setResetNFT] = useState([]);
+  const [creationNFT, setCreationNFT] = useState([]);
+  const [feesNftMap, setFeesNftMap] = useState({});
+
   const [isMetaMaskInitialized, setIsMetaMaskInitialized] = useState(false);
 
   // Effets
@@ -100,16 +103,40 @@ const Profil = () => {
       if (signer) {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const userAddress = await signer.getAddress();
-        const [ownedNFTIds, resetNfts, stakedNFTIds] = await Promise.all([
-          contract.getNFTsByOwner(userAddress),
-          contract.getNFTsResetByOwner(userAddress),
-          contract.getNFTsStakedByOwner(userAddress),
-        ]);
+        const nftsStake = await contract.getNFTsStakedByOwner(userAddress);
+        const nftsAndFees = await contract.getNFTsAndFeesByOwner(userAddress);
+        const nftsRAndFees = await contract.getResetNFTsAndFeesByOwner(
+          userAddress
+        );
+
+        const nftsReset = await contract.getNFTsResetByOwner(userAddress);
+        const nftsCreationFees = await contract.getNftCreationAndFeesByUser(
+          userAddress
+        );
+        // const [ownedNFTIds, resetNfts, stakedNFTIds] = await Promise.all([
+        //   contract.getNFTsByOwner(userAddress),
+        //   contract.getNFTsResetByOwner(userAddress),
+        //   contract.getNFTsStakedByOwner(userAddress),
+        // ]);
         const balanceWei = await provider.getBalance(userAddress);
         const balanceEther = ethers.utils.formatUnits(balanceWei, "ether");
-        const ownedNFTs = ownedNFTIds.map((tokenId) => tokenId.toNumber());
-        const stakedNFTs = stakedNFTIds.map((tokenId) => tokenId.toNumber());
-        const resetNFTs = resetNfts.map((tokenId) => tokenId.toNumber());
+        const ownedNFTs = nftsAndFees[0].map((tokenId) => tokenId.toNumber());
+        const stakedNFTs = nftsStake.map((tokenId) => tokenId.toNumber());
+        const resetNFTs = nftsReset.map((tokenId) => tokenId.toNumber());
+        const feesNft = nftsRAndFees[1].map((tokenId) => tokenId.toString());
+        const creationNFTs = nftsCreationFees[0].map((tokenId) =>
+          tokenId.toNumber()
+        );
+        const feesCreationNFTs = nftsCreationFees[1].map((tokenId) =>
+          tokenId.toString()
+        );
+
+        const feesNftMap = {};
+        feesNft.forEach((fee, index) => {
+          feesNftMap[resetNFTs[index]] = fee;
+        });
+
+        setFeesNftMap(feesNftMap);
 
         const filteredOwnedNFTs = ownedNFTs.filter(
           (tokenId) =>
@@ -121,6 +148,7 @@ const Profil = () => {
         setBalance(balanceEther);
         setStakedNFTs(stakedNFTs);
         setResetNFT(resetNFTs);
+        setCreationNFT(creationNFTs);
         setIsLoading(false);
       }
     } catch (error) {
@@ -178,8 +206,7 @@ const Profil = () => {
         );
         feesArray.push(amountInWei);
       }
-
-      const rep = await contract.resetNFT(selectedNFTs, feesArray);
+      const rep = await contract.resetNFT(selectedNFTs, [1]);
       await rep.wait();
 
       const updatedOwnedNFTs = ownedNFTs.filter(
@@ -223,7 +250,7 @@ const Profil = () => {
     if (selectedResetNFTs.length === 0) return;
 
     try {
-      const rep = await contract.claimNFT(selectedResetNFTs);
+      const rep = await contract.cancelResetNFT(selectedResetNFTs);
       await rep.wait();
       await axios.post(`${process.env.SERVER}${process.env.ROUTE_NFT_RESET}`, {
         selectedNFTs: selectedResetNFTs,
@@ -385,11 +412,11 @@ const Profil = () => {
                     ))}
                   </ul>
                   <a className={styles.red2Button} onClick={stakeSelectedNFTs}>
-                    NFTs Stake
+                    Stake NFTs
                   </a>
 
                   <a className={styles.red2Button} onClick={resetNFTs}>
-                    NFTs Back in games
+                    Back in Game NFTs
                   </a>
                 </React.Fragment>
               </div>
@@ -434,7 +461,7 @@ const Profil = () => {
             </div>
             <div style={{ flex: 1 }}>
               <div className={`${styles.yourResetNft}`}>
-                <h2>Reset NFTs</h2>
+                <h2>NFTs Back in game </h2>
                 <p>just select nft to clean reset</p>
                 {resetNFT.length === 0 ? (
                   <p>
@@ -459,7 +486,8 @@ const Profil = () => {
                                 );
                               }}
                             />
-                            GeoSpace: {tokenId}
+                            GeoSpace: {tokenId} (Fee: {feesNftMap[tokenId]}{" "}
+                            ZAMA)
                           </label>
                         </li>
                       ))}
@@ -467,6 +495,26 @@ const Profil = () => {
                     <a className={styles.redButton} onClick={claimNft}>
                       Claim Selected NFTs
                     </a>
+                  </React.Fragment>
+                )}
+              </div>
+            </div>
+
+            <div style={{ flex: 1 }}>
+              <div className={`${styles.yourResetNft}`}>
+                <h2>NFTs Creation</h2>
+                <p>just see nft your nft creation</p>
+                {creationNFT.length === 0 ? (
+                  <p>No creation nft</p>
+                ) : (
+                  <React.Fragment>
+                    <ul>
+                      {creationNFT.map((tokenId) => (
+                        <li key={tokenId}>
+                          <label>GeoSpace: {tokenId}</label>
+                        </li>
+                      ))}
+                    </ul>
                   </React.Fragment>
                 )}
               </div>

@@ -57,11 +57,6 @@ const Ranking = () => {
             "fees"
           ),
           fetchData(
-            `${process.env.SERVER}${process.env.ROUTE_GET_NFT_RESET}`,
-            setNumberNftReset,
-            "total reset NFTs"
-          ),
-          fetchData(
             `${process.env.SERVER}${process.env.ROUTE_GET_HOLDER_ID}`,
             setHolders,
             "holders and tokenIds"
@@ -103,7 +98,6 @@ const Ranking = () => {
                 <th className={styles.th}>Holder</th>
                 <th className={styles.th}>GeoSpace Owned</th>
                 <th className={styles.th}>GeoSpace Staked</th>
-                <th className={styles.th}>GeoSpace Back in game</th>
               </tr>
             </thead>
             <tbody className={styles.tbody}>
@@ -119,8 +113,8 @@ const Ranking = () => {
                   <td data-label="GeoSpace Owned" className={styles.td}>
                     <div className={styles.fieldContainer}>
                       <p>
-                        {holders[address].nfts.length > 0
-                          ? holders[address].nfts.join(", ")
+                        {holders[address].nftsId.length > 0
+                          ? holders[address].nftsId.join(", ")
                           : "0"}
                       </p>
                     </div>
@@ -128,17 +122,8 @@ const Ranking = () => {
                   <td data-label="GeoSpace Staked" className={styles.td}>
                     <div className={styles.fieldContainer}>
                       <p>
-                        {holders[address].nftsStaked.length > 0
-                          ? holders[address].nftsStaked.join(", ")
-                          : "0"}
-                      </p>
-                    </div>
-                  </td>
-                  <td data-label="GeoSpace Back in game" className={styles.td}>
-                    <div className={styles.fieldContainer}>
-                      <p>
-                        {holders[address].nftsReset.length > 0
-                          ? holders[address].nftsReset.join(", ")
+                        {holders[address].nftsStake.length > 0
+                          ? holders[address].nftsStake.join(", ")
                           : "0"}
                       </p>
                     </div>
@@ -166,10 +151,6 @@ const Ranking = () => {
           <p className={styles.totalStake}>
             Total Number of NFTs staking:{" "}
             <span className={styles.dynamicValue}>{numberNftStake}</span>
-          </p>
-          <p className={styles.totalReset}>
-            Total Number of NFTs back in game:{" "}
-            <span className={styles.dynamicValue}>{numberNftReset}</span>
           </p>
           <p className={styles.minimumStake}>
             Minimum stake access:{" "}

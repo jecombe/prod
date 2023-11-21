@@ -137,6 +137,15 @@ export default function Contents() {
         className={`${styles.section} ${styles.presentation}`}
       >
         <div className={styles.blockAll}>
+          <div className={styles.blockTwo}>
+            <h1>First Gaming Web3 with FHE</h1>
+            <p>
+              For now, the game is available and in development on the{" "}
+              <a href="https://www.zama.ai/">Zama </a>
+              network. Later on, a migration will be carried out to the{" "}
+              <a href="https://www.fhenix.io/">Fhenix</a> blockchain.
+            </p>
+          </div>
           <div className={styles.blockOne}>
             <div className={styles.discover}>
               <h1>Discover the world</h1>
@@ -148,7 +157,7 @@ export default function Contents() {
                 in an encrypted manner.
                 <br /> To request location verification, it costs you 1 ZAMA.
                 <br />
-                If you are within a 5 km radius, you win the GeoSpace NFT
+                If you are within a 5 km radius, you win the NFT GeoSpace
                 associated with that location.
               </p>
             </div>
@@ -160,7 +169,7 @@ export default function Contents() {
           <div className={styles.lineBlock}></div>
 
           <div className={styles.blockTwo}>
-            <h1>Earn Geospace</h1>
+            <h1>Earn NFT Geospace</h1>
             <p>
               Win an NFT and unlock the right to put it back into play with your
               own tax.
@@ -169,7 +178,7 @@ export default function Contents() {
           <div className={styles.lineBlock}></div>
 
           <div className={styles.blockThree}>
-            <h1>Stake GeoSpace</h1>
+            <h1>Stake NFT GeoSpace</h1>
             <p>
               Once you have 3 NFTs, you can stake them to unlock the right to
               create a Geospace NFT with a valid GPS point (i.e., with an
