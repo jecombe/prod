@@ -206,7 +206,7 @@ const Profil = () => {
         );
         feesArray.push(amountInWei);
       }
-      const rep = await contract.resetNFT(selectedNFTs, [1]);
+      const rep = await contract.resetNFT(selectedNFTs, feesArray);
       await rep.wait();
 
       const updatedOwnedNFTs = ownedNFTs.filter(
