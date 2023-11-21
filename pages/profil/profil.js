@@ -351,7 +351,7 @@ const Profil = () => {
         </Link>
       </div>
       <div className={styles.firstContainer}>
-        <h1>Profil</h1>
+        <h1>Profile</h1>
       </div>
       <div className={styles.balanceAndAddress}>
         <div className={styles.headerItem}>
