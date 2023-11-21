@@ -1,13 +1,6 @@
 /* Dans profil.module.css */
 /* Style pour les div "Your Owned NFTs" et "Staked NFTs" */
 
-.yourNFTs,
-.yourStakedNft,
-.yourResetNft {
-  padding: auto;
-  width: 400px; /* Set the width to 100% or adjust as needed */
-  font-size: 14px;
-}
 .firstContainer,
 .balanceAndAddress {
   display: flex;
@@ -65,9 +58,23 @@
   box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2); /* Ombre plus prononcée au survol */
 }
 
-/* profil.css */
+/* Add or modify the existing styles for containerInfos, yourNFTs, yourStakedNft, yourResetNft, and yourCreationNft */
 .containerInfos {
-  margin: 0 auto; /* Pour centrer horizontalement */
+  display: flex;
+  flex-wrap: wrap; /* Allow items to wrap to the next line if there's not enough space */
+}
+
+.yourNFTs,
+.yourStakedNft,
+.yourResetNft,
+.yourCreationNft {
+  flex: 1;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-right: 20px;
+  margin-bottom: 20px; /* Add margin-bottom to create space between the items */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
 }
 
 .container a {
@@ -94,9 +101,24 @@
   cursor: pointer;
   margin-right: 20px;
 }
+
+.buttonContainer {
+  display: flex;
+  flex-direction: column; /* Afficher les boutons en colonne */
+  margin-top: 10px; /* Ajustez la marge selon vos préférences */
+}
+
+.buttonSpacing {
+  margin-top: 10px; /* Espace entre les boutons */
+}
+
 .red2Button:hover {
   background-position: 0 0;
 }
+.buttonContainer {
+  margin-right: 20px; /* Ajustez la valeur selon vos besoins */
+}
+
 /* Styles au survol */
 /* Lorsque survolé, l'effet 3D apparaît */
 
@@ -170,18 +192,31 @@
 }
 
 @media screen and (max-width: 570px) {
+  .containerInfos {
+    flex-direction: column;
+  }
+
   .yourNFTs,
-  .yourStakedNft {
-    width: 100%; /* Réglez la largeur à 100% pour qu'ils occupent toute la largeur */
-    margin-top: 10px; /* Ajoutez une marge en haut pour un espacement */
-    background-color: initial; /* Retirez les couleurs de fond définies précédemment */
+  .yourStakedNft,
+  .yourResetNft,
+  .yourCreationNft {
+    margin-bottom: 20px;
   }
+}
 
-  .yourNFTs {
-    order: 1; /* Changez l'ordre d'affichage pour que yourNFTs apparaisse en premier */
-  }
+/* Add or modify the existing styles for containerInfos, yourNFTs, yourStakedNft, yourResetNft, and yourCreationNft */
+.containerInfos {
+  display: flex;
+  justify-content: space-between;
+}
 
-  .yourStakedNft {
-    order: 2; /* Changez l'ordre d'affichage pour que yourStakedNft apparaisse en second */
-  }
+.yourNFTs,
+.yourStakedNft,
+.yourResetNft,
+.yourCreationNft {
+  flex: 1;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-right: 20px;
 }

@@ -194,6 +194,7 @@ const Profil = () => {
     try {
       const feesArray = [];
       const ffes = [];
+      const feesNftMap = {};
 
       for (const tokenId of selectedNFTs) {
         const feeInput = document.querySelector(`#feeInput-${tokenId}`);
@@ -205,10 +206,13 @@ const Profil = () => {
           "ether"
         );
         feesArray.push(amountInWei);
+        feesNftMap[tokenId] = Number(feeValue.toString());
       }
+      setFeesNftMap(feesNftMap);
+
       const rep = await contract.resetNFT(selectedNFTs, feesArray);
       await rep.wait();
-
+      feesNftMap[tokenId];
       const updatedOwnedNFTs = ownedNFTs.filter(
         (tokenId) => !selectedNFTs.includes(tokenId)
       );
@@ -371,7 +375,7 @@ const Profil = () => {
         <div className={styles.containerInfos}>
           <div style={{ display: "flex" }}>
             <div style={{ flex: 1 }}>
-              <div className={`${styles.yourStakedNft}`}>
+              <div className={`${styles.yourNFTs}`}>
                 <h2>Your available NFTs</h2>
                 <p>
                   just select nft to stake or to put your NFT back into play
@@ -411,13 +415,20 @@ const Profil = () => {
                       </li>
                     ))}
                   </ul>
-                  <a className={styles.red2Button} onClick={stakeSelectedNFTs}>
-                    Stake NFTs
-                  </a>
-
-                  <a className={styles.red2Button} onClick={resetNFTs}>
-                    Back in Game NFTs
-                  </a>
+                  <div className={styles.buttonContainer}>
+                    <a
+                      className={styles.red2Button}
+                      onClick={stakeSelectedNFTs}
+                    >
+                      Stake
+                    </a>
+                    <a
+                      className={`${styles.red2Button} ${styles.buttonSpacing}`}
+                      onClick={resetNFTs}
+                    >
+                      Back in Game
+                    </a>
+                  </div>
                 </React.Fragment>
               </div>
             </div>
@@ -453,7 +464,7 @@ const Profil = () => {
                       ))}
                     </ul>
                     <a className={styles.redButton} onClick={unstakeNFTs}>
-                      Unstake Selected NFTs
+                      Unstake
                     </a>
                   </React.Fragment>
                 )}
@@ -501,7 +512,7 @@ const Profil = () => {
             </div>
 
             <div style={{ flex: 1 }}>
-              <div className={`${styles.yourResetNft}`}>
+              <div className={`${styles.yourCreationNft}`}>
                 <h2>NFTs Creation</h2>
                 <p>just see nft your nft creation</p>
                 {creationNFT.length === 0 ? (
