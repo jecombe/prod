@@ -104,22 +104,27 @@ const Profil = () => {
       if (signer) {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const userAddress = await signer.getAddress();
-        const nftsStake = await contract.getNFTsStakedByOwner(userAddress);
-        const nftsAndFees = await contract.getNFTsAndFeesByOwner(userAddress);
-        const nftsRAndFees = await contract.getResetNFTsAndFeesByOwner(
-          userAddress
-        );
 
-        const nftsReset = await contract.getNFTsResetByOwner(userAddress);
-        const nftsCreationFees = await contract.getNftCreationAndFeesByUser(
-          userAddress
-        );
-        // const [ownedNFTIds, resetNfts, stakedNFTIds] = await Promise.all([
-        //   contract.getNFTsByOwner(userAddress),
-        //   contract.getNFTsResetByOwner(userAddress),
-        //   contract.getNFTsStakedByOwner(userAddress),
-        // ]);
-        const balanceWei = await provider.getBalance(userAddress);
+        // Créez un tableau de promesses
+        const promises = [
+          contract.getNFTsStakedByOwner(userAddress),
+          contract.getNFTsAndFeesByOwner(userAddress),
+          contract.getResetNFTsAndFeesByOwner(userAddress),
+          contract.getNFTsResetByOwner(userAddress),
+          contract.getNftCreationAndFeesByUser(userAddress),
+          provider.getBalance(userAddress),
+        ];
+
+        // Utilisez Promise.all pour exécuter toutes les promesses en parallèle
+        const [
+          nftsStake,
+          nftsAndFees,
+          nftsRAndFees,
+          nftsReset,
+          nftsCreationFees,
+          balanceWei,
+        ] = await Promise.all(promises);
+
         const balanceEther = ethers.utils.formatUnits(balanceWei, "ether");
         const ownedNFTs = nftsAndFees[0].map((tokenId) => tokenId.toNumber());
         const stakedNFTs = nftsStake.map((tokenId) => tokenId.toNumber());
@@ -127,9 +132,6 @@ const Profil = () => {
         const feesNft = nftsRAndFees[1].map((tokenId) => tokenId.toString());
         const creationNFTs = nftsCreationFees[0].map((tokenId) =>
           tokenId.toNumber()
-        );
-        const feesCreationNFTs = nftsCreationFees[1].map((tokenId) =>
-          tokenId.toString()
         );
 
         const feesNftMap = {};
@@ -213,17 +215,24 @@ const Profil = () => {
 
       const rep = await contract.resetNFT(selectedNFTs, feesArray);
       await rep.wait();
-      feesNftMap[tokenId];
+      const promises = selectedNFTs.map(async (nftId) => {
+        await axios.post(
+          `${process.env.SERVER}${process.env.ROUTE_NFT_RESET}`,
+          {
+            nftId,
+            fee: feesNftMap[nftId],
+          }
+        );
+      });
+
+      await Promise.all(promises);
+      setResetNFT((prevResetNFTs) => [...prevResetNFTs, ...selectedNFTs]);
+
       const updatedOwnedNFTs = ownedNFTs.filter(
         (tokenId) => !selectedNFTs.includes(tokenId)
       );
-      await axios.post(`${process.env.SERVER}${process.env.ROUTE_NFT_RESET}`, {
-        selectedNFTs,
-        feesArray: ffes,
-      });
-
       setOwnedNFTs(updatedOwnedNFTs);
-      setResetNFT((prevResetNFTs) => [...prevResetNFTs, ...selectedNFTs]);
+
       setSelectedNFTs([]);
     } catch (error) {
       console.error("Error resetting NFTs:", error);
@@ -257,19 +266,26 @@ const Profil = () => {
     try {
       const rep = await contract.cancelResetNFT(selectedResetNFTs);
       await rep.wait();
-      await axios.post(`${process.env.SERVER}${process.env.ROUTE_NFT_RESET}`, {
-        selectedNFTs: selectedResetNFTs,
-        feesArray: Array(selectedResetNFTs.length).fill(0),
+
+      const promises = selectedResetNFTs.map(async (nftId) => {
+        await axios.post(
+          `${process.env.SERVER}${process.env.ROUTE_REMOVE_GPS}`,
+          {
+            nftId,
+          }
+        );
       });
 
+      await Promise.all(promises);
+
+      setSelectedResetNFTs([]);
       const updatedResetNFTs = resetNFT.filter(
         (tokenId) => !selectedResetNFTs.includes(tokenId)
       );
       setResetNFT(updatedResetNFTs);
       setOwnedNFTs((prevOwnedNFTs) => [...prevOwnedNFTs, ...selectedResetNFTs]);
-      setSelectedResetNFTs([]);
     } catch (error) {
-      console.error("Error unstaking NFTs:", error);
+      console.error("Error reset claim NFTs:", error);
     }
   };
 
@@ -310,18 +326,19 @@ const Profil = () => {
           fhevm.encrypt32(Number(amountInWei.toString())),
         ];
 
-        const id = await contract.getNextTokenId();
-        const signature = await checkIfMessageIsSigned(id.toString());
-
-        const rep = await contract.createNftForOwner(obj);
+        const rep = await contract.createGpsOwnerNft(obj);
         await rep.wait();
+        const id = await contract.totalSupply();
+
         await axios.post(
           `${process.env.SERVER}${process.env.ROUTE_PROFIL_NEW_GPS}`,
           {
             nftId: Number(id.toString()),
-            signature,
+            addressOwner: account,
           }
         );
+      } else {
+        console.log("Street View Non Disponible");
       }
     } catch (error) {
       console.error("Error creating GPS NFT:", error);

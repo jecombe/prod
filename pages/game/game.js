@@ -15,6 +15,7 @@ import Link from "next/link";
 import ErrorMetamask from "../errorPage/metamask";
 import CryptoJS from "crypto-js";
 import Loading from "../loading/loading";
+import axios from "axios";
 
 const lib = ["places"];
 
@@ -114,17 +115,20 @@ export default function GamePage() {
       }
       setIsLoadingMeta(false);
 
-      contract.on("GpsCheckResult", async (userAddress, result) => {
+      contract.on("GpsCheckResult", async (userAddress, result, tokenId) => {
         const addrSigner = await signer.getAddress();
         if (userAddress === addrSigner) {
           if (result) {
+            await axios.post(
+              `${process.env.SERVER}${proces.env.ROUTE_REMOVE_GPS}`,
+              { tokenId: Number(tokenId.toString()) }
+            );
             setShowWinMessage(true);
 
             setIsTransactionSuccessful(true);
             setSuccessMessage("You Win NFT");
             setIsTransactionFailed(false);
             setIsLoading(false);
-
             setTimeout(() => {
               setShowWinMessage(false);
               setIsTransactionSuccessful(false);
@@ -146,16 +150,12 @@ export default function GamePage() {
         }
       });
     } catch (error) {
-      console.error("Error initialize contract:", error);
-
-      if (isMounted) {
-        console.error("Error initialize contract mounted:", error);
-        setIsLoading(false);
-        setIsLoadingMeta(false);
-        setIsTransactionSuccessful(false);
-        setIsTransactionFailed(false);
-        setIsMiniMapDisabled(false);
-      }
+      console.error("Error initialize contract mounted:", error);
+      setIsLoading(false);
+      setIsLoadingMeta(false);
+      setIsTransactionSuccessful(false);
+      setIsTransactionFailed(false);
+      setIsMiniMapDisabled(false);
     }
   }
 
@@ -229,7 +229,6 @@ export default function GamePage() {
       const lng = fhevm.encrypt32(lngConvert);
 
       const value = 1 + nft.tax;
-      console.log(nft.tokenId);
       const transaction = await contract["checkGps(bytes,bytes,uint256)"](
         lat,
         lng,

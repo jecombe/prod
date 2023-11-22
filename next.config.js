@@ -20,7 +20,7 @@ module.exports = {
     ROUTE_NFT_MINI_STAKE: process.env.ROUTE_NFT_MINI_STAKE,
     ROUTE_PROFIL_NEW_GPS: process.env.ROUTE_PROFIL_NEW_GPS,
     ROUTE_PROFIL_CHECK_NEW_GPS: process.env.ROUTE_PROFIL_CHECK_NEW_GPS,
-    ROUTE_PROFIL_SAVE_SIGNATURE: process.env.ROUTE_PROFIL_SAVE_SIGNATURE,
+    ROUTE_REMOVE_GPS: process.env.ROUTE_REMOVE_GPS,
   },
   webpack: (config) => {
     // Ajoutez ici la configuration de résolution pour 'tfhe_bg.wasm'
