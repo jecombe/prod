@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import styles from "./ranking.module.css";
+import Loading from "../loading/loading";
 
 const Ranking = () => {
   // const [holders, setHolders] = useState([]);
@@ -72,12 +73,7 @@ const Ranking = () => {
     fetchAllData();
   }, []);
 
-  if (isLoading)
-    return (
-      <div>
-        <h1>Loading...</h1>
-      </div>
-    );
+  if (isLoading) return <Loading />;
 
   return (
     <div>

@@ -27,9 +27,22 @@ const Footer = () => {
         >
           Telegram
         </a>
+        <a
+          href="https://medium.com/@jeremcombe/nftguessr-6dcfde3621ac"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Medium
+        </a>
       </div>
       <div className={styles.footerText}>
-        <a>Made by Jérémy Combe</a>
+        <a
+          href="https://github.com/jecombe"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Made by Jérémy Combe
+        </a>
       </div>
     </footer>
   );

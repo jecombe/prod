@@ -1,7 +1,7 @@
 "use client";
 import styles from "./content.module.css";
 import Image from "next/image";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 export default function Contents() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -107,7 +107,13 @@ export default function Contents() {
       content: (
         <div>
           <div className={styles.centerImage}>
-            <Image src="/coins.png" alt="coin" height={100} width={100} />
+            <Image
+              src="/coins.png"
+              alt="coin"
+              height={100}
+              width={100}
+              loading="lazy"
+            />
           </div>
           <p>
             Get <a href="https://faucet.zama.ai/">here</a>
@@ -146,6 +152,8 @@ export default function Contents() {
               <a href="https://www.fhenix.io/">Fhenix</a> blockchain.
             </p>
           </div>
+          <div className={styles.lineBlock}></div>
+
           <div className={styles.blockOne}>
             <div className={styles.discover}>
               <h1>Discover the world</h1>

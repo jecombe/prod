@@ -7,6 +7,7 @@ import ErrorMetamask from "../errorPage/metamask";
 import Link from "next/link";
 import axios from "axios";
 import { getFhevmInstance } from "../../utils/fhevmInstance";
+import Loading from "../loading/loading";
 
 // Fonction utilitaire pour créer un carré autour d'un point avec des décimales
 function createSquareAroundPointWithDecimals(
@@ -327,19 +328,71 @@ const Profil = () => {
     }
   };
 
-  // Rendu du composant
-  if (isLoading)
-    return (
-      <div>
-        <h1>Loading...</h1>
-      </div>
-    );
+  const connectToZamaDevnet = async () => {
+    try {
+      await window.ethereum.request({
+        method: "wallet_addEthereumChain",
+        params: [
+          {
+            chainId: "0x1f49",
+            chainName: "Zama Network",
+            nativeCurrency: {
+              name: "ZAMA",
+              symbol: "ZAMA",
+              decimals: 18,
+            },
+            rpcUrls: ["https://devnet.zama.ai"],
+            blockExplorerUrls: ["https://main.explorer.zama.ai"],
+          },
+        ],
+      });
 
-  if (!signer) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      setContract(null);
+      setSigner(null);
+
+      await initMetaMask();
+      await fetchData();
+    } catch (error) {
+      console.error("Error connecting to Fhenix Devnet:", error);
+    }
+  };
+
+  const checkNetwork = async () => {
+    if (window.ethereum) {
+      try {
+        const networkId = await window.ethereum.request({
+          method: "eth_chainId",
+        });
+        if (networkId !== "0x1f49") {
+          const userResponse = window.confirm(
+            "Please switch to Zama Devnet network to use this application. Do you want to switch now?"
+          );
+
+          if (userResponse) {
+            await connectToZamaDevnet();
+          }
+        }
+      } catch (error) {
+        console.error("Error checking network:", error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    checkNetwork();
+  }, []);
+
+  // Rendu du composant
+
+  if (!signer && !isLoading) {
     return (
       <ErrorMetamask message="Please connect to MetaMask and go to zama devnet" />
     );
   }
+  if (isLoading) return <Loading />;
+
   // Fonction pour récupérer les données
   return (
     <div className={styles.container}>

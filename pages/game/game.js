@@ -14,6 +14,7 @@ import initMetaMask from "../../utils/metamask";
 import Link from "next/link";
 import ErrorMetamask from "../errorPage/metamask";
 import CryptoJS from "crypto-js";
+import Loading from "../loading/loading";
 
 const lib = ["places"];
 
@@ -284,12 +285,7 @@ export default function GamePage() {
       <ErrorMetamask message="Please connect to MetaMask and go to zama devnet" />
     );
   }
-  if (isLoadingMeta)
-    return (
-      <div>
-        <h1>Loading...</h1>
-      </div>
-    );
+  if (isLoadingMeta) return <Loading />;
 
   return (
     <LoadScript

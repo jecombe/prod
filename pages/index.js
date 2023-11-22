@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
+import React from "react";
 // import { Provider } from "react-redux";
 // import store from "../utils/store";
 import HomeView from "./home/page";
-import io from "socket.io-client";
+import Head from "next/head";
 
 function Map() {
   // useEffect(() => {
@@ -21,9 +21,12 @@ function Map() {
   // }, []); // La dépendance vide signifie que cela s'exécutera une fois après le montage du composant
 
   return (
-    // <Provider store={store}>
-    <HomeView />
-    // </Provider>
+    <>
+      <Head>
+        <link rel="icon" href="/profil.ico" />
+      </Head>
+      <HomeView />
+    </>
   );
 }
 
