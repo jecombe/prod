@@ -268,6 +268,11 @@ const abi = [
         name: "userLongitude",
         type: "bytes",
       },
+      {
+        internalType: "uint256",
+        name: "_tokenId",
+        type: "uint256",
+      },
     ],
     name: "checkGps",
     outputs: [
@@ -338,24 +343,6 @@ const abi = [
         internalType: "uint256",
         name: "",
         type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "getAllAddressesAndTokenIds",
-    outputs: [
-      {
-        internalType: "address[]",
-        name: "",
-        type: "address[]",
-      },
-      {
-        internalType: "uint256[][]",
-        name: "",
-        type: "uint256[][]",
       },
     ],
     stateMutability: "view",

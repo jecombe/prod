@@ -229,10 +229,16 @@ export default function GamePage() {
       const lng = fhevm.encrypt32(lngConvert);
 
       const value = 1 + nft.tax;
-      const transaction = await contract["checkGps(bytes,bytes)"](lat, lng, {
-        value: ethers.utils.parseEther(`${value}`),
-        gasLimit: 10000000,
-      });
+      console.log(nft.tokenId);
+      const transaction = await contract["checkGps(bytes,bytes,uint256)"](
+        lat,
+        lng,
+        1,
+        {
+          value: ethers.utils.parseEther(`${value}`),
+          gasLimit: 10000000,
+        }
+      );
 
       await transaction.wait();
     } catch (error) {
