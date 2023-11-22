@@ -120,8 +120,8 @@ export default function GamePage() {
         if (userAddress === addrSigner) {
           if (result) {
             await axios.post(
-              `${process.env.SERVER}${proces.env.ROUTE_REMOVE_GPS}`,
-              { tokenId: Number(tokenId.toString()) }
+              `${process.env.SERVER}${process.env.ROUTE_REMOVE_GPS}`,
+              { nftId: Number(tokenId.toString()) }
             );
             setShowWinMessage(true);
 

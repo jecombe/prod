@@ -133,10 +133,11 @@ const Profil = () => {
         const creationNFTs = nftsCreationFees[0].map((tokenId) =>
           tokenId.toNumber()
         );
-
         const feesNftMap = {};
         feesNft.forEach((fee, index) => {
-          feesNftMap[resetNFTs[index]] = fee;
+          const valueEth = Math.round(ethers.utils.formatUnits(fee, "ether"));
+
+          feesNftMap[resetNFTs[index]] = valueEth;
         });
 
         setFeesNftMap(feesNftMap);
