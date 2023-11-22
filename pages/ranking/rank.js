@@ -101,7 +101,8 @@ const Ranking = () => {
                 <tr className={styles.tr} key={index}>
                   <td data-label="Holder" className={styles.td}>
                     <p>
-                      {address === process.env.CONTRACT.toLowerCase()
+                      {address.toLowerCase() ===
+                      process.env.CONTRACT.toLowerCase()
                         ? "NFTGuessr smart contract"
                         : address}
                     </p>
