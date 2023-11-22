@@ -233,7 +233,7 @@ export default function GamePage() {
       const transaction = await contract["checkGps(bytes,bytes,uint256)"](
         lat,
         lng,
-        1,
+        nft.tokenId,
         {
           value: ethers.utils.parseEther(`${value}`),
           gasLimit: 10000000,
