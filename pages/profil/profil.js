@@ -461,7 +461,7 @@ const Profil = () => {
                         <input
                           id={`feeInput-${tokenId}`} // ID unique pour chaque champ de saisie
                           type="number"
-                          placeholder="Enter a fees reset"
+                          placeholder="Enter a fees"
                           min="0"
                           // Add any additional attributes or event handlers as needed
                         />
@@ -526,7 +526,7 @@ const Profil = () => {
             <div style={{ flex: 1 }}>
               <div className={`${styles.yourResetNft}`}>
                 <h2>NFTs Back in game </h2>
-                <p>just select nft to clean reset</p>
+                {/* <p>just select nft to clean reset</p> */}
                 {resetNFT.length === 0 ? (
                   <p>
                     Please select nft on your collection to put back in games
