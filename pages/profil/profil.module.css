@@ -7,6 +7,12 @@
   justify-content: center;
   align-items: center;
 }
+
+.firstContainer h1 {
+  color: rgb(188, 121, 21);
+  font-size: 50px;
+}
+
 /* Appliquer la rotation lorsqu'un élément est survolé */
 
 .headerContainer {
@@ -81,10 +87,14 @@
   color: #fbfdfd;
   font-size: medium;
 }
-.container h1,
+
 .container h3,
 .container h2 {
   color: #fbfdfd;
+}
+
+.container p {
+  color: antiquewhite;
 }
 /* Styles pour les boutons */
 

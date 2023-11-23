@@ -100,12 +100,14 @@ const Ranking = () => {
               {Object.keys(holders).map((address, index) => (
                 <tr className={styles.tr} key={index}>
                   <td data-label="Holder" className={styles.td}>
-                    <p>
-                      {address.toLowerCase() ===
-                      process.env.CONTRACT.toLowerCase()
-                        ? "NFTGuessr smart contract"
-                        : address}
-                    </p>
+                    <div className={styles.fieldContainer}>
+                      <p>
+                        {address.toLowerCase() ===
+                        process.env.CONTRACT.toLowerCase()
+                          ? "NFTGuessr smart contract"
+                          : address}
+                      </p>
+                    </div>
                   </td>
                   <td data-label="GeoSpace Owned" className={styles.td}>
                     <div className={styles.fieldContainer}>

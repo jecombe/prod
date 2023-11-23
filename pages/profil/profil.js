@@ -577,9 +577,11 @@ const Profil = () => {
               <div className={`${styles.yourStakedNft}`}>
                 <h2>Staked NFTs</h2>
 
-                <p>just select nft to unstake</p>
+                {stakedNFTs.length > 0 ? <p>just select nft to unstake</p> : ""}
+                {ownedNFTs.length > 0 ? <p>select NFTs to stake</p> : ""}
+
                 {stakedNFTs.length === 0 ? (
-                  <p>Find a NFT first before staking</p>
+                  ""
                 ) : (
                   <React.Fragment>
                     <ul>
@@ -660,14 +662,13 @@ const Profil = () => {
                 )}
               </div>
             </div>
-
-            <div style={{ flex: 1 }}>
-              <div className={`${styles.yourCreationNft}`}>
-                <h2>NFTs Creation</h2>
-                <p>just see nft your nft creation</p>
-                {creationNFT.length === 0 ? (
-                  <p>No creation nft</p>
-                ) : (
+            {creationNFT.length === 0 ? (
+              ""
+            ) : (
+              <div style={{ flex: 1 }}>
+                <div className={`${styles.yourCreationNft}`}>
+                  <h2>NFTs Creation</h2>
+                  <p>just see nft your nft creation</p>
                   <React.Fragment>
                     <ul>
                       {creationNFT.map((tokenId) => (
@@ -677,9 +678,9 @@ const Profil = () => {
                       ))}
                     </ul>
                   </React.Fragment>
-                )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       )}

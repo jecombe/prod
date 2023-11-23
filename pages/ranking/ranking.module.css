@@ -70,11 +70,20 @@
   font-weight: bold;
 }
 
-.containerInfos h1,
+.containerInfos h1 {
+  color: rgb(188, 121, 21);
+  font-size: 50px;
+}
 .containerInfos h2 {
   color: #ffffff;
 }
 
+.fieldContainer {
+  color: blanchedalmond;
+}
+.statsContainer span {
+  color: blanchedalmond;
+}
 /* En mode responsive */
 @media (max-width: 570px) {
   .th {
