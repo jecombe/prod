@@ -366,7 +366,10 @@ export default function GamePage() {
               width: "100%",
               height: "100%",
             }}
-            center={position}
+            center={{
+              lat: 0,
+              lng: 0,
+            }}
             zoom={1}
             options={opt()}
             onClick={handleMiniMapClick}
