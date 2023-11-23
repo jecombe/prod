@@ -376,6 +376,7 @@ export default function GamePage() {
             center={lastPosition}
             zoom={1}
             options={{
+              zoomControl: true,
               disableDefaultUI: true,
             }}
             onClick={handleMiniMapClick}
