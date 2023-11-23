@@ -56,6 +56,18 @@ const Profil = () => {
   const [resetNFT, setResetNFT] = useState([]);
   const [creationNFT, setCreationNFT] = useState([]);
   const [feesNftMap, setFeesNftMap] = useState({});
+  const [isTransactionStakePending, setIsTransactionStakePending] =
+    useState(false);
+  const [isTransactionUnstakePending, setIsTransactionUnstakePending] =
+    useState(false);
+
+  const [isTransactionResetPending, setIsTransactionResetPending] =
+    useState(false);
+  const [isTransactionClaimPending, setIsTransactionClaimPending] =
+    useState(false);
+
+  const [isTransactionCreatePending, setIsTransactionCreatePending] =
+    useState(false);
 
   const [isMetaMaskInitialized, setIsMetaMaskInitialized] = useState(false);
 
@@ -176,8 +188,11 @@ const Profil = () => {
     if (selectedNFTs.length === 0) return;
 
     try {
+      setIsTransactionStakePending(true); // Set transaction pending state
+
       const rep = await contract.stakeNFT(selectedNFTs);
       await rep.wait();
+      setIsTransactionStakePending(false); // Set transaction pending state
 
       setStakedNFTs((prevStakedNFTs) => [...prevStakedNFTs, ...selectedNFTs]);
 
@@ -188,6 +203,8 @@ const Profil = () => {
 
       setSelectedNFTs([]);
     } catch (error) {
+      setIsTransactionStakePending(false); // Set transaction pending state
+
       console.error("Error staking NFTs:", error);
     }
   };
@@ -196,6 +213,8 @@ const Profil = () => {
     if (selectedNFTs.length === 0) return;
 
     try {
+      setIsTransactionResetPending(true); // Set transaction pending state
+
       const feesArray = [];
       const ffes = [];
       const feesNftMap = {};
@@ -227,6 +246,8 @@ const Profil = () => {
       });
 
       await Promise.all(promises);
+      setIsTransactionResetPending(false); // Set transaction pending state
+
       setResetNFT((prevResetNFTs) => [...prevResetNFTs, ...selectedNFTs]);
 
       const updatedOwnedNFTs = ownedNFTs.filter(
@@ -236,6 +257,8 @@ const Profil = () => {
 
       setSelectedNFTs([]);
     } catch (error) {
+      setIsTransactionResetPending(false); // Set transaction pending state
+
       console.error("Error resetting NFTs:", error);
     }
   };
@@ -244,8 +267,11 @@ const Profil = () => {
     if (selectedStakedNFTs.length === 0) return;
 
     try {
+      setIsTransactionUnstakePending(true); // Set transaction pending state
+
       const rep = await contract.unstakeNFT(selectedStakedNFTs);
       await rep.wait();
+      setIsTransactionUnstakePending(false); // Set transaction pending state
 
       setSelectedStakedNFTs([]);
       const updatedStakedNFTs = stakedNFTs.filter(
@@ -257,6 +283,8 @@ const Profil = () => {
         ...selectedStakedNFTs,
       ]);
     } catch (error) {
+      setIsTransactionUnstakePending(false); // Set transaction pending state
+
       console.error("Error unstaking NFTs:", error);
     }
   };
@@ -265,6 +293,8 @@ const Profil = () => {
     if (selectedResetNFTs.length === 0) return;
 
     try {
+      setIsTransactionClaimPending(true); // Set transaction pending state
+
       const rep = await contract.cancelResetNFT(selectedResetNFTs);
       await rep.wait();
 
@@ -278,6 +308,7 @@ const Profil = () => {
       });
 
       await Promise.all(promises);
+      setIsTransactionClaimPending(false); // Set transaction pending state
 
       setSelectedResetNFTs([]);
       const updatedResetNFTs = resetNFT.filter(
@@ -286,12 +317,16 @@ const Profil = () => {
       setResetNFT(updatedResetNFTs);
       setOwnedNFTs((prevOwnedNFTs) => [...prevOwnedNFTs, ...selectedResetNFTs]);
     } catch (error) {
+      setIsTransactionClaimPending(false); // Set transaction pending state
+
       console.error("Error reset claim NFTs:", error);
     }
   };
 
   const createGps = async () => {
     try {
+      setIsTransactionCreatePending(true); // Set transaction pending state
+
       const number = numberInput;
       const latitude = parseFloat(latitudeInput.replace(",", "."));
       const longitude = parseFloat(longitudeInput.replace(",", "."));
@@ -338,10 +373,15 @@ const Profil = () => {
             addressOwner: account,
           }
         );
+        setIsTransactionCreatePending(false); // Set transaction pending state
       } else {
+        setIsTransactionCreatePending(false); // Set transaction pending state
+
         console.log("Street View Non Disponible");
       }
     } catch (error) {
+      setIsTransactionCreatePending(false); // Set transaction pending state
+
       console.error("Error creating GPS NFT:", error);
     }
   };
@@ -487,18 +527,27 @@ const Profil = () => {
                     ))}
                   </ul>
                   <div className={styles.buttonContainer}>
-                    <a
-                      className={styles.red2Button}
-                      onClick={stakeSelectedNFTs}
-                    >
-                      Stake
-                    </a>
-                    <a
-                      className={`${styles.red2Button} ${styles.buttonSpacing}`}
-                      onClick={resetNFTs}
-                    >
-                      Back in Game
-                    </a>
+                    {isTransactionStakePending ? (
+                      "Loading..."
+                    ) : (
+                      <a
+                        className={styles.red2Button}
+                        onClick={stakeSelectedNFTs}
+                      >
+                        Stake
+                      </a>
+                    )}
+
+                    {isTransactionResetPending ? (
+                      "Loading..."
+                    ) : (
+                      <a
+                        className={`${styles.red2Button} ${styles.buttonSpacing}`}
+                        onClick={resetNFTs}
+                      >
+                        Back in Game
+                      </a>
+                    )}
                   </div>
                 </React.Fragment>
               </div>
@@ -534,9 +583,14 @@ const Profil = () => {
                         </li>
                       ))}
                     </ul>
-                    <a className={styles.redButton} onClick={unstakeNFTs}>
-                      Unstake
-                    </a>
+
+                    {isTransactionUnstakePending ? (
+                      "Loading..."
+                    ) : (
+                      <a className={styles.redButton} onClick={unstakeNFTs}>
+                        Unstake
+                      </a>
+                    )}
                   </React.Fragment>
                 )}
               </div>
@@ -574,9 +628,13 @@ const Profil = () => {
                         </li>
                       ))}
                     </ul>
-                    <a className={styles.redButton} onClick={claimNft}>
-                      Claim Selected NFTs
-                    </a>
+                    {isTransactionClaimPending ? (
+                      "Loading..."
+                    ) : (
+                      <a className={styles.redButton} onClick={claimNft}>
+                        Claim Selected NFTs
+                      </a>
+                    )}
                   </React.Fragment>
                 )}
               </div>
@@ -636,9 +694,13 @@ const Profil = () => {
                 />
               </label>
             </form>
-            <a className={styles.accessButton} onClick={createGps}>
-              Create Gps
-            </a>
+            {isTransactionCreatePending ? (
+              "Loading..."
+            ) : (
+              <a className={styles.accessButton} onClick={createGps}>
+                Create Gps
+              </a>
+            )}
           </>
         )}
 
