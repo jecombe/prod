@@ -78,29 +78,50 @@ const Profil = () => {
     }
   }, [isMetaMaskInitialized, signer]);
 
+  const handleChainChanged = async () => {
+    // Mettez à jour le contrat et le signer après un changement de réseau
+    setContract(null);
+    setSigner(null);
+    await initializeMetaMask();
+    await fetchData();
+  };
+
   useEffect(() => {
-    const initializeMetaMask = async () => {
-      try {
-        setIsLoading(true);
-        const signer = await initMetaMask();
-        const contract = new ethers.Contract(process.env.CONTRACT, abi, signer);
+    if (window.ethereum) {
+      window.ethereum.on("chainChanged", handleChainChanged);
+    }
 
-        const fhevmInstance = await getFhevmInstance();
-        setFhevm(fhevmInstance);
-
-        setSigner(signer);
-        setContract(contract);
-        setIsMetaMaskInitialized(true);
-
-        if (window.ethereum) {
-          window.ethereum.on("accountsChanged", handleAccountsChanged);
-        }
-      } catch (error) {
-        console.error("Error initializing MetaMask:", error);
-        setIsLoading(false);
+    return () => {
+      // Nettoyer le gestionnaire d'événements lorsque le composant est démonté
+      if (window.ethereum) {
+        window.ethereum.off("chainChanged", handleChainChanged);
       }
     };
+  }, []);
 
+  const initializeMetaMask = async () => {
+    try {
+      setIsLoading(true);
+      const signer = await initMetaMask();
+      const contract = new ethers.Contract(process.env.CONTRACT, abi, signer);
+
+      const fhevmInstance = await getFhevmInstance();
+      setFhevm(fhevmInstance);
+
+      setSigner(signer);
+      setContract(contract);
+      setIsMetaMaskInitialized(true);
+
+      if (window.ethereum) {
+        window.ethereum.on("accountsChanged", handleAccountsChanged);
+      }
+    } catch (error) {
+      console.error("Error initializing MetaMask:", error);
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
     initializeMetaMask();
   }, []);
 
@@ -407,11 +428,11 @@ const Profil = () => {
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      setContract(null);
-      setSigner(null);
+      //setContract(null);
+      //setSigner(null);
 
-      await initMetaMask();
-      await fetchData();
+      //  await initializeMetaMask();
+      // await fetchData();
     } catch (error) {
       console.error("Error connecting to Fhenix Devnet:", error);
     }

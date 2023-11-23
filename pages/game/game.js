@@ -88,16 +88,31 @@ export default function GamePage() {
       });
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      setContract(null);
-      setSigner(null);
-
-      await initializeContract();
-      await updateAccountInfo();
     } catch (error) {
       console.error("Error connecting to Fhenix Devnet:", error);
     }
   };
+
+  const handleChainChanged = async () => {
+    // Mettez à jour le contrat et le signer après un changement de réseau
+    setContract(null);
+    setSigner(null);
+    await initializeContract();
+    await updateAccountInfo();
+  };
+
+  useEffect(() => {
+    if (window.ethereum) {
+      window.ethereum.on("chainChanged", handleChainChanged);
+    }
+
+    return () => {
+      // Nettoyer le gestionnaire d'événements lorsque le composant est démonté
+      if (window.ethereum) {
+        window.ethereum.off("chainChanged", handleChainChanged);
+      }
+    };
+  }, []);
   async function initializeContract() {
     try {
       setIsLoadingMeta(true);

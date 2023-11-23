@@ -148,7 +148,8 @@ export default function Contents() {
             <p>
               For now, the game is available and in development on the{" "}
               <a href="https://www.zama.ai/">Zama </a>
-              network. Later on, a migration will be carried out to the{" "}
+              devnet <br />
+              Later on, a migration will be carried out to the{" "}
               <a href="https://www.fhenix.io/">Fhenix</a> blockchain.
             </p>
           </div>
@@ -179,8 +180,8 @@ export default function Contents() {
           <div className={styles.blockTwo}>
             <h1>Earn NFT Geospace</h1>
             <p>
-              Win an NFT and unlock the right to put it back into play with your
-              own tax.
+              Win an NFT and unlock the right to put it back into the game with
+              your own tax.
             </p>
           </div>
           <div className={styles.lineBlock}></div>
