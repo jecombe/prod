@@ -268,6 +268,10 @@ export default function GamePage() {
   };
 
   const handleConfirmGps = async () => {
+    if (!position) {
+      alert("You need to place a pin");
+      return;
+    }
     setIsLoading(true);
     setIsMiniMapDisabled(false);
     try {
@@ -386,7 +390,7 @@ export default function GamePage() {
           )}
           <div className={style.containerButton}>
             <a className={style.button} onClick={handleConfirmGps}>
-              valid point
+              Guess
             </a>
           </div>
         </div>
