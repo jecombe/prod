@@ -29,14 +29,13 @@ export default function GamePage() {
 
   const [position, setPosition] = useState(init);
   const [markers, setMarkers] = useState([]);
-  const [lastPosition, setLastPosition] = useState(init);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMeta, setIsLoadingMeta] = useState(false);
   const [isTransactionSuccessful, setIsTransactionSuccessful] = useState(false);
   const [isTransactionFailed, setIsTransactionFailed] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [failureMessage, setFailureMessage] = useState("");
-  const [isMiniMapDisabled, setIsMiniMapDisabled] = useState(false);
+  const [isMiniMapDisabled, setIsMiniMapDisabled] = useState(true);
   const [fhevm, setFhevm] = useState(null);
   const [contract, setContract] = useState(null);
   const [signer, setSigner] = useState(null);
@@ -148,7 +147,7 @@ export default function GamePage() {
               setShowWinMessage(false);
               setIsTransactionSuccessful(false);
               setIsTransactionFailed(false);
-              setIsMiniMapDisabled(false);
+              setIsMiniMapDisabled(true);
             }, 5000);
           } else {
             setIsTransactionFailed(true);
@@ -159,7 +158,7 @@ export default function GamePage() {
             setTimeout(() => {
               setIsTransactionSuccessful(false);
               setIsTransactionFailed(false);
-              setIsMiniMapDisabled(false);
+              setIsMiniMapDisabled(true);
             }, 5000);
           }
         }
@@ -170,7 +169,7 @@ export default function GamePage() {
       setIsLoadingMeta(false);
       setIsTransactionSuccessful(false);
       setIsTransactionFailed(false);
-      setIsMiniMapDisabled(false);
+      setIsMiniMapDisabled(true);
     }
   }
 
@@ -225,50 +224,11 @@ export default function GamePage() {
   }, [isMounted]);
 
   const handleMiniMapClick = async (e) => {
-    if (isMiniMapDisabled || !signer) {
-      return;
-    }
-
-    console.log("OOOOOOOOOOK");
-
     const newMarker = {
       lat: e.latLng.lat(),
       lng: e.latLng.lng(),
     };
-    setLastPosition(newMarker);
-    //setIsLoading(true);
-    // Clear existing markers
-    // Update the state using the functional form
     setMarkers((prevMarkers) => [newMarker]);
-
-    // setLastPosition(newMarker);
-    //setIsMiniMapDisabled(true);
-
-    // setIsMiniMapDisabled(true);
-
-    try {
-      // const attConvert = Math.trunc(newMarker.lat * 1e5);
-      // const lngConvert = Math.trunc(newMarker.lng * 1e5);
-      // const lat = fhevm.encrypt32(attConvert);
-      // const lng = fhevm.encrypt32(lngConvert);
-      // const value = 1 + nft.tax;
-      // const transaction = await contract["checkGps(bytes,bytes,uint256)"](
-      //   lat,
-      //   lng,
-      //   nft.tokenId,
-      //   {
-      //     value: ethers.utils.parseEther(`${value}`),
-      //     gasLimit: 10000000,
-      //   }
-      // );
-      // await transaction.wait();
-    } catch (error) {
-      console.error("Error send transaction:", error);
-      //setIsLoading(false);
-      setIsMiniMapDisabled(false);
-      setMarkers([]);
-      setLastPosition(init);
-    }
   };
 
   async function fetchGpsData() {
@@ -309,7 +269,7 @@ export default function GamePage() {
 
   const handleConfirmGps = async () => {
     setIsLoading(true);
-    setIsMiniMapDisabled(true);
+    setIsMiniMapDisabled(false);
     try {
       const attConvert = Math.trunc(position.lat * 1e5);
       const lngConvert = Math.trunc(position.lng * 1e5);
@@ -328,7 +288,7 @@ export default function GamePage() {
       await transaction.wait();
     } catch (error) {
       setIsLoading(false);
-      setIsMiniMapDisabled(false);
+      setIsMiniMapDisabled(true);
     }
   };
 
@@ -336,6 +296,7 @@ export default function GamePage() {
     return {
       disableDefaultUI: true,
       zoomControl: true,
+      draggable: isMiniMapDisabled,
     };
   };
 
