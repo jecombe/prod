@@ -1,7 +1,3 @@
-.miniMapContainer {
-  transition: transform 0.2s; /* Ajoute une transition sur la propriété "transform" */
-  position: relative; /* Position relative pour positionner la pseudo-élément */
-}
 .newCoordinate {
   background-color: #141e30; /* Couleur de fond sombre */
   color: #ffffff; /* Couleur du texte en blanc */
@@ -51,32 +47,39 @@
   padding: 10px; /* Ajoutez de la marge autour du contenu si nécessaire */
 }
 
-.miniMapContainer::before {
-  content: "";
+/* map.module.css */
+.miniMapContainer {
+  width: 200px; /* Largeur initiale */
+  height: 100px; /* Hauteur initiale */
   position: absolute;
-  width: 10px; /* Largeur de l'agrandissement sur le côté gauche */
-  height: 100%;
-  background: linear-gradient(
-    to right,
-    transparent,
-    rgba(171, 29, 29, 0.6)
-  ); /* Dégradé de lumière */
-  top: 0;
-  left: -10px; /* Ajustez cette valeur pour agrandir vers la gauche */
-  transform: scaleX(
-    0
-  ); /* Transformation initiale pour l'effet de zoom à gauche */
-  transform-origin: left; /* Zoom depuis la gauche */
-  transition: transform 0.2s; /* Transition pour le zoom */
+  bottom: 100px;
+  right: 30px;
+  z-index: 1;
+  transition: width 0.2s, height 0.2s; /* Ajoute une transition en douceur */
 }
 
 .miniMapContainer:hover {
-  transform: scale(1.1); /* Applique un effet de zoom de 10% lors du survol */
-  cursor: crosshair; /* Curseur en forme de croix */
+  width: 300px; /* Largeur lors du survol */
+  height: 300px; /* Hauteur lors du survol */
+  transform: scale(1.1);
+  cursor: crosshair;
+}
+
+.miniMapContainer::before {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 100%;
+  background: linear-gradient(to right, transparent, rgba(171, 29, 29, 0.6));
+  top: 0;
+  left: -10px;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.2s;
 }
 
 .miniMapContainer:hover::before {
-  transform: scaleX(1.1); /* Zoom du pseudo-élément sur l'axe X (gauche) */
+  transform: scaleX(1.1);
 }
 
 .loadingIndicator {
@@ -173,4 +176,25 @@
   align-items: center;
   z-index: 3; /* Mettez-le au-dessus de tout */
   background: rgba(0, 0, 0, 0.5); /* Arrière-plan sombre semi-transparent */
+}
+.button {
+  text-transform: uppercase;
+  text-align: center;
+  text-decoration: none;
+  background: linear-gradient(to top, #107a20 0%, #107a20 50%, transparent 50%);
+  background-size: 100% 200%;
+  background-position: 0 100%;
+  transition: background-position 0.3s;
+  width: 100%; /* Make the button 100% width of the container */
+  padding: 10px;
+  cursor: pointer;
+}
+.button:hover {
+  background-position: 0 0;
+}
+
+.containerButton {
+  margin-top: 5px;
+  display: flex;
+  justify-content: flex-end; /* Align the button to the right */
 }

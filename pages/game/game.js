@@ -228,36 +228,43 @@ export default function GamePage() {
     if (isMiniMapDisabled || !signer) {
       return;
     }
+
+    console.log("OOOOOOOOOOK");
+
     const newMarker = {
       lat: e.latLng.lat(),
       lng: e.latLng.lng(),
     };
-    setIsLoading(true);
-    setIsMiniMapDisabled(true);
-
-    setMarkers([...markers, newMarker]);
     setLastPosition(newMarker);
+    //setIsLoading(true);
+    // Clear existing markers
+    // Update the state using the functional form
+    setMarkers((prevMarkers) => [newMarker]);
+
+    // setLastPosition(newMarker);
+    //setIsMiniMapDisabled(true);
+
+    // setIsMiniMapDisabled(true);
+
     try {
-      const attConvert = Math.trunc(newMarker.lat * 1e5);
-      const lngConvert = Math.trunc(newMarker.lng * 1e5);
-      const lat = fhevm.encrypt32(attConvert);
-      const lng = fhevm.encrypt32(lngConvert);
-
-      const value = 1 + nft.tax;
-      const transaction = await contract["checkGps(bytes,bytes,uint256)"](
-        lat,
-        lng,
-        nft.tokenId,
-        {
-          value: ethers.utils.parseEther(`${value}`),
-          gasLimit: 10000000,
-        }
-      );
-
-      await transaction.wait();
+      // const attConvert = Math.trunc(newMarker.lat * 1e5);
+      // const lngConvert = Math.trunc(newMarker.lng * 1e5);
+      // const lat = fhevm.encrypt32(attConvert);
+      // const lng = fhevm.encrypt32(lngConvert);
+      // const value = 1 + nft.tax;
+      // const transaction = await contract["checkGps(bytes,bytes,uint256)"](
+      //   lat,
+      //   lng,
+      //   nft.tokenId,
+      //   {
+      //     value: ethers.utils.parseEther(`${value}`),
+      //     gasLimit: 10000000,
+      //   }
+      // );
+      // await transaction.wait();
     } catch (error) {
       console.error("Error send transaction:", error);
-      setIsLoading(false);
+      //setIsLoading(false);
       setIsMiniMapDisabled(false);
       setMarkers([]);
       setLastPosition(init);
@@ -300,13 +307,44 @@ export default function GamePage() {
     };
   };
 
+  const handleConfirmGps = async () => {
+    setIsLoading(true);
+    setIsMiniMapDisabled(true);
+    try {
+      const attConvert = Math.trunc(position.lat * 1e5);
+      const lngConvert = Math.trunc(position.lng * 1e5);
+      const lat = fhevm.encrypt32(attConvert);
+      const lng = fhevm.encrypt32(lngConvert);
+      const value = 1 + nft.tax;
+      const transaction = await contract["checkGps(bytes,bytes,uint256)"](
+        lat,
+        lng,
+        nft.tokenId,
+        {
+          value: ethers.utils.parseEther(`${value}`),
+          gasLimit: 10000000,
+        }
+      );
+      await transaction.wait();
+    } catch (error) {
+      setIsLoading(false);
+      setIsMiniMapDisabled(false);
+    }
+  };
+
+  const opt = () => {
+    return {
+      disableDefaultUI: true,
+      zoomControl: true,
+    };
+  };
+
   if (!signer && !isLoadingMeta) {
     return (
       <ErrorMetamask message="Please connect to MetaMask and go to zama devnet" />
     );
   }
   if (isLoadingMeta) return <Loading />;
-
   return (
     <LoadScript
       googleMapsApiKey={process.env.API_MAP}
@@ -357,28 +395,15 @@ export default function GamePage() {
           />
         </GoogleMap>
 
-        <div
-          className={style.miniMapContainer}
-          style={{
-            width: "300px",
-            height: "300px",
-            position: "absolute",
-            bottom: "10px",
-            right: "10px",
-            zIndex: 1,
-          }}
-        >
+        <div className={style.miniMapContainer}>
           <GoogleMap
             mapContainerStyle={{
               width: "100%",
               height: "100%",
             }}
-            center={lastPosition}
+            center={position}
             zoom={1}
-            options={{
-              zoomControl: true,
-              disableDefaultUI: true,
-            }}
+            options={opt()}
             onClick={handleMiniMapClick}
           >
             {markers.map((marker, index) => (
@@ -388,18 +413,21 @@ export default function GamePage() {
           {isLoading && (
             <div className={style.loadingIndicator}>Loading...</div>
           )}
-
           {isTransactionSuccessful && (
             <div className={style.overlay}>
               <div className={style.successMessage}>{successMessage}</div>
             </div>
           )}
-
           {isTransactionFailed && (
             <div className={style.overlay}>
               <div className={style.failureMessage}>{failureMessage}</div>
             </div>
           )}
+          <div className={style.containerButton}>
+            <a className={style.button} onClick={handleConfirmGps}>
+              valid point
+            </a>
+          </div>
         </div>
       </div>
     </LoadScript>
