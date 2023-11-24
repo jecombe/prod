@@ -398,7 +398,7 @@ const Profil = () => {
       } else {
         setIsTransactionCreatePending(false); // Set transaction pending state
 
-        console.log("Street View Non Disponible");
+        console.error("Street View Non Disponible");
       }
     } catch (error) {
       setIsTransactionCreatePending(false); // Set transaction pending state

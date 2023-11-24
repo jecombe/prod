@@ -94,6 +94,7 @@ const Ranking = () => {
                 <th className={styles.th}>Holder</th>
                 <th className={styles.th}>GeoSpace Owned</th>
                 <th className={styles.th}>GeoSpace Staked</th>
+                <th className={styles.th}>GeoSpace Reset</th>
               </tr>
             </thead>
             <tbody className={styles.tbody}>
@@ -123,6 +124,15 @@ const Ranking = () => {
                       <p>
                         {holders[address].nftsStake.length > 0
                           ? holders[address].nftsStake.join(", ")
+                          : "0"}
+                      </p>
+                    </div>
+                  </td>
+                  <td data-label="GeoSpace Reset" className={styles.td}>
+                    <div className={styles.fieldContainer}>
+                      <p>
+                        {holders[address].nftsReset.length > 0
+                          ? holders[address].nftsReset.join(", ")
                           : "0"}
                       </p>
                     </div>

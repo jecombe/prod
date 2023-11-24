@@ -28,6 +28,8 @@ export default function GamePage() {
   const init = { lat: 0, lng: 0 };
 
   const [position, setPosition] = useState(init);
+  const [positionMiniMap, setPositionMiniMap] = useState(init);
+
   const [markers, setMarkers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMeta, setIsLoadingMeta] = useState(false);
@@ -229,6 +231,7 @@ export default function GamePage() {
       lng: e.latLng.lng(),
     };
     setMarkers((prevMarkers) => [newMarker]);
+    setPositionMiniMap(newMarker);
   };
 
   async function fetchGpsData() {
@@ -366,10 +369,7 @@ export default function GamePage() {
               width: "100%",
               height: "100%",
             }}
-            center={{
-              lat: 0,
-              lng: 0,
-            }}
+            center={positionMiniMap}
             zoom={1}
             options={opt()}
             onClick={handleMiniMapClick}
