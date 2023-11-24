@@ -49,7 +49,7 @@ export default function GamePage() {
   const [showWinMessage, setShowWinMessage] = useState(false);
 
   const updateAccountInfo = async () => {
-    if (typeof window !== "undefined" && window.ethereum && isMounted) {
+    if (typeof window !== "undefined" && window.ethereum) {
       const web3 = new Web3(window.ethereum);
       try {
         const accounts = await window.ethereum.request({
@@ -94,26 +94,6 @@ export default function GamePage() {
     }
   };
 
-  const handleChainChanged = async () => {
-    // Mettez à jour le contrat et le signer après un changement de réseau
-    setContract(null);
-    setSigner(null);
-    await initializeContract();
-    await updateAccountInfo();
-  };
-
-  useEffect(() => {
-    if (window.ethereum) {
-      window.ethereum.on("chainChanged", handleChainChanged);
-    }
-
-    return () => {
-      // Nettoyer le gestionnaire d'événements lorsque le composant est démonté
-      if (window.ethereum) {
-        window.ethereum.off("chainChanged", handleChainChanged);
-      }
-    };
-  }, []);
   async function initializeContract() {
     try {
       setIsLoadingMeta(true);
@@ -174,7 +154,6 @@ export default function GamePage() {
       setIsMiniMapDisabled(true);
     }
   }
-
   const checkNetwork = async () => {
     if (window.ethereum) {
       try {
@@ -188,6 +167,7 @@ export default function GamePage() {
 
           if (userResponse) {
             await connectToZamaDevnet();
+            await initializeContract();
           }
         }
       } catch (error) {
@@ -203,27 +183,18 @@ export default function GamePage() {
   }, []);
 
   useEffect(() => {
-    if (isMetaMaskInitialized && isMounted) {
+    if (isMetaMaskInitialized) {
       updateAccountInfo();
     }
-  }, [isMetaMaskInitialized, isMounted]);
-
-  useEffect(() => {
-    setIsMounted(true);
-
-    return () => {
-      setIsMounted(false);
-    };
-  }, []);
+  }, [isMetaMaskInitialized]);
 
   useEffect(() => {
     initializeContract();
-    fetchGpsData();
+  }, [isMetaMaskInitialized]);
 
-    return () => {
-      setIsMounted(false);
-    };
-  }, [isMounted]);
+  useEffect(() => {
+    fetchGpsData();
+  }, []);
 
   const handleMiniMapClick = async (e) => {
     const newMarker = {
