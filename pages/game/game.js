@@ -115,9 +115,10 @@ export default function GamePage() {
         const addrSigner = await signer.getAddress();
         if (userAddress === addrSigner) {
           if (result) {
-            await axios.post(`${process.env.SERVER}api/remove-gps`, {
-              nftId: Number(tokenId.toString()),
-            });
+            await axios.post(
+              `${process.env.SERVER}${process.env.ROUTE_REMOVE_GPS}`,
+              { nftId: Number(tokenId.toString()) }
+            );
             setShowWinMessage(true);
 
             setIsTransactionSuccessful(true);
