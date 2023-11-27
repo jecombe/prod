@@ -179,7 +179,6 @@ const Profil = () => {
           (tokenId) =>
             !resetNFTs.includes(tokenId) && !stakedNFTs.includes(tokenId)
         );
-
         setOwnedNFTs(filteredOwnedNFTs);
         setAccount(userAddress);
         setBalance(balanceEther);
