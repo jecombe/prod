@@ -47,3 +47,8 @@ li {
 label {
   font-size: 18px;
 }
+
+input,
+label {
+  color: antiquewhite;
+}

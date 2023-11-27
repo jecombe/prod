@@ -576,8 +576,7 @@ const Profil = () => {
               <div className={`${styles.yourStakedNft}`}>
                 <h2>Staked NFTs</h2>
 
-                {stakedNFTs.length > 0 ? <p>just select nft to unstake</p> : ""}
-                {ownedNFTs.length > 0 ? <p>select NFTs to stake</p> : ""}
+                {stakedNFTs.length > 0 ? <p>Just select nft to unstake</p> : ""}
 
                 {stakedNFTs.length === 0 ? (
                   ""
@@ -684,46 +683,46 @@ const Profil = () => {
         </div>
       )}
       <div className={styles.containerAccess}>
-        {stakedNFTs.length >= 3 && ( // Condition pour afficher le bouton si le nombre de NFTs stakés est supérieur à 3
-          <>
-            <form>
-              <label>
-                Number:
-                <input
-                  type="number"
-                  value={numberInput}
-                  onChange={(e) =>
-                    setNumberInput(Math.max(0, parseInt(e.target.value)))
-                  }
-                  min="0"
-                />
-              </label>
-              <label>
-                Latitude:
-                <input
-                  type="number"
-                  value={latitudeInput}
-                  onChange={(e) => setLatitudeInput(e.target.value)}
-                />
-              </label>
-              <label>
-                Longitude:
-                <input
-                  type="number"
-                  value={longitudeInput}
-                  onChange={(e) => setLongitudeInput(e.target.value)}
-                />
-              </label>
-            </form>
-            {isTransactionCreatePending ? (
-              "Loading..."
-            ) : (
-              <a className={styles.accessButton} onClick={createGps}>
-                Create Gps
-              </a>
-            )}
-          </>
-        )}
+        {/* {stakedNFTs.length >= 3 && ( // Condition pour afficher le bouton si le nombre de NFTs stakés est supérieur à 3 */}
+        <>
+          <form>
+            <label>
+              Fees:
+              <input
+                type="number"
+                value={numberInput}
+                onChange={(e) =>
+                  setNumberInput(Math.max(0, parseInt(e.target.value)))
+                }
+                min="0"
+              />
+            </label>
+            <label>
+              Latitude:
+              <input
+                type="number"
+                value={latitudeInput}
+                onChange={(e) => setLatitudeInput(e.target.value)}
+              />
+            </label>
+            <label>
+              Longitude:
+              <input
+                type="number"
+                value={longitudeInput}
+                onChange={(e) => setLongitudeInput(e.target.value)}
+              />
+            </label>
+          </form>
+          {isTransactionCreatePending ? (
+            "Loading..."
+          ) : (
+            <a className={styles.accessButton} onClick={createGps}>
+              Create Gps
+            </a>
+          )}
+        </>
+        {/* )} */}
 
         {ownedNFTs.length === 0 &&
           stakedNFTs.length === 0 &&
