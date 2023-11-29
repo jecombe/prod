@@ -352,6 +352,44 @@ const abi = [
     inputs: [
       {
         internalType: "uint256",
+        name: "_tokenId",
+        type: "uint256",
+      },
+    ],
+    name: "getAddressResetWithToken",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_tokenId",
+        type: "uint256",
+      },
+    ],
+    name: "getAddressStakeWithToken",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
         name: "tokenId",
         type: "uint256",
       },
@@ -394,70 +432,68 @@ const abi = [
   {
     inputs: [
       {
-        internalType: "uint256",
-        name: "tokenId",
-        type: "uint256",
-      },
-      {
-        internalType: "bytes32",
-        name: "publicKey",
-        type: "bytes32",
-      },
-    ],
-    name: "getLocation",
-    outputs: [
-      {
-        internalType: "bytes[6]",
-        name: "",
-        type: "bytes[6]",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "tokenId",
-        type: "uint256",
-      },
-      {
-        internalType: "bytes32",
-        name: "publicKey",
-        type: "bytes32",
-      },
-    ],
-    name: "getLocationNonAccessible",
-    outputs: [
-      {
-        internalType: "bytes[6]",
-        name: "",
-        type: "bytes[6]",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
         internalType: "address",
         name: "user",
         type: "address",
       },
     ],
-    name: "getNFTsAndFeesByOwner",
+    name: "getNFTByOwner",
     outputs: [
       {
         internalType: "uint256[]",
         name: "",
         type: "uint256[]",
       },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
       {
-        internalType: "uint256[]",
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+    ],
+    name: "getNFTLocation",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint32",
+            name: "northLat",
+            type: "uint32",
+          },
+          {
+            internalType: "uint32",
+            name: "southLat",
+            type: "uint32",
+          },
+          {
+            internalType: "uint32",
+            name: "eastLon",
+            type: "uint32",
+          },
+          {
+            internalType: "uint32",
+            name: "westLon",
+            type: "uint32",
+          },
+          {
+            internalType: "uint256",
+            name: "lat",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "lng",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct NftGuessr.NFTLocation",
         name: "",
-        type: "uint256[]",
+        type: "tuple",
       },
     ],
     stateMutability: "view",
@@ -621,6 +657,44 @@ const abi = [
       },
     ],
     name: "isApprovedForAll",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "locationId",
+        type: "uint256",
+      },
+    ],
+    name: "isLocationValid",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "isStake",
     outputs: [
       {
         internalType: "bool",
@@ -933,6 +1007,44 @@ const abi = [
         internalType: "uint256",
         name: "",
         type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "tokenResetAddress",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "tokenStakeAddress",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
       },
     ],
     stateMutability: "view",

@@ -141,9 +141,8 @@ const Profil = () => {
         // Créez un tableau de promesses
         const promises = [
           contract.getNFTsStakedByOwner(userAddress),
-          contract.getNFTsAndFeesByOwner(userAddress),
+          contract.getNFTByOwner(userAddress),
           contract.getResetNFTsAndFeesByOwner(userAddress),
-          contract.getNFTsResetByOwner(userAddress),
           contract.getNftCreationAndFeesByUser(userAddress),
           provider.getBalance(userAddress),
         ];
@@ -151,17 +150,16 @@ const Profil = () => {
         // Utilisez Promise.all pour exécuter toutes les promesses en parallèle
         const [
           nftsStake,
-          nftsAndFees,
+          nftsOwned,
           nftsRAndFees,
-          nftsReset,
           nftsCreationFees,
           balanceWei,
         ] = await Promise.all(promises);
 
         const balanceEther = ethers.utils.formatUnits(balanceWei, "ether");
-        const ownedNFTs = nftsAndFees[0].map((tokenId) => tokenId.toNumber());
+        const ownedNFTs = nftsOwned.map((tokenId) => tokenId.toNumber());
         const stakedNFTs = nftsStake.map((tokenId) => tokenId.toNumber());
-        const resetNFTs = nftsReset.map((tokenId) => tokenId.toNumber());
+        const resetNFTs = nftsRAndFees[0].map((tokenId) => tokenId.toNumber());
         const feesNft = nftsRAndFees[1].map((tokenId) => tokenId.toString());
         const creationNFTs = nftsCreationFees[0].map((tokenId) =>
           tokenId.toNumber()
@@ -507,7 +505,7 @@ const Profil = () => {
           <div style={{ display: "flex" }}>
             <div style={{ flex: 1 }}>
               <div className={`${styles.yourNFTs}`}>
-                <h2>Your available NFTs</h2>
+                <h2>Your available GeoSpace</h2>
                 <p>
                   just select nft to stake or to put your NFT back into play
                   with your fees. (default is set on 0)
@@ -574,9 +572,17 @@ const Profil = () => {
             </div>
             <div style={{ flex: 1 }}>
               <div className={`${styles.yourStakedNft}`}>
-                <h2>Staked NFTs</h2>
+                <h2>Staked GeoSpaces</h2>
+                <p>
+                  just stake 3 GeoSpaces to have the right to unlock the
+                  creation of NFTs.
+                </p>
 
-                {stakedNFTs.length > 0 ? <p>just select nft to unstake</p> : ""}
+                {stakedNFTs.length > 0 ? (
+                  <p>just select GeoSpaces to unstake</p>
+                ) : (
+                  ""
+                )}
 
                 {stakedNFTs.length === 0 ? (
                   ""
@@ -618,11 +624,12 @@ const Profil = () => {
             </div>
             <div style={{ flex: 1 }}>
               <div className={`${styles.yourResetNft}`}>
-                <h2>NFTs Back in game </h2>
+                <h2>GeoSpaces Back in game </h2>
                 {/* <p>just select nft to clean reset</p> */}
                 {resetNFT.length === 0 ? (
                   <p>
-                    Please select nft on your collection to put back in games
+                    Please select GeoSpace on your collection to put back in
+                    games
                   </p>
                 ) : (
                   <React.Fragment>
@@ -653,7 +660,7 @@ const Profil = () => {
                       "Loading..."
                     ) : (
                       <a className={styles.redButton} onClick={claimNft}>
-                        Claim Selected NFTs
+                        Cancel NFTs game reset
                       </a>
                     )}
                   </React.Fragment>
