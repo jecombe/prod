@@ -242,15 +242,15 @@ export default function GamePage() {
   };
 
   const handleConfirmGps = async () => {
-    if (!position) {
+    if (!positionMiniMap.lat || !positionMiniMap.lng) {
       alert("You need to place a pin");
       return;
     }
     setIsLoading(true);
     setIsMiniMapDisabled(false);
     try {
-      const attConvert = Math.trunc(position.lat * 1e5);
-      const lngConvert = Math.trunc(position.lng * 1e5);
+      const attConvert = Math.trunc(positionMiniMap.lat * 1e5);
+      const lngConvert = Math.trunc(positionMiniMap.lng * 1e5);
       const lat = fhevm.encrypt32(attConvert);
       const lng = fhevm.encrypt32(lngConvert);
       const value = 1 + nft.tax;
