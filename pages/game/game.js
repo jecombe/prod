@@ -42,7 +42,6 @@ export default function GamePage() {
   const [contract, setContract] = useState(null);
   const [signer, setSigner] = useState(null);
   const [nft, setNft] = useState({});
-  const [isMounted, setIsMounted] = useState(true);
   const [accountAddress, setAccountAddress] = useState("");
   const [accountBalance, setAccountBalance] = useState("");
   const [isMetaMaskInitialized, setIsMetaMaskInitialized] = useState(false);
@@ -129,6 +128,7 @@ export default function GamePage() {
               setShowWinMessage(false);
               setIsTransactionSuccessful(false);
               setIsTransactionFailed(false);
+              setMarkers([]);
               setIsMiniMapDisabled(true);
             }, 5000);
           } else {
@@ -141,6 +141,7 @@ export default function GamePage() {
               setIsTransactionSuccessful(false);
               setIsTransactionFailed(false);
               setIsMiniMapDisabled(true);
+              setMarkers([]);
             }, 5000);
           }
         }
@@ -254,6 +255,7 @@ export default function GamePage() {
       const lat = fhevm.encrypt32(attConvert);
       const lng = fhevm.encrypt32(lngConvert);
       const value = 1 + nft.tax;
+
       const transaction = await contract["checkGps(bytes,bytes,uint256)"](
         lat,
         lng,

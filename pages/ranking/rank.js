@@ -75,6 +75,12 @@ const Ranking = () => {
 
   if (isLoading) return <Loading />;
 
+  const createList = (nftsArray) => {
+    return nftsArray.map((id, index) => (
+      <li key={index}>{`id: ${id.id}, fees: ${id.fee}`}</li>
+    ));
+  };
+
   return (
     <div>
       <div className={styles.headerContainer}>
@@ -95,6 +101,7 @@ const Ranking = () => {
                 <th className={styles.th}>GeoSpace Owned</th>
                 <th className={styles.th}>GeoSpace Staked</th>
                 <th className={styles.th}>GeoSpace Back in game</th>
+                <th className={styles.th}>GeoSpace creation</th>
               </tr>
             </thead>
             <tbody className={styles.tbody}>
@@ -115,7 +122,7 @@ const Ranking = () => {
                       <p>
                         {holders[address].nftsId.length > 0
                           ? holders[address].nftsId.join(", ")
-                          : "0"}
+                          : []}
                       </p>
                     </div>
                   </td>
@@ -124,17 +131,18 @@ const Ranking = () => {
                       <p>
                         {holders[address].nftsStake.length > 0
                           ? holders[address].nftsStake.join(", ")
-                          : "0"}
+                          : []}
                       </p>
                     </div>
                   </td>
                   <td data-label="GeoSpace Back in game" className={styles.td}>
                     <div className={styles.fieldContainer}>
-                      <p>
-                        {holders[address].nftsReset.length > 0
-                          ? holders[address].nftsReset.join(", ")
-                          : "0"}
-                      </p>
+                      <p>{createList(holders[address]?.nftsReset || [])}</p>
+                    </div>
+                  </td>
+                  <td data-label="GeoSpace Creations" className={styles.td}>
+                    <div className={styles.fieldContainer}>
+                      <p>{createList(holders[address]?.nftsCreation || [])}</p>
                     </div>
                   </td>
                 </tr>

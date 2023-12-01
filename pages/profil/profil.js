@@ -164,6 +164,17 @@ const Profil = () => {
         const creationNFTs = nftsCreationFees[0].map((tokenId) =>
           tokenId.toNumber()
         );
+        const creationNFTsFees = nftsCreationFees[1].map((tokenId) =>
+          tokenId.toString()
+        );
+
+        const nftsCreaFee = creationNFTs.map((id, index) => ({
+          id,
+          fee: Math.round(
+            ethers.utils.formatUnits(creationNFTsFees[index], "ether")
+          ),
+        }));
+
         const feesNftMap = {};
         feesNft.forEach((fee, index) => {
           const valueEth = Math.round(ethers.utils.formatUnits(fee, "ether"));
@@ -182,7 +193,7 @@ const Profil = () => {
         setBalance(balanceEther);
         setStakedNFTs(stakedNFTs);
         setResetNFT(resetNFTs);
-        setCreationNFT(creationNFTs);
+        setCreationNFT(nftsCreaFee);
         setIsLoading(false);
       }
     } catch (error) {
@@ -354,49 +365,58 @@ const Profil = () => {
         return;
       }
 
-      const rep = await axios.post(
-        `${process.env.SERVER}${process.env.ROUTE_PROFIL_CHECK_NEW_GPS}`,
-        {
-          latitude,
-          longitude,
-        }
-      );
+      // const rep = await axios.post(
+      //   `${process.env.SERVER}${process.env.ROUTE_PROFIL_CHECK_NEW_GPS}`,
+      //   {
+      //     latitude,
+      //     longitude,
+      //   }
+      // );
 
       const amountInWei = ethers.utils.parseUnits(number.toString(), "ether");
 
-      if (rep.data.success) {
-        const location = createSquareAroundPointWithDecimals(
-          latitude,
-          longitude,
-          5
-        );
-        const obj = [
-          fhevm.encrypt32(location.northLat),
-          fhevm.encrypt32(location.southLat),
-          fhevm.encrypt32(location.eastLon),
-          fhevm.encrypt32(location.westLon),
-          fhevm.encrypt32(location.lat),
-          fhevm.encrypt32(location.lng),
-          fhevm.encrypt32(Number(amountInWei.toString())),
-        ];
+      //      if (rep.data.success) {
+      const location = createSquareAroundPointWithDecimals(
+        latitude,
+        longitude,
+        5
+      );
+      const obj = [
+        fhevm.encrypt32(location.northLat),
+        fhevm.encrypt32(location.southLat),
+        fhevm.encrypt32(location.eastLon),
+        fhevm.encrypt32(location.westLon),
+        fhevm.encrypt32(location.lat),
+        fhevm.encrypt32(location.lng),
+      ];
 
-        const rep = await contract.createGpsOwnerNft(obj);
-        await rep.wait();
-        const id = await contract.totalSupply();
+      const objFees = [amountInWei];
 
-        await axios.post(
-          `${process.env.SERVER}${process.env.ROUTE_PROFIL_NEW_GPS}`,
-          {
-            nftId: Number(id.toString()),
-            addressOwner: account,
-          }
-        );
-        setIsTransactionCreatePending(false); // Set transaction pending state
-      } else {
-        setIsTransactionCreatePending(false); // Set transaction pending state
+      const rep = await contract.createGpsOwnerNft(obj, objFees);
+      await rep.wait();
+      const id = await contract.totalSupply();
 
-        console.error("Street View Non Disponible");
-      }
+      await axios.post(
+        `${process.env.SERVER}${process.env.ROUTE_PROFIL_NEW_GPS}`,
+        {
+          nftId: Number(id.toString()),
+          addressOwner: account,
+        }
+      );
+
+      setCreationNFT((prevCreationNFT) => [
+        ...prevCreationNFT,
+        {
+          id: Number(id.toString()),
+          fee: number,
+        },
+      ]);
+      setIsTransactionCreatePending(false); // Set transaction pending state
+      // } else {
+      //   setIsTransactionCreatePending(false); // Set transaction pending state
+      //   alert("street view non accessible, please enter another street view");
+      //   console.error("Street View Non Disponible");
+      // }
     } catch (error) {
       setIsTransactionCreatePending(false); // Set transaction pending state
 
@@ -677,8 +697,10 @@ const Profil = () => {
                   <React.Fragment>
                     <ul>
                       {creationNFT.map((tokenId) => (
-                        <li key={tokenId}>
-                          <label>GeoSpace: {tokenId}</label>
+                        <li key={tokenId.id}>
+                          <label>
+                            GeoSpace: {tokenId.id} (Fee: {tokenId.fee} ZAMA)
+                          </label>
                         </li>
                       ))}
                     </ul>

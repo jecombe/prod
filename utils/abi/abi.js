@@ -292,6 +292,11 @@ const abi = [
         name: "data",
         type: "bytes[]",
       },
+      {
+        internalType: "uint256[]",
+        name: "feesData",
+        type: "uint256[]",
+      },
     ],
     name: "createGpsOwner",
     outputs: [],
@@ -304,6 +309,11 @@ const abi = [
         internalType: "bytes[]",
         name: "data",
         type: "bytes[]",
+      },
+      {
+        internalType: "uint256[]",
+        name: "feesData",
+        type: "uint256[]",
       },
     ],
     name: "createGpsOwnerNft",
@@ -782,19 +792,6 @@ const abi = [
     type: "function",
   },
   {
-    inputs: [],
-    name: "resetNFTCount",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
     inputs: [
       {
         internalType: "address",
@@ -1101,24 +1098,6 @@ const abi = [
       },
     ],
     name: "transferFrom",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "to",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "tokenId",
-        type: "uint256",
-      },
-    ],
-    name: "transferNFT",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
