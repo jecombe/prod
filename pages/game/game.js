@@ -308,8 +308,8 @@ export default function GamePage() {
           New coordinates
         </button>
         <div>
-          <p>TokenId: {nft.tokenId}</p>
-          <p>Tax: {nft.tax + 1} ZAMA</p>
+          <p>GeoSpace: {nft.tokenId}</p>
+          <p>Fees: {nft.tax + 1} ZAMA</p>
         </div>
       </div>
       {showWinMessage && (
