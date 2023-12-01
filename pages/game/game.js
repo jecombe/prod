@@ -130,7 +130,6 @@ export default function GamePage() {
               setIsTransactionFailed(false);
               setMarkers([]);
               setIsMiniMapDisabled(true);
-              fetchGpsData();
             }, 5000);
           } else {
             setIsTransactionFailed(true);
