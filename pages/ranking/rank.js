@@ -4,18 +4,9 @@ import styles from "./ranking.module.css";
 import Loading from "../loading/loading";
 
 const Ranking = () => {
-  // const [holders, setHolders] = useState([]);
-  // const [numberNft, setNumberNft] = useState([]);
-  // const [numberNftStake, setNumberNftStake] = useState(0);
-  // const [numberNftReset, setNumberNftReset] = useState(0);
-
-  // const [fees, setFees] = useState(0); // Added state for fees
-  // const [numberNftStakeMinimum, setNumberNftStakeMinimum] = useState(0);
-
   const [holders, setHolders] = useState([]);
   const [numberNft, setNumberNft] = useState([]);
   const [numberNftStake, setNumberNftStake] = useState(0);
-  const [numberNftReset, setNumberNftReset] = useState(0);
   const [fees, setFees] = useState(0);
   const [numberNftStakeMinimum, setNumberNftStakeMinimum] = useState(0);
   const [isLoading, setIsLoading] = useState(true); // New state for loading
@@ -120,8 +111,8 @@ const Ranking = () => {
                   <td data-label="GeoSpace Owned" className={styles.td}>
                     <div className={styles.fieldContainer}>
                       <p>
-                        {holders[address].nftsId.length > 0
-                          ? holders[address].nftsId.join(", ")
+                        {holders[address].nfts.length > 0
+                          ? holders[address].nfts.join(", ")
                           : []}
                       </p>
                     </div>
