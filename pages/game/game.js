@@ -201,13 +201,13 @@ export default function GamePage() {
     fetchGpsData();
   }, []);
 
-  useEffect(() => {
-    getOption().then((options) => {
-      setOptControl(options);
-      // Faites quelque chose avec les options (par exemple, définissez-les dans l'état)
-      // setState(options);
-    });
-  }, []);
+  // useEffect(() => {
+  //   getOption().then((options) => {
+  //     setOptControl(options);
+  //     // Faites quelque chose avec les options (par exemple, définissez-les dans l'état)
+  //     // setState(options);
+  //   });
+  // }, []);
 
   const handleMiniMapClick = async (e) => {
     const newMarker = {
@@ -237,7 +237,7 @@ export default function GamePage() {
     }
   }
 
-  const getOption = () => {
+  /* const getOption = () => {
     return new Promise((resolve) => {
       if (window.google && window.google.maps) {
         resolve({
@@ -278,8 +278,8 @@ export default function GamePage() {
       }
     });
   };
-
-  /*const gestOption = () => {
+*/
+  const gestOption = () => {
     return {
       addressControl: false,
       linksControl: false,
@@ -294,7 +294,7 @@ export default function GamePage() {
             : undefined,
       },
     };
-  };*/
+  };
 
   const handleConfirmGps = async () => {
     if (!positionMiniMap.lat || !positionMiniMap.lng) {
@@ -420,7 +420,7 @@ export default function GamePage() {
           <StreetViewPanorama
             id="street-view"
             containerStyle={containerStyle}
-            options={optControl}
+            options={gestOption()}
             position={position}
             visible={true}
           />
