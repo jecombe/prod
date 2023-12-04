@@ -69,7 +69,11 @@
   display: flex;
   flex-wrap: wrap; /* Allow items to wrap to the next line if there's not enough space */
 }
-
+.titleMap {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
 .yourNFTs,
 .yourStakedNft,
 .yourResetNft,

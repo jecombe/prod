@@ -366,6 +366,25 @@ const abi = [
         type: "uint256",
       },
     ],
+    name: "getAddressCreationWithToken",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_tokenId",
+        type: "uint256",
+      },
+    ],
     name: "getAddressResetWithToken",
     outputs: [
       {
@@ -467,6 +486,57 @@ const abi = [
       },
     ],
     name: "getNFTLocation",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint32",
+            name: "northLat",
+            type: "uint32",
+          },
+          {
+            internalType: "uint32",
+            name: "southLat",
+            type: "uint32",
+          },
+          {
+            internalType: "uint32",
+            name: "eastLon",
+            type: "uint32",
+          },
+          {
+            internalType: "uint32",
+            name: "westLon",
+            type: "uint32",
+          },
+          {
+            internalType: "uint256",
+            name: "lat",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "lng",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct NftGuessr.NFTLocation",
+        name: "",
+        type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+    ],
+    name: "getNFTLocationForOwner",
     outputs: [
       {
         components: [
@@ -980,6 +1050,25 @@ const abi = [
         internalType: "uint256",
         name: "",
         type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "tokenCreationAddress",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
       },
     ],
     stateMutability: "view",

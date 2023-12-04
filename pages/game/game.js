@@ -44,12 +44,11 @@ export default function GamePage() {
   const [contract, setContract] = useState(null);
   const [signer, setSigner] = useState(null);
   const [nft, setNft] = useState({});
-  const [accountAddress, setAccountAddress] = useState("");
-  const [accountBalance, setAccountBalance] = useState("");
+  const [accountAddress, setAccountAddress] = useState("0x");
+  const [accountBalance, setAccountBalance] = useState(0);
   const [isMetaMaskInitialized, setIsMetaMaskInitialized] = useState(false);
   const [showWinMessage, setShowWinMessage] = useState(false);
   const [isPlay, setIsPlay] = useState(true);
-  const [optControl, setOptControl] = useState({});
 
   const updateAccountInfo = async () => {
     if (typeof window !== "undefined" && window.ethereum) {
@@ -59,16 +58,16 @@ export default function GamePage() {
           method: "eth_requestAccounts",
         });
         const address = accounts[0];
-        setAccountAddress(`Address : ${address}`);
+        setAccountAddress(`${address}`);
 
         const balance = await web3.eth.getBalance(address);
         const etherBalance = web3.utils.fromWei(balance, "ether");
-        setAccountBalance(`Balance : ${etherBalance} ZAMA`);
+        setAccountBalance(etherBalance);
       } catch (error) {
         console.error("error updating account info:", error);
       }
     } else {
-      setAccountAddress("MetaMask is not installed");
+      setAccountAddress("0x");
     }
   };
 
@@ -287,7 +286,6 @@ export default function GamePage() {
       zoomControl: false,
       showRoadLabels: false,
       enableCloseButton: false,
-      scrollwheel: true, // Active la roulette de la souris pour le zoom
       panControlOptions: {
         position:
           window.google && window.google.maps
@@ -331,7 +329,7 @@ export default function GamePage() {
     return {
       disableDefaultUI: true,
       zoomControl: true,
-      draggable: isMiniMapDisabled,
+      scrollwheel: true, // Active la roulette de la souris pour le zoom
     };
   };
 
@@ -391,8 +389,13 @@ export default function GamePage() {
         <MuteButton onClick={() => setIsPlay(!isPlay)} />
 
         <div className={style.accountInfo}>
-          <div>{accountAddress}</div>
-          <div>{accountBalance}</div>
+          <p>My address: {accountAddress}</p>
+          <p>My balance: {accountBalance} ZAMA</p>
+        </div>
+
+        <div className={style.infoNft}>
+          <p>GeoSpace: {nft.tokenId}</p>
+          <p>Fees: {nft.tax + 1} ZAMA</p>
         </div>
         <button
           onClick={fetchGpsData}
@@ -400,15 +403,11 @@ export default function GamePage() {
         >
           New coordinates
         </button>
-        <div>
-          <p>GeoSpace: {nft.tokenId}</p>
-          <p>Fees: {nft.tax + 1} ZAMA</p>
-        </div>
       </div>
       {showWinMessage && (
         <div className={style.overlay}>
           <div className={style.winMessage}>
-            You Win Geospace! Go to your profile...
+            You Win Geospace! Go to your profil...
           </div>
         </div>
       )}

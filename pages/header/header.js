@@ -33,7 +33,7 @@ const Header = () => {
           <a className={styles.profilStat}>Game Stats</a>
         </Link>
         <Link href="/profil/profil">
-          <a className={styles.profilStat}>My profile</a>
+          <a className={styles.profilStat}>My profil</a>
         </Link>
       </div>
       <Link href="/game/game">

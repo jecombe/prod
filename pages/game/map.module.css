@@ -38,7 +38,8 @@
 }
 
 .accountInfo {
-  color: #ffffff;
+  color: antiquewhite;
+  font-size: 14px;
 }
 .headerContainer {
   display: flex;
@@ -46,8 +47,9 @@
   align-items: center; /* Centre verticalement le contenu du header et du bouton */
   padding: 10px; /* Ajoutez de la marge autour du contenu si nécessaire */
 }
-.optionsFrame {
-  /* Assurez-vous que le cadre est au-dessus de tout le reste */
+.infoNft {
+  color: antiquewhite;
+  font-size: 14px;
 }
 .muteButton {
   width: 20px; /* Largeur initiale */

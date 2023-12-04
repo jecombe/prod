@@ -8,6 +8,7 @@ import Link from "next/link";
 import axios from "axios";
 import { getFhevmInstance } from "../../utils/fhevmInstance";
 import Loading from "../loading/loading";
+import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 
 // Fonction utilitaire pour créer un carré autour d'un point avec des décimales
 function createSquareAroundPointWithDecimals(
@@ -56,6 +57,14 @@ const Profil = () => {
   const [resetNFT, setResetNFT] = useState([]);
   const [creationNFT, setCreationNFT] = useState([]);
   const [feesNftMap, setFeesNftMap] = useState({});
+  const [decryptedNFTS, setDecrypted] = useState([]);
+  const [mapCenter, setMapCenter] = useState({ lat: 0, lng: 0 });
+
+  const [decryptedStakeNFTS, setDecryptedStake] = useState([]);
+  const [decryptedResetNFTS, setDecryptedReset] = useState([]);
+  const [decryptedCreaNFTS, setDecryptedCrea] = useState([]);
+  const [isMounted, setIsMounted] = useState(true);
+
   const [isTransactionStakePending, setIsTransactionStakePending] =
     useState(false);
   const [isTransactionUnstakePending, setIsTransactionUnstakePending] =
@@ -70,6 +79,11 @@ const Profil = () => {
     useState(false);
 
   const [isMetaMaskInitialized, setIsMetaMaskInitialized] = useState(false);
+  const [markers, setMarkers] = useState([]);
+  const [isMapsScriptLoaded, setIsMapsScriptLoaded] = useState(false);
+  const [position, setPosition] = useState({ lat: 0, lng: 0 });
+
+  const lib = ["places"];
 
   // Effets
   useEffect(() => {
@@ -125,11 +139,55 @@ const Profil = () => {
     initializeMetaMask();
   }, []);
 
-  useEffect(() => {
-    if (isMetaMaskInitialized) {
-      fetchData();
+  const callDecrypt = async (ownedNfts, userAddress) => {
+    const promises = [];
+    for (const tokenId of ownedNfts) {
+      promises.push(
+        contract.getNFTLocationForOwner(tokenId, {
+          from: userAddress,
+        })
+      );
     }
-  }, [isMetaMaskInitialized, signer, contract]);
+    return Promise.all(promises);
+  };
+  function formaterNombre(nombre) {
+    const nombreEnChaine = nombre.toString();
+
+    if (nombreEnChaine.length === 7) {
+      // Si le nombre a 7 chiffres, placez la virgule après le deuxième chiffre
+      return nombreEnChaine.slice(0, 2) + "." + nombreEnChaine.slice(2);
+    } else if (nombreEnChaine.length === 6) {
+      // Si le nombre a 6 chiffres, placez la virgule après le premier chiffre
+      return nombreEnChaine[0] + "." + nombreEnChaine.slice(1);
+    } else {
+      // Pour d'autres longueurs, laissez la représentation du nombre inchangée
+      return nombreEnChaine;
+    }
+  }
+
+  const setMarkerArray = (array) => {
+    if (array.length > 0) {
+      const markersData = array.map((marker, i) => {
+        const lat = Number(marker[4]);
+        const lng = Number(marker[5]);
+
+        const latConvert = Number(formaterNombre(lat));
+        const lngConvert = Number(formaterNombre(lng));
+
+        return {
+          position: {
+            lat: latConvert,
+            lng: lngConvert,
+          },
+          title: `GeoSpace ${i}`,
+        };
+      });
+      setMarkers(markersData);
+    }
+  };
+  useEffect(() => {
+    setMarkerArray(decryptedNFTS);
+  }, [decryptedNFTS]);
 
   // Fonction fetchData optimisée
   const fetchData = async () => {
@@ -147,7 +205,6 @@ const Profil = () => {
           provider.getBalance(userAddress),
         ];
 
-        // Utilisez Promise.all pour exécuter toutes les promesses en parallèle
         const [
           nftsStake,
           nftsOwned,
@@ -158,6 +215,7 @@ const Profil = () => {
 
         const balanceEther = ethers.utils.formatUnits(balanceWei, "ether");
         const ownedNFTs = nftsOwned.map((tokenId) => tokenId.toNumber());
+
         const stakedNFTs = nftsStake.map((tokenId) => tokenId.toNumber());
         const resetNFTs = nftsRAndFees[0].map((tokenId) => tokenId.toNumber());
         const feesNft = nftsRAndFees[1].map((tokenId) => tokenId.toString());
@@ -175,6 +233,22 @@ const Profil = () => {
           ),
         }));
 
+        const decryptedNFTs = callDecrypt(ownedNFTs, userAddress);
+        const decyptStake = callDecrypt(stakedNFTs, userAddress);
+        const decryptedReset = callDecrypt(resetNFTs, userAddress);
+        const decryptedCrea = callDecrypt(creationNFTs, userAddress);
+
+        const promise = [
+          decryptedNFTs,
+          decyptStake,
+          decryptedReset,
+          decryptedCrea,
+        ];
+
+        const result = await Promise.all(promise);
+
+        const r = [...result[0], ...result[1], ...result[2], ...result[3]];
+        setDecrypted(r);
         const feesNftMap = {};
         feesNft.forEach((fee, index) => {
           const valueEth = Math.round(ethers.utils.formatUnits(fee, "ether"));
@@ -444,12 +518,6 @@ const Profil = () => {
       });
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      //setContract(null);
-      //setSigner(null);
-
-      //  await initializeMetaMask();
-      // await fetchData();
     } catch (error) {
       console.error("Error connecting to Fhenix Devnet:", error);
     }
@@ -475,13 +543,29 @@ const Profil = () => {
       }
     }
   };
+  // Dans votre useEffect de cleanup (composantWillUnmount)
+  useEffect(() => {
+    return () => {
+      setIsMounted(false);
+    };
+  }, []);
 
   useEffect(() => {
     checkNetwork();
   }, []);
 
   // Rendu du composant
-
+  const handleMapLoad = (map) => {
+    //try {
+    // map.addListener("center_changed", () => {
+    //const newCenter = map.getCenter();
+    // const newMapPosition = { lat: newCenter.lat(), lng: newCenter.lng() };
+    //setPosition(newMapPosition);
+    // });
+    // } catch (error) {
+    //   console.error("Error handling map interaction:", error);
+    // }
+  };
   if (!signer && !isLoading) {
     return (
       <ErrorMetamask message="Please connect to MetaMask and go to zama devnet" />
@@ -491,280 +575,325 @@ const Profil = () => {
 
   // Fonction pour récupérer les données
   return (
-    <div className={styles.container}>
-      <div className={styles.headerContainer}>
-        <Link href="/">
-          <button className={`${styles.backHome} center-left-button`}>
-            Back Home
-          </button>
-        </Link>
-      </div>
-      <div className={styles.firstContainer}>
-        <h1>Profile</h1>
-      </div>
-      <div className={styles.balanceAndAddress}>
-        <div className={styles.headerItem}>
-          <h3> My address </h3>
-          <p>{account}</p>
+    <LoadScript
+      googleMapsApiKey={process.env.API_MAP}
+      libraries={lib}
+      onLoad={() => setIsMapsScriptLoaded(true)} // Callback function
+    >
+      <div className={styles.container}>
+        <div className={styles.headerContainer}>
+          <Link href="/">
+            <button className={`${styles.backHome} center-left-button`}>
+              Back Home
+            </button>
+          </Link>
         </div>
-
-        <div className={styles.headerItem}>
-          <h3>My balance </h3>
-          <p>{balance} ZAMA</p>
+        <div className={styles.firstContainer}>
+          <h1>Profil</h1>
         </div>
-      </div>
-      {ownedNFTs.length === 0 &&
-      resetNFT.length === 0 &&
-      stakedNFTs.length === 0 ? (
-        <div className={styles.needToPlay}>
-          <h1>You don&#39;t have any nft</h1>
-          <p>you need to play to win nft</p>
+        <div className={styles.balanceAndAddress}>
+          <div className={styles.headerItem}>
+            <h3> My address </h3>
+            <p>{account}</p>
+          </div>
+
+          <div className={styles.headerItem}>
+            <h3>My balance </h3>
+            <p>{balance} ZAMA</p>
+          </div>
         </div>
-      ) : (
-        <div className={styles.containerInfos}>
-          <div style={{ display: "flex" }}>
-            <div style={{ flex: 1 }}>
-              <div className={`${styles.yourNFTs}`}>
-                <h2>Your available GeoSpace</h2>
-                <p>
-                  just select nft to stake or to put your NFT back into play
-                  with your fees. (default is set on 0)
-                </p>
-                <React.Fragment>
-                  <ul>
-                    {ownedNFTs.map((tokenId) => (
-                      <li key={tokenId}>
-                        <label>
-                          <input
-                            type="checkbox"
-                            value={tokenId}
-                            checked={selectedNFTs.includes(tokenId)}
-                            onChange={(e) => {
-                              const value = parseInt(e.target.value);
-                              setSelectedNFTs((prevSelected) =>
-                                prevSelected.includes(value)
-                                  ? prevSelected.filter((id) => id !== value)
-                                  : [...prevSelected, value]
-                              );
-                            }}
-                            disabled={
-                              stakedNFTs.includes(tokenId) ||
-                              resetNFT.includes(tokenId)
-                            }
-                          />
-                          GeoSpace {tokenId}
-                        </label>
-                        <input
-                          id={`feeInput-${tokenId}`} // ID unique pour chaque champ de saisie
-                          type="number"
-                          placeholder="Enter a fees"
-                          min="0"
-                          // Add any additional attributes or event handlers as needed
-                        />
-                      </li>
-                    ))}
-                  </ul>
-                  <div className={styles.buttonContainer}>
-                    {isTransactionStakePending ? (
-                      "Loading..."
-                    ) : (
-                      <a
-                        className={styles.red2Button}
-                        onClick={stakeSelectedNFTs}
-                      >
-                        Stake
-                      </a>
-                    )}
+        {ownedNFTs.length === 0 &&
+        resetNFT.length === 0 &&
+        stakedNFTs.length === 0 ? (
+          <div className={styles.needToPlay}>
+            <h1>You don&#39;t have any nft</h1>
+            <p>you need to play to win nft</p>
+          </div>
+        ) : (
+          <div className={styles.containerInfos}>
+            {isMapsScriptLoaded && (
+              <>
+                <div className={styles.titleMap}>
+                  <h2>Location of your GeosSpace NFTs</h2>
+                </div>
+                <GoogleMap
+                  mapContainerStyle={{
+                    width: "70%",
+                    height: "400px", // Ajustez la hauteur en fonction de vos besoins
+                    margin: "auto", // Center the map horizontally
+                  }}
+                  center={position} // Centrez la carte aux coordonnées désirées
+                  zoom={1}
+                  onLoad={(map) => handleMapLoad(map)}
+                  options={{
+                    disableDefaultUI: true,
+                    zoomControl: true,
+                    scrollwheel: true, // Active la roulette de la souris pour le zoom
+                  }}
+                >
+                  {markers.map((marker) => (
+                    <Marker
+                      key={marker.id}
+                      position={marker.position}
+                      title={marker.title}
+                      icon={{
+                        url: "/nfts.png", // Use your custom marker icon
+                        scaledSize: new window.google.maps.Size(40, 40), // Adjust the size as needed
+                      }}
+                    />
+                  ))}
+                </GoogleMap>
+              </>
+            )}
 
-                    {isTransactionResetPending ? (
-                      "Loading..."
-                    ) : (
-                      <a
-                        className={`${styles.red2Button} ${styles.buttonSpacing}`}
-                        onClick={resetNFTs}
-                      >
-                        Back in Game
-                      </a>
-                    )}
-                  </div>
-                </React.Fragment>
-              </div>
-            </div>
-            <div style={{ flex: 1 }}>
-              <div className={`${styles.yourStakedNft}`}>
-                <h2>Staked GeoSpaces</h2>
-                <p>
-                  just stake 3 GeoSpaces to have the right to unlock the
-                  creation of NFTs.
-                </p>
-
-                {stakedNFTs.length > 0 ? (
-                  <p>just select GeoSpaces to unstake</p>
-                ) : (
-                  ""
-                )}
-
-                {stakedNFTs.length === 0 ? (
-                  ""
-                ) : (
+            <div style={{ display: "flex" }}>
+              <div style={{ flex: 1 }}>
+                <div className={`${styles.yourNFTs}`}>
+                  <h2>Your available GeoSpace</h2>
+                  <p>
+                    just select nft to stake or to put your NFT back into play
+                    with your fees. (default is set on 0)
+                  </p>
                   <React.Fragment>
                     <ul>
-                      {stakedNFTs.map((tokenId) => (
+                      {ownedNFTs.map((tokenId) => (
                         <li key={tokenId}>
                           <label>
                             <input
                               type="checkbox"
                               value={tokenId}
-                              checked={selectedStakedNFTs.includes(tokenId)}
+                              checked={selectedNFTs.includes(tokenId)}
                               onChange={(e) => {
                                 const value = parseInt(e.target.value);
-                                setSelectedStakedNFTs((prevSelected) =>
+                                setSelectedNFTs((prevSelected) =>
                                   prevSelected.includes(value)
                                     ? prevSelected.filter((id) => id !== value)
                                     : [...prevSelected, value]
                                 );
                               }}
+                              disabled={
+                                stakedNFTs.includes(tokenId) ||
+                                resetNFT.includes(tokenId)
+                              }
                             />
                             GeoSpace {tokenId}
                           </label>
+                          <input
+                            id={`feeInput-${tokenId}`} // ID unique pour chaque champ de saisie
+                            type="number"
+                            placeholder="Enter a fees"
+                            min="0"
+                            // Add any additional attributes or event handlers as needed
+                          />
                         </li>
                       ))}
                     </ul>
+                    <div className={styles.buttonContainer}>
+                      {isTransactionStakePending ? (
+                        "Loading..."
+                      ) : (
+                        <a
+                          className={styles.red2Button}
+                          onClick={stakeSelectedNFTs}
+                        >
+                          Stake
+                        </a>
+                      )}
 
-                    {isTransactionUnstakePending ? (
-                      "Loading..."
-                    ) : (
-                      <a className={styles.redButton} onClick={unstakeNFTs}>
-                        Unstake
-                      </a>
-                    )}
-                  </React.Fragment>
-                )}
-              </div>
-            </div>
-            <div style={{ flex: 1 }}>
-              <div className={`${styles.yourResetNft}`}>
-                <h2>GeoSpaces Back in game </h2>
-                {/* <p>just select nft to clean reset</p> */}
-                {resetNFT.length === 0 ? (
-                  <p>
-                    Please select GeoSpace on your collection to put back in
-                    games
-                  </p>
-                ) : (
-                  <React.Fragment>
-                    <ul>
-                      {resetNFT.map((tokenId) => (
-                        <li key={tokenId}>
-                          <label>
-                            <input
-                              type="checkbox"
-                              value={tokenId}
-                              checked={selectedResetNFTs.includes(tokenId)}
-                              onChange={(e) => {
-                                const value = parseInt(e.target.value);
-                                setSelectedResetNFTs((prevSelected) =>
-                                  prevSelected.includes(value)
-                                    ? prevSelected.filter((id) => id !== value)
-                                    : [...prevSelected, value]
-                                );
-                              }}
-                            />
-                            GeoSpace: {tokenId} (Fee: {feesNftMap[tokenId]}{" "}
-                            ZAMA)
-                          </label>
-                        </li>
-                      ))}
-                    </ul>
-                    {isTransactionClaimPending ? (
-                      "Loading..."
-                    ) : (
-                      <a className={styles.redButton} onClick={claimNft}>
-                        Cancel NFTs game reset
-                      </a>
-                    )}
-                  </React.Fragment>
-                )}
-              </div>
-            </div>
-            {creationNFT.length === 0 ? (
-              ""
-            ) : (
-              <div style={{ flex: 1 }}>
-                <div className={`${styles.yourCreationNft}`}>
-                  <h2>NFTs Creation</h2>
-                  <p>just see nft your nft creation</p>
-                  <React.Fragment>
-                    <ul>
-                      {creationNFT.map((tokenId) => (
-                        <li key={tokenId.id}>
-                          <label>
-                            GeoSpace: {tokenId.id} (Fee: {tokenId.fee} ZAMA)
-                          </label>
-                        </li>
-                      ))}
-                    </ul>
+                      {isTransactionResetPending ? (
+                        "Loading..."
+                      ) : (
+                        <a
+                          className={`${styles.red2Button} ${styles.buttonSpacing}`}
+                          onClick={resetNFTs}
+                        >
+                          Back in Game
+                        </a>
+                      )}
+                    </div>
                   </React.Fragment>
                 </div>
               </div>
-            )}
-          </div>
-        </div>
-      )}
-      <div className={styles.containerAccess}>
-        {stakedNFTs.length >= 3 && ( // Condition pour afficher le bouton si le nombre de NFTs stakés est supérieur à 3
-          <>
-            <form>
-              <label>
-                Fees:
-                <input
-                  type="number"
-                  value={numberInput}
-                  onChange={(e) =>
-                    setNumberInput(Math.max(0, parseInt(e.target.value)))
-                  }
-                  min="0"
-                />
-              </label>
-              <label>
-                Latitude:
-                <input
-                  type="number"
-                  value={latitudeInput}
-                  onChange={(e) => setLatitudeInput(e.target.value)}
-                />
-              </label>
-              <label>
-                Longitude:
-                <input
-                  type="number"
-                  value={longitudeInput}
-                  onChange={(e) => setLongitudeInput(e.target.value)}
-                />
-              </label>
-            </form>
-            {isTransactionCreatePending ? (
-              "Loading..."
-            ) : (
-              <a className={styles.accessButton} onClick={createGps}>
-                Create Gps
-              </a>
-            )}
-          </>
-        )}
+              <div style={{ flex: 1 }}>
+                <div className={`${styles.yourStakedNft}`}>
+                  <h2>Staked GeoSpaces</h2>
+                  <p>
+                    just stake 3 GeoSpaces to have the right to unlock the
+                    creation of NFTs.
+                  </p>
 
-        {ownedNFTs.length === 0 &&
-          stakedNFTs.length === 0 &&
-          resetNFT.length === 0 && (
-            // Condition pour afficher le bouton si le nombre de NFTs stakés est supérieur à 3
-            <Link href="/game/game">
-              <button className={`${styles.backHome} center-left-button`}>
-                PLAY
-              </button>
-            </Link>
+                  {stakedNFTs.length > 0 ? (
+                    <p>just select GeoSpaces to unstake</p>
+                  ) : (
+                    ""
+                  )}
+
+                  {stakedNFTs.length === 0 ? (
+                    ""
+                  ) : (
+                    <React.Fragment>
+                      <ul>
+                        {stakedNFTs.map((tokenId) => (
+                          <li key={tokenId}>
+                            <label>
+                              <input
+                                type="checkbox"
+                                value={tokenId}
+                                checked={selectedStakedNFTs.includes(tokenId)}
+                                onChange={(e) => {
+                                  const value = parseInt(e.target.value);
+                                  setSelectedStakedNFTs((prevSelected) =>
+                                    prevSelected.includes(value)
+                                      ? prevSelected.filter(
+                                          (id) => id !== value
+                                        )
+                                      : [...prevSelected, value]
+                                  );
+                                }}
+                              />
+                              GeoSpace {tokenId}
+                            </label>
+                          </li>
+                        ))}
+                      </ul>
+
+                      {isTransactionUnstakePending ? (
+                        "Loading..."
+                      ) : (
+                        <a className={styles.redButton} onClick={unstakeNFTs}>
+                          Unstake
+                        </a>
+                      )}
+                    </React.Fragment>
+                  )}
+                </div>
+              </div>
+              <div style={{ flex: 1 }}>
+                <div className={`${styles.yourResetNft}`}>
+                  <h2>GeoSpaces Back in game </h2>
+                  {/* <p>just select nft to clean reset</p> */}
+                  {resetNFT.length === 0 ? (
+                    <p>
+                      Please select GeoSpace on your collection to put back in
+                      games
+                    </p>
+                  ) : (
+                    <React.Fragment>
+                      <ul>
+                        {resetNFT.map((tokenId) => (
+                          <li key={tokenId}>
+                            <label>
+                              <input
+                                type="checkbox"
+                                value={tokenId}
+                                checked={selectedResetNFTs.includes(tokenId)}
+                                onChange={(e) => {
+                                  const value = parseInt(e.target.value);
+                                  setSelectedResetNFTs((prevSelected) =>
+                                    prevSelected.includes(value)
+                                      ? prevSelected.filter(
+                                          (id) => id !== value
+                                        )
+                                      : [...prevSelected, value]
+                                  );
+                                }}
+                              />
+                              GeoSpace: {tokenId} (Fee: {feesNftMap[tokenId]}{" "}
+                              ZAMA)
+                            </label>
+                          </li>
+                        ))}
+                      </ul>
+                      {isTransactionClaimPending ? (
+                        "Loading..."
+                      ) : (
+                        <a className={styles.redButton} onClick={claimNft}>
+                          Cancel NFTs game reset
+                        </a>
+                      )}
+                    </React.Fragment>
+                  )}
+                </div>
+              </div>
+              {creationNFT.length === 0 ? (
+                ""
+              ) : (
+                <div style={{ flex: 1 }}>
+                  <div className={`${styles.yourCreationNft}`}>
+                    <h2>NFTs Creation</h2>
+                    <p>just see nft your nft creation</p>
+                    <React.Fragment>
+                      <ul>
+                        {creationNFT.map((tokenId) => (
+                          <li key={tokenId.id}>
+                            <label>
+                              GeoSpace: {tokenId.id} (Fee: {tokenId.fee} ZAMA)
+                            </label>
+                          </li>
+                        ))}
+                      </ul>
+                    </React.Fragment>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+        <div className={styles.containerAccess}>
+          {stakedNFTs.length >= 3 && ( // Condition pour afficher le bouton si le nombre de NFTs stakés est supérieur à 3
+            <>
+              <form>
+                <label>
+                  Fees:
+                  <input
+                    type="number"
+                    value={numberInput}
+                    onChange={(e) =>
+                      setNumberInput(Math.max(0, parseInt(e.target.value)))
+                    }
+                    min="0"
+                  />
+                </label>
+                <label>
+                  Latitude:
+                  <input
+                    type="number"
+                    value={latitudeInput}
+                    onChange={(e) => setLatitudeInput(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Longitude:
+                  <input
+                    type="number"
+                    value={longitudeInput}
+                    onChange={(e) => setLongitudeInput(e.target.value)}
+                  />
+                </label>
+              </form>
+              {isTransactionCreatePending ? (
+                "Loading..."
+              ) : (
+                <a className={styles.accessButton} onClick={createGps}>
+                  Create Gps
+                </a>
+              )}
+            </>
           )}
+
+          {ownedNFTs.length === 0 &&
+            stakedNFTs.length === 0 &&
+            resetNFT.length === 0 && (
+              // Condition pour afficher le bouton si le nombre de NFTs stakés est supérieur à 3
+              <Link href="/game/game">
+                <button className={`${styles.backHome} center-left-button`}>
+                  PLAY
+                </button>
+              </Link>
+            )}
+        </div>
       </div>
-    </div>
+    </LoadScript>
   );
 };
 
