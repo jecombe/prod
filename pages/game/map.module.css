@@ -46,7 +46,20 @@
   align-items: center; /* Centre verticalement le contenu du header et du bouton */
   padding: 10px; /* Ajoutez de la marge autour du contenu si nécessaire */
 }
+.optionsFrame {
+  /* Assurez-vous que le cadre est au-dessus de tout le reste */
+}
+.muteButton {
+  width: 20px; /* Largeur initiale */
+  height: 20px;
+}
 
+.optionButton {
+  bottom: 100px;
+  left: 30px;
+  position: absolute;
+  z-index: 1;
+}
 /* map.module.css */
 .miniMapContainer {
   width: 200px; /* Largeur initiale */

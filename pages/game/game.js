@@ -16,6 +16,8 @@ import ErrorMetamask from "../errorPage/metamask";
 import CryptoJS from "crypto-js";
 import Loading from "../loading/loading";
 import axios from "axios";
+import ReactPlayer from "react-player"; // Importez ReactPlayer
+import Image from "next/image";
 
 const lib = ["places"];
 
@@ -46,6 +48,8 @@ export default function GamePage() {
   const [accountBalance, setAccountBalance] = useState("");
   const [isMetaMaskInitialized, setIsMetaMaskInitialized] = useState(false);
   const [showWinMessage, setShowWinMessage] = useState(false);
+  const [isPlay, setIsPlay] = useState(true);
+  const [optControl, setOptControl] = useState({});
 
   const updateAccountInfo = async () => {
     if (typeof window !== "undefined" && window.ethereum) {
@@ -197,6 +201,14 @@ export default function GamePage() {
     fetchGpsData();
   }, []);
 
+  useEffect(() => {
+    getOption().then((options) => {
+      setOptControl(options);
+      // Faites quelque chose avec les options (par exemple, définissez-les dans l'état)
+      // setState(options);
+    });
+  }, []);
+
   const handleMiniMapClick = async (e) => {
     const newMarker = {
       lat: e.latLng.lat(),
@@ -226,6 +238,48 @@ export default function GamePage() {
   }
 
   const getOption = () => {
+    return new Promise((resolve) => {
+      if (window.google && window.google.maps) {
+        resolve({
+          addressControl: false,
+          linksControl: false,
+          panControl: true,
+          zoomControl: false,
+          showRoadLabels: false,
+          enableCloseButton: false,
+          panControlOptions: {
+            position: window.google.maps.ControlPosition.LEFT_TOP,
+          },
+        });
+      } else {
+        // Attendez que l'événement "tilesloaded" soit déclenché pour résoudre la promesse
+        const tilesLoadedListener = () => {
+          resolve({
+            addressControl: false,
+            linksControl: false,
+            panControl: true,
+            zoomControl: false,
+            showRoadLabels: false,
+            enableCloseButton: false,
+            panControlOptions: {
+              position: window.google.maps.ControlPosition.LEFT_TOP,
+            },
+          });
+          // Retirez l'écouteur après résolution de la promesse
+          window.google.maps.event.removeListener(tilesLoadedListener);
+        };
+
+        // Ajoutez l'écouteur à l'événement "tilesloaded"
+        window.google.maps.event.addListenerOnce(
+          map,
+          "tilesloaded",
+          tilesLoadedListener
+        );
+      }
+    });
+  };
+
+  /*const gestOption = () => {
     return {
       addressControl: false,
       linksControl: false,
@@ -240,7 +294,7 @@ export default function GamePage() {
             : undefined,
       },
     };
-  };
+  };*/
 
   const handleConfirmGps = async () => {
     if (!positionMiniMap.lat || !positionMiniMap.lng) {
@@ -285,19 +339,55 @@ export default function GamePage() {
       <ErrorMetamask message="Please connect to MetaMask and go to zama devnet" />
     );
   }
+
+  const MuteButton = ({ onClick }) => {
+    return (
+      <button onClick={onClick}>
+        {isPlay ? (
+          <Image
+            src="/volume-2.svg"
+            alt="volume2"
+            height={30}
+            width={30}
+            loading="lazy"
+          />
+        ) : (
+          <Image
+            src="/volume-x.svg"
+            alt="volumex"
+            loading="lazy"
+            height={30}
+            width={30}
+          />
+        )}
+      </button>
+    );
+  };
+
   if (isLoadingMeta) return <Loading />;
+
   return (
     <LoadScript
       googleMapsApiKey={process.env.API_MAP}
       libraries={lib}
       onLoad={() => console.log("Google Maps loaded successfully.")}
     >
+      <ReactPlayer
+        url="/musicGeo.mp3"
+        playing={isPlay}
+        loop={true}
+        volume={0.1} // Ajustez le volume selon vos préférences
+        width="0px"
+        height="0px"
+      />
+
       <div className={style.headerContainer}>
         <Link href="/">
           <button className={`${style.newCoordinate} center-left-button`}>
             Back Home
           </button>
         </Link>
+        <MuteButton onClick={() => setIsPlay(!isPlay)} />
 
         <div className={style.accountInfo}>
           <div>{accountAddress}</div>
@@ -330,7 +420,7 @@ export default function GamePage() {
           <StreetViewPanorama
             id="street-view"
             containerStyle={containerStyle}
-            options={getOption()}
+            options={optControl}
             position={position}
             visible={true}
           />
