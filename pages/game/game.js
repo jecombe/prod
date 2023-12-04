@@ -287,6 +287,7 @@ export default function GamePage() {
       zoomControl: false,
       showRoadLabels: false,
       enableCloseButton: false,
+      scrollwheel: true, // Active la roulette de la souris pour le zoom
       panControlOptions: {
         position:
           window.google && window.google.maps
