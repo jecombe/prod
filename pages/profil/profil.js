@@ -192,7 +192,7 @@ const Profil = () => {
         // Créez un tableau de promesses
         const promises = [
           contract.getNFTsStakedByOwner(userAddress),
-          contract.getNFTByOwner(userAddress),
+          contract.getOwnedNFTs(userAddress),
           contract.getResetNFTsAndFeesByOwner(userAddress),
           contract.getNftCreationAndFeesByUser(userAddress),
           provider.getBalance(userAddress),
