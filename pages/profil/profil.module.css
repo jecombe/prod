@@ -1,30 +1,31 @@
 /* Dans profil.module.css */
 /* Style pour les div "Your Owned NFTs" et "Staked NFTs" */
 
-.firstContainer,
 .balanceAndAddress {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
+  text-align: center;
+}
+
+.firstContainer {
+  flex-grow: 1; /* Faites en sorte que ce conteneur occupe tout l'espace disponible */
+  text-align: center;
 }
 
 .firstContainer h1 {
   color: rgb(188, 121, 21);
   font-size: 50px;
+  margin: 0; /* Supprimez la marge par défaut du titre */
 }
 
 /* Appliquer la rotation lorsqu'un élément est survolé */
 
 .headerContainer {
   display: flex;
-  justify-content: space-between; /* Place le bouton à droite du header */
-  align-items: center; /* Centre verticalement le contenu du header et du bouton */
+  align-items: center;
+  justify-content: space-between; /* Utiliser space-between pour pousser les éléments aux extrémités */
 }
 
-.balanceAndAddress {
-  display: flex;
-  justify-content: space-between;
-}
 .needToPlay {
   display: flex;
   flex-direction: column;
@@ -70,9 +71,11 @@
   flex-wrap: wrap; /* Allow items to wrap to the next line if there's not enough space */
 }
 .titleMap {
+  display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
+  height: 100%;
 }
 .yourNFTs,
 .yourStakedNft,
