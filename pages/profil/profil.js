@@ -358,17 +358,14 @@ const Profil = () => {
 
       const rep = await contract.resetNFT(selectedNFTs, feesArray);
       await rep.wait();
-      const promises = selectedNFTs.map(async (nftId) => {
-        await axios.post(
-          `${process.env.SERVER}${process.env.ROUTE_NFT_RESET}`,
-          {
-            nftId,
-            fee: feesNftMap[nftId],
-          }
-        );
-      });
-
-      await Promise.all(promises);
+      const result = await axios.post(
+        `${process.env.SERVER}${process.env.ROUTE_NFT_RESET}`,
+        {
+          nftIds: selectedNFTs,
+          fee: feesNftMap,
+          isReset: true,
+        }
+      );
       setIsTransactionResetPending(false); // Set transaction pending state
 
       setResetNFT((prevResetNFTs) => [...prevResetNFTs, ...selectedNFTs]);
@@ -420,18 +417,14 @@ const Profil = () => {
 
       const rep = await contract.cancelResetNFT(selectedResetNFTs);
       await rep.wait();
-
-      const promises = selectedResetNFTs.map(async (nftId) => {
-        await axios.post(
-          `${process.env.SERVER}${process.env.ROUTE_REMOVE_GPS}`,
-          {
-            nftId,
-            isReset: true,
-          }
-        );
-      });
-
-      await Promise.all(promises);
+      const result = await axios.post(
+        `${process.env.SERVER}${process.env.ROUTE_NFT_RESET}`,
+        {
+          nftIds: selectedResetNFTs,
+          fee: feesNftMap,
+          isReset: false,
+        }
+      );
       setIsTransactionClaimPending(false); // Set transaction pending state
 
       setSelectedResetNFTs([]);
