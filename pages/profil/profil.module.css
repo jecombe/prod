@@ -68,6 +68,7 @@
 /* Add or modify the existing styles for containerInfos, yourNFTs, yourStakedNft, yourResetNft, and yourCreationNft */
 .containerInfos {
   display: flex;
+  margin-top: 70px;
   flex-wrap: wrap; /* Allow items to wrap to the next line if there's not enough space */
 }
 .titleMap {

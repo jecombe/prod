@@ -44,12 +44,15 @@ const Profil = () => {
   const [balance, setBalance] = useState(0);
   const [ownedNFTs, setOwnedNFTs] = useState([]);
   const [stakedNFTs, setStakedNFTs] = useState([]);
+  const [createdNFTs, setCreatedNFTs] = useState([]);
+
   const [isLoading, setIsLoading] = useState(true);
   const [signer, setSigner] = useState(null);
   const [contract, setContract] = useState(null);
   const [selectedNFTs, setSelectedNFTs] = useState([]);
   const [selectedStakedNFTs, setSelectedStakedNFTs] = useState([]);
   const [selectedResetNFTs, setSelectedResetNFTs] = useState([]);
+
   const [fhevm, setFhevm] = useState(null);
   const [numberInput, setNumberInput] = useState(0);
   const [latitudeInput, setLatitudeInput] = useState("");
@@ -74,6 +77,10 @@ const Profil = () => {
   const [isMetaMaskInitialized, setIsMetaMaskInitialized] = useState(false);
   const [markers, setMarkers] = useState([]);
   const [isMapsScriptLoaded, setIsMapsScriptLoaded] = useState(false);
+  const [isMapsLoadingData, setLoadingDataMap] = useState(false);
+
+  const [showMap, setShowMap] = useState(false);
+
   const [position, setPosition] = useState({ lat: 0, lng: 0 });
   const lib = ["places"];
 
@@ -110,10 +117,8 @@ const Profil = () => {
       setIsLoading(true);
       const signer = await initMetaMask();
       const contract = new ethers.Contract(process.env.CONTRACT, abi, signer);
-
       const fhevmInstance = await getFhevmInstance();
       setFhevm(fhevmInstance);
-
       setSigner(signer);
       setContract(contract);
       setIsMetaMaskInitialized(true);
@@ -182,6 +187,44 @@ const Profil = () => {
     setMarkerArray(decryptedNFTS);
   }, [decryptedNFTS]);
 
+  const fetchDecrypt = async () => {
+    if (signer) {
+      try {
+        setLoadingDataMap(true);
+        const promise = [];
+        if (ownedNFTs.length > 0) {
+          promise.push(ownedNFTs);
+        }
+        if (stakedNFTs.length > 0) {
+          promise.push(stakedNFTs);
+        }
+        if (resetNFT.length > 0) {
+          promise.push(resetNFT);
+        }
+        if (createdNFTs.length > 0) {
+          promise.push(createdNFTs);
+        }
+        const assamblage = promise.reduce(
+          (acc, currentArray) => acc.concat(currentArray),
+          []
+        );
+        const decryptedLocations = await callDecrypt(assamblage, account);
+        setDecrypted(decryptedLocations);
+        setMarkerArray(decryptedLocations);
+        setLoadingDataMap(false);
+      } catch (error) {
+        console.error("error get decrypt", error);
+        setLoadingDataMap(false);
+      }
+    }
+  };
+
+  const handleShowMap = async (isShow) => {
+    if (isShow) {
+      await fetchDecrypt();
+    }
+    setShowMap(isShow);
+  };
   // Fonction fetchData optimisée
   const fetchData = async () => {
     try {
@@ -205,7 +248,6 @@ const Profil = () => {
           nftsCreationFees,
           balanceWei,
         ] = await Promise.all(promises);
-
         const balanceEther = ethers.utils.formatUnits(balanceWei, "ether");
         const ownedNFTs = nftsOwned.map((tokenId) => tokenId.toNumber());
 
@@ -225,31 +267,8 @@ const Profil = () => {
             ethers.utils.formatUnits(creationNFTsFees[index], "ether")
           ),
         }));
-        const promise = [];
-        if (ownedNFTs.length > 0) {
-          const decryptedNFTs = callDecrypt(ownedNFTs, userAddress);
-          promise.push(decryptedNFTs);
-        }
-        if (stakedNFTs.length > 0) {
-          const decyptStake = callDecrypt(stakedNFTs, userAddress);
-          promise.push(decyptStake);
-        }
-        if (resetNFTs.length > 0) {
-          const decryptedReset = callDecrypt(resetNFTs, userAddress);
-          promise.push(decryptedReset);
-        }
-        if (creationNFTs.length > 0) {
-          const decryptedCrea = callDecrypt(creationNFTs, userAddress);
-          promise.push(decryptedCrea);
-        }
+        setCreatedNFTs(creationNFTs);
 
-        const result = await Promise.all(promise);
-        const r = result.reduce(
-          (acc, currentArray) => acc.concat(currentArray),
-          []
-        );
-
-        setDecrypted(r);
         const feesNftMap = {};
         feesNft.forEach((fee, index) => {
           const valueEth = Math.round(ethers.utils.formatUnits(fee, "ether"));
@@ -458,7 +477,6 @@ const Profil = () => {
         5
       );
 
-      console.log(location);
       const obj = [
         fhevm.encrypt32(location.northLat),
         fhevm.encrypt32(location.southLat),
@@ -616,15 +634,47 @@ const Profil = () => {
           </div>
         ) : (
           <div>
-            {isMapsScriptLoaded && (
-              <div>
-                <div className={styles.titleMap}>
-                  <h2>Location of your GeoSpace NFTs</h2>
-                </div>
+            <div className={styles.titleMap}>
+              {/* <h2>Location of your GeoSpace NFTs</h2> */}
+
+              <a
+                className={styles.accessButton}
+                onClick={() => {
+                  if (!isMapsLoadingData) {
+                    handleShowMap(!showMap);
+                  }
+                }}
+              >
+                {showMap ? (
+                  // Affichez le bouton pour masquer la carte
+                  <span>{isMapsLoadingData ? "Pending..." : "Hide Map"}</span>
+                ) : (
+                  // Affichez le bouton pour afficher la carte
+                  <span>
+                    {isMapsLoadingData ? "Pending..." : "Decrypt Map"}
+                  </span>
+                )}
+              </a>
+            </div>
+            {isMapsLoadingData && isMapsScriptLoaded && showMap && (
+              <div
+                style={{
+                  height: "300px",
+                  top: "10px", // Ajustez la hauteur en fonction de vos besoins
+                  margin: "auto", // Center the map horizontally
+                  bottom: "10px",
+                }}
+              >
+                <p>Loading...</p>
+              </div>
+            )}
+            {isMapsScriptLoaded && showMap && !isMapsLoadingData && (
+              <div className={styles.map}>
                 <GoogleMap
                   mapContainerStyle={{
-                    width: "50%",
-                    height: "300px", // Ajustez la hauteur en fonction de vos besoins
+                    width: "70%",
+                    height: "400px",
+                    top: "20px", // Ajustez la hauteur en fonction de vos besoins
                     margin: "auto", // Center the map horizontally
                     bottom: "10px",
                   }}
@@ -696,7 +746,7 @@ const Profil = () => {
                       </ul>
                       <div className={styles.buttonContainer}>
                         {isTransactionStakePending ? (
-                          "Loading..."
+                          <p>Pending...</p>
                         ) : (
                           <a
                             className={styles.red2Button}
@@ -707,7 +757,7 @@ const Profil = () => {
                         )}
 
                         {isTransactionResetPending ? (
-                          "Loading..."
+                          <p>Pending...</p>
                         ) : (
                           <a
                             className={`${styles.red2Button} ${styles.buttonSpacing}`}
@@ -764,7 +814,7 @@ const Profil = () => {
                         </ul>
 
                         {isTransactionUnstakePending ? (
-                          "Loading..."
+                          <p>Pending...</p>
                         ) : (
                           <a className={styles.redButton} onClick={unstakeNFTs}>
                             Unstake
@@ -811,7 +861,7 @@ const Profil = () => {
                           ))}
                         </ul>
                         {isTransactionClaimPending ? (
-                          "Loading..."
+                          <p>Pending...</p>
                         ) : (
                           <a className={styles.redButton} onClick={claimNft}>
                             Cancel NFTs game reset
@@ -879,7 +929,7 @@ const Profil = () => {
                 </label>
               </form>
               {isTransactionCreatePending ? (
-                "Loading..."
+                <p>Pending...</p>
               ) : (
                 <a className={styles.accessButton} onClick={createGps}>
                   Create Gps
