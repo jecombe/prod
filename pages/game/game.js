@@ -184,16 +184,13 @@ export default function GamePage() {
     alert("Attention: The game is under development, and bugs may occur.");
 
     checkNetwork();
+    initializeContract();
   }, []);
 
   useEffect(() => {
     if (isMetaMaskInitialized) {
       updateAccountInfo();
     }
-  }, [isMetaMaskInitialized]);
-
-  useEffect(() => {
-    initializeContract();
   }, [isMetaMaskInitialized]);
 
   useEffect(() => {
@@ -318,7 +315,8 @@ export default function GamePage() {
           gasLimit: 10000000,
         }
       );
-      await transaction.wait();
+      const rep = await transaction.wait();
+      console.log(rep);
     } catch (error) {
       setIsLoading(false);
       setIsMiniMapDisabled(true);

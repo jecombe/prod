@@ -142,6 +142,7 @@ const Profil = () => {
       promises.push(
         contract.getNFTLocationForOwner(tokenId, {
           from: userAddress,
+          // gasLimit: 10000000,
         })
       );
     }
