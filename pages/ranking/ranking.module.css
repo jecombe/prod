@@ -53,7 +53,8 @@
   border-collapse: collapse;
   margin-top: 20px; /* Ajout de marge pour une meilleure apparence */
 }
-.th {
+.th,
+.td {
   color: #ffffff;
 }
 

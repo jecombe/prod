@@ -122,7 +122,6 @@ const Profil = () => {
       setSigner(signer);
       setContract(contract);
       setIsMetaMaskInitialized(true);
-
       if (window.ethereum) {
         window.ethereum.on("accountsChanged", handleAccountsChanged);
       }
@@ -132,9 +131,9 @@ const Profil = () => {
     }
   };
 
-  useEffect(() => {
-    initializeMetaMask();
-  }, []);
+  // useEffect(() => {
+  //   initializeMetaMask();
+  // }, []);
 
   const callDecrypt = async (ownedNfts, userAddress) => {
     const promises = [];
@@ -298,6 +297,7 @@ const Profil = () => {
 
   const handleAccountsChanged = async (accounts) => {
     const newAccount = accounts[0];
+
     setAccount(newAccount);
     const signer = await initMetaMask();
     setSigner(signer);
@@ -563,6 +563,7 @@ const Profil = () => {
 
   useEffect(() => {
     checkNetwork();
+    initializeMetaMask();
   }, []);
 
   // Rendu du composant

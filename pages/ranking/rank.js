@@ -98,7 +98,7 @@ const Ranking = () => {
             <tbody className={styles.tbody}>
               {Object.keys(holders).map((address, index) => (
                 <tr className={styles.tr} key={index}>
-                  <td data-label="Holder" className={styles.td}>
+                  <td data-label="Holder">
                     <div className={styles.fieldContainer}>
                       <p>
                         {address.toLowerCase() ===
