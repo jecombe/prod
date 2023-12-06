@@ -119,7 +119,7 @@ export default function GamePage() {
           if (result) {
             await axios.post(
               `${process.env.SERVER}${process.env.ROUTE_REMOVE_GPS}`,
-              { nftId: Number(tokenId.toString()) }
+              { nftId: Number(tokenId.toString()), isReset: false }
             );
             setShowWinMessage(true);
 

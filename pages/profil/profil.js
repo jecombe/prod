@@ -407,6 +407,7 @@ const Profil = () => {
           `${process.env.SERVER}${process.env.ROUTE_REMOVE_GPS}`,
           {
             nftId,
+            isReset: true,
           }
         );
       });
@@ -456,6 +457,8 @@ const Profil = () => {
         longitude,
         5
       );
+
+      console.log(location);
       const obj = [
         fhevm.encrypt32(location.northLat),
         fhevm.encrypt32(location.southLat),
