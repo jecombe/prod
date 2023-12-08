@@ -61,6 +61,7 @@ const Profil = () => {
   const [creationNFT, setCreationNFT] = useState([]);
   const [feesNftMap, setFeesNftMap] = useState({});
   const [decryptedNFTS, setDecrypted] = useState([]);
+  const [isAccessGovernance, setAccessGovernance] = useState(false);
   const [isTransactionStakePending, setIsTransactionStakePending] =
     useState(false);
   const [isTransactionUnstakePending, setIsTransactionUnstakePending] =
@@ -187,27 +188,27 @@ const Profil = () => {
     setMarkerArray(decryptedNFTS);
   }, [decryptedNFTS]);
 
+  const getAllOwnedNfts = () => {
+    const assambly = [];
+    if (ownedNFTs.length > 0) {
+      assambly.push(ownedNFTs);
+    }
+    if (stakedNFTs.length > 0) {
+      assambly.push(stakedNFTs);
+    }
+    if (resetNFT.length > 0) {
+      assambly.push(resetNFT);
+    }
+    if (createdNFTs.length > 0) {
+      assambly.push(createdNFTs);
+    }
+    return assambly.reduce((acc, currentArray) => acc.concat(currentArray), []);
+  };
   const fetchDecrypt = async () => {
     if (signer) {
       try {
         setLoadingDataMap(true);
-        const promise = [];
-        if (ownedNFTs.length > 0) {
-          promise.push(ownedNFTs);
-        }
-        if (stakedNFTs.length > 0) {
-          promise.push(stakedNFTs);
-        }
-        if (resetNFT.length > 0) {
-          promise.push(resetNFT);
-        }
-        if (createdNFTs.length > 0) {
-          promise.push(createdNFTs);
-        }
-        const assamblage = promise.reduce(
-          (acc, currentArray) => acc.concat(currentArray),
-          []
-        );
+        const assamblage = getAllOwnedNfts();
         const decryptedLocations = await callDecrypt(assamblage, account);
         setDecrypted(decryptedLocations);
         setMarkerArray(decryptedLocations);
@@ -282,12 +283,26 @@ const Profil = () => {
           (tokenId) =>
             !resetNFTs.includes(tokenId) && !stakedNFTs.includes(tokenId)
         );
+
         setOwnedNFTs(filteredOwnedNFTs);
         setAccount(userAddress);
         setBalance(balanceEther);
         setStakedNFTs(stakedNFTs);
         setResetNFT(resetNFTs);
         setCreationNFT(nftsCreaFee);
+        const assamblage = getAllOwnedNfts();
+        if (assamblage.length > 0) {
+          // const rep = await axios.post(
+          //   `${process.env.SERVER}${process.env.ROUTE_TELEGRAM}`,
+          //   {
+          //     isAccess: true,
+          //     userName: 1019053159,
+          //   }
+          // );
+          setAccessGovernance(true);
+        } else {
+          setAccessGovernance(false);
+        }
         setIsLoading(false);
       }
     } catch (error) {
@@ -365,6 +380,7 @@ const Profil = () => {
           nftIds: selectedNFTs,
           fee: feesNftMap,
           isReset: true,
+          isWinner: false,
         }
       );
       setIsTransactionResetPending(false); // Set transaction pending state
@@ -424,6 +440,7 @@ const Profil = () => {
           nftIds: selectedResetNFTs,
           fee: feesNftMap,
           isReset: false,
+          isWinner: false,
         }
       );
       setIsTransactionClaimPending(false); // Set transaction pending state

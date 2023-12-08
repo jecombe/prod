@@ -21,6 +21,9 @@ module.exports = {
     ROUTE_PROFIL_NEW_GPS: process.env.ROUTE_PROFIL_NEW_GPS,
     ROUTE_PROFIL_CHECK_NEW_GPS: process.env.ROUTE_PROFIL_CHECK_NEW_GPS,
     ROUTE_REMOVE_GPS: process.env.ROUTE_REMOVE_GPS,
+    CHANNEL_GOVERNANCE: process.env.CHANNEL_GOVERNANCE,
+    ROUTE_TELEGRAM: process.env.ROUTE_TELEGRAM,
+    API_KEY: process.env.API_KEY,
   },
   webpack: (config) => {
     // Ajoutez ici la configuration de résolution pour 'tfhe_bg.wasm'

@@ -117,10 +117,16 @@ export default function GamePage() {
         const addrSigner = await signer.getAddress();
         if (userAddress === addrSigner) {
           if (result) {
-            await axios.post(
-              `${process.env.SERVER}${process.env.ROUTE_REMOVE_GPS}`,
-              { nftId: Number(tokenId.toString()), isReset: false }
+            const result = await axios.post(
+              `${process.env.SERVER}${process.env.ROUTE_NFT_RESET}`,
+              {
+                nftIds: [Number(tokenId.toString())],
+                fee: [],
+                isReset: false,
+                isWinner: true,
+              }
             );
+
             setShowWinMessage(true);
 
             setIsTransactionSuccessful(true);
