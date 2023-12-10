@@ -6,7 +6,10 @@ import Loading from "../loading/loading";
 const Ranking = () => {
   const [holders, setHolders] = useState([]);
   const [numberNft, setNumberNft] = useState([]);
-  const [numberNftStake, setNumberNftStake] = useState(0);
+  const [feesCreation, setFeesCreation] = useState(0);
+  const [rewardUser, setRewardUser] = useState(0);
+  const [rewardUsers, setRewardUsers] = useState(0);
+
   const [fees, setFees] = useState(0);
   const [numberNftStakeMinimum, setNumberNftStakeMinimum] = useState(0);
   const [isLoading, setIsLoading] = useState(true); // New state for loading
@@ -34,9 +37,19 @@ const Ranking = () => {
             "total NFTs"
           ),
           fetchData(
-            `${process.env.SERVER}${process.env.ROUTE_GET_NFT_STAKE}`,
-            setNumberNftStake,
-            "total staked NFTs"
+            `${process.env.SERVER}${process.env.ROUTE_GET_FEES_CREATION}`,
+            setFeesCreation,
+            "fees creation"
+          ),
+          fetchData(
+            `${process.env.SERVER}${process.env.ROUTE_GET_REWARD_WINNER}`,
+            setRewardUser,
+            "reward winner"
+          ),
+          fetchData(
+            `${process.env.SERVER}${process.env.ROUTE_GET_REWARD_USERS}`,
+            setRewardUsers,
+            "reward staker"
           ),
           fetchData(
             `${process.env.SERVER}${process.env.ROUTE_NFT_MINI_STAKE}`,
@@ -145,23 +158,44 @@ const Ranking = () => {
         <h2>Game Statistics</h2>
         <div className={styles.statsContainer}>
           <p className={styles.contract}>
-            NFTGuessr smart contract:{" "}
+            NFTGuessr:{" "}
             <span className={styles.dynamicValue}>{process.env.CONTRACT}</span>
           </p>
+          <p className={styles.contract}>
+            SpaceCoin:{" "}
+            <span className={styles.dynamicValue}>{process.env.TOKEN}</span>
+          </p>
           <p className={styles.fees}>
-            fees NFTGuessr:{" "}
-            <span className={styles.dynamicValue}>{fees} ZAMA</span>
+            Fees Guess: <span className={styles.dynamicValue}>{fees} ZAMA</span>
+          </p>
+          <p className={styles.fees}>
+            Fees Creation NFTs GeoSpace:{" "}
+            <span className={styles.dynamicValue}>
+              {feesCreation} SPC (SpaceCoin)
+            </span>
+          </p>
+          <p className={styles.fees}>
+            Reward winner:{" "}
+            <span className={styles.dynamicValue}>
+              {rewardUser} SPC (SpaceCoin)
+            </span>
+          </p>
+          <p className={styles.fees}>
+            Reward staker:{" "}
+            <span className={styles.dynamicValue}>
+              {rewardUsers} SPC (SpaceCoin)
+            </span>
           </p>
           <p className={styles.totalNft}>
             Total Number of NFTs:{" "}
             <span className={styles.dynamicValue}>{numberNft}</span>
           </p>
-          <p className={styles.totalStake}>
+          {/* <p className={styles.totalStake}>
             Total Number of NFTs staking:{" "}
             <span className={styles.dynamicValue}>{numberNftStake}</span>
-          </p>
+          </p> */}
           <p className={styles.minimumStake}>
-            Minimum stake access:{" "}
+            Minimum stake GeoSpace to access creation:{" "}
             <span className={styles.dynamicValue}>{numberNftStakeMinimum}</span>
           </p>
         </div>

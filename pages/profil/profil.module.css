@@ -44,6 +44,13 @@
   margin: 0; /* Supprimez la marge par défaut pour un espacement propre */
 }
 
+.yourCreationNft li,
+.yourNFTs li,
+.yourResetNft li,
+.yourStakedNft li {
+  padding: 14px;
+  color: antiquewhite;
+}
 .backHome {
   background-color: #141e30; /* Couleur de fond sombre */
   color: #ffffff; /* Couleur du texte en blanc */

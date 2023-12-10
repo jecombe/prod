@@ -146,6 +146,16 @@
   font-family: "Montserrat", sans-serif; /* Police de caractères */
 }
 
+.blockPut {
+  flex: 1;
+  text-align: left; /* Aligner le texte à droite */
+  margin-left: 10px; /* Ajouter un espace entre blockTwo et blockThree */
+  line-height: 1.5;
+
+  color: #fff; /* Couleur du texte (blanc) */
+  font-family: "Montserrat", sans-serif; /* Police de caractères */
+}
+
 .blockAll h1,
 .blockPlay h1 {
   color: blanchedalmond;
@@ -207,6 +217,10 @@
   align-items: center;
   text-align: center;
   color: #fff;
+}
+
+.blockAll li {
+  font-family: "Bungee", sans-serif; /* Utilisation de la police personnalisée */
 }
 
 #howToPlay {

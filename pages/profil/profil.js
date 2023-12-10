@@ -9,6 +9,7 @@ import axios from "axios";
 import { getFhevmInstance } from "../../utils/fhevmInstance";
 import Loading from "../loading/loading";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
+import { parseUnits } from "ethers/lib/utils";
 
 // Fonction utilitaire pour créer un carré autour d'un point avec des décimales
 function createSquareAroundPointWithDecimals(
@@ -61,6 +62,7 @@ const Profil = () => {
   const [creationNFT, setCreationNFT] = useState([]);
   const [feesNftMap, setFeesNftMap] = useState({});
   const [decryptedNFTS, setDecrypted] = useState([]);
+  const [errorsFetch, setErrorFetch] = useState("");
   const [isAccessGovernance, setAccessGovernance] = useState(false);
   const [isTransactionStakePending, setIsTransactionStakePending] =
     useState(false);
@@ -81,6 +83,8 @@ const Profil = () => {
   const [isMapsLoadingData, setLoadingDataMap] = useState(false);
 
   const [showMap, setShowMap] = useState(false);
+  const [balanceSPC, setBalanceSPC] = useState(0);
+  const [contractCoin, setContractCoin] = useState(null);
 
   const [position, setPosition] = useState({ lat: 0, lng: 0 });
   const lib = ["places"];
@@ -95,6 +99,7 @@ const Profil = () => {
   const handleChainChanged = async () => {
     // Mettez à jour le contrat et le signer après un changement de réseau
     setContract(null);
+    setContractCoin(null);
     setSigner(null);
     await initializeMetaMask();
     await fetchData();
@@ -118,10 +123,13 @@ const Profil = () => {
       setIsLoading(true);
       const signer = await initMetaMask();
       const contract = new ethers.Contract(process.env.CONTRACT, abi, signer);
+      const contractCoin = new ethers.Contract(process.env.TOKEN, abi, signer);
+
       const fhevmInstance = await getFhevmInstance();
       setFhevm(fhevmInstance);
       setSigner(signer);
       setContract(contract);
+      setContractCoin(contractCoin);
       setIsMetaMaskInitialized(true);
       if (window.ethereum) {
         window.ethereum.on("accountsChanged", handleAccountsChanged);
@@ -216,23 +224,32 @@ const Profil = () => {
       } catch (error) {
         console.error("error get decrypt", error);
         setLoadingDataMap(false);
+        return error;
       }
     }
   };
 
   const handleShowMap = async (isShow) => {
-    if (isShow) {
-      await fetchDecrypt();
+    try {
+      setErrorFetch("");
+
+      if (isShow) {
+        if (!decryptedNFTS.length) await fetchDecrypt();
+      }
+      setShowMap(isShow);
+    } catch (error) {
+      console.error("fetch decrypt: ", error);
+      setShowMap(false);
+      setErrorFetch("Error decrypt maps");
     }
-    setShowMap(isShow);
   };
   // Fonction fetchData optimisée
   const fetchData = async () => {
     try {
+      setErrorFetch("");
       if (signer) {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const userAddress = await signer.getAddress();
-
         // Créez un tableau de promesses
         const promises = [
           contract.getNFTsStakedByOwner(userAddress),
@@ -240,6 +257,7 @@ const Profil = () => {
           contract.getResetNFTsAndFeesByOwner(userAddress),
           contract.getNftCreationAndFeesByUser(userAddress),
           provider.getBalance(userAddress),
+          contract.getBalanceCoinSpace(userAddress),
         ];
 
         const [
@@ -248,8 +266,16 @@ const Profil = () => {
           nftsRAndFees,
           nftsCreationFees,
           balanceWei,
+          balanceWeiCoinSpace,
         ] = await Promise.all(promises);
-        const balanceEther = ethers.utils.formatUnits(balanceWei, "ether");
+        const balanceEther = Math.round(
+          ethers.utils.formatUnits(balanceWei, "ether")
+        );
+        const balanceCoinSpace = ethers.utils.formatUnits(
+          balanceWeiCoinSpace,
+          "ether"
+        );
+
         const ownedNFTs = nftsOwned.map((tokenId) => tokenId.toNumber());
 
         const stakedNFTs = nftsStake.map((tokenId) => tokenId.toNumber());
@@ -287,6 +313,7 @@ const Profil = () => {
         setOwnedNFTs(filteredOwnedNFTs);
         setAccount(userAddress);
         setBalance(balanceEther);
+        setBalanceSPC(balanceCoinSpace);
         setStakedNFTs(stakedNFTs);
         setResetNFT(resetNFTs);
         setCreationNFT(nftsCreaFee);
@@ -307,6 +334,8 @@ const Profil = () => {
       }
     } catch (error) {
       console.error("Error fetching data:", error);
+      setErrorFetch("Error fetching data");
+      return error;
     }
   };
 
@@ -318,6 +347,7 @@ const Profil = () => {
     setSigner(signer);
 
     setBalance(0);
+    setBalanceSPC(0);
     setOwnedNFTs([]);
     setStakedNFTs([]);
     fetchData();
@@ -434,15 +464,12 @@ const Profil = () => {
 
       const rep = await contract.cancelResetNFT(selectedResetNFTs);
       await rep.wait();
-      const result = await axios.post(
-        `${process.env.SERVER}${process.env.ROUTE_NFT_RESET}`,
-        {
-          nftIds: selectedResetNFTs,
-          fee: feesNftMap,
-          isReset: false,
-          isWinner: false,
-        }
-      );
+      await axios.post(`${process.env.SERVER}${process.env.ROUTE_NFT_RESET}`, {
+        nftIds: selectedResetNFTs,
+        fee: feesNftMap,
+        isReset: false,
+        isWinner: false,
+      });
       setIsTransactionClaimPending(false); // Set transaction pending state
 
       setSelectedResetNFTs([]);
@@ -498,6 +525,15 @@ const Profil = () => {
       ];
 
       const objFees = [amountInWei];
+      const erc20Contract = new ethers.Contract(process.env.TOKEN, abi, signer);
+      const approvalAmount = parseUnits("80", 18);
+
+      const approvalTx = await erc20Contract.approve(
+        process.env.CONTRACT,
+        approvalAmount
+      );
+
+      await approvalTx.wait();
 
       const rep = await contract.createGpsOwnerNft(obj, objFees);
       await rep.wait();
@@ -636,6 +672,7 @@ const Profil = () => {
         <div className={styles.balanceAndAddress}>
           <p>{account}</p>
           <p>{balance} ZAMA</p>
+          <p>{balanceSPC} SPC</p>
         </div>
         {ownedNFTs.length === 0 &&
         resetNFT.length === 0 &&
@@ -649,24 +686,28 @@ const Profil = () => {
             <div className={styles.titleMap}>
               {/* <h2>Location of your GeoSpace NFTs</h2> */}
 
-              <a
-                className={styles.accessButton}
-                onClick={() => {
-                  if (!isMapsLoadingData) {
-                    handleShowMap(!showMap);
-                  }
-                }}
-              >
-                {showMap ? (
-                  // Affichez le bouton pour masquer la carte
-                  <span>{isMapsLoadingData ? "Pending..." : "Hide Map"}</span>
-                ) : (
-                  // Affichez le bouton pour afficher la carte
-                  <span>
-                    {isMapsLoadingData ? "Pending..." : "Decrypt Map"}
-                  </span>
-                )}
-              </a>
+              {isMapsLoadingData ? (
+                // Affichez le bouton en tant que <p> lorsqu'il est en cours de chargement
+                <p>Pending...</p>
+              ) : (
+                // Affichez le bouton en tant que <a> avec le texte approprié
+                <a
+                  className={styles.accessButton}
+                  onClick={() => {
+                    if (!isMapsLoadingData) {
+                      handleShowMap(!showMap);
+                    }
+                  }}
+                >
+                  {showMap ? (
+                    // Affichez le bouton pour masquer la carte
+                    <span>Hide Map</span>
+                  ) : (
+                    // Affichez le bouton pour afficher la carte
+                    <span>Decrypt Map</span>
+                  )}
+                </a>
+              )}
             </div>
             {isMapsLoadingData && isMapsScriptLoaded && showMap && (
               <div
@@ -680,6 +721,7 @@ const Profil = () => {
                 <p>Loading...</p>
               </div>
             )}
+            {errorsFetch && <p> {errorsFetch} </p>}
             {isMapsScriptLoaded && showMap && !isMapsLoadingData && (
               <div className={styles.map}>
                 <GoogleMap
@@ -876,7 +918,7 @@ const Profil = () => {
                           <p>Pending...</p>
                         ) : (
                           <a className={styles.redButton} onClick={claimNft}>
-                            Cancel NFTs game reset
+                            Cancel
                           </a>
                         )}
                       </React.Fragment>

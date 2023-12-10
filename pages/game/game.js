@@ -121,7 +121,7 @@ export default function GamePage() {
               `${process.env.SERVER}${process.env.ROUTE_NFT_RESET}`,
               {
                 nftIds: [Number(tokenId.toString())],
-                fee: [],
+                fee: { [Number(tokenId.toString())]: 0 },
                 isReset: false,
                 isWinner: true,
               }
@@ -324,6 +324,7 @@ export default function GamePage() {
       const rep = await transaction.wait();
       console.log(rep);
     } catch (error) {
+      console.error(error);
       setIsLoading(false);
       setIsMiniMapDisabled(true);
     }
@@ -379,7 +380,7 @@ export default function GamePage() {
         url="/musicGeo.mp3"
         playing={isPlay}
         loop={true}
-        volume={0.1} // Ajustez le volume selon vos préférences
+        volume={0.1}
         width="0px"
         height="0px"
       />

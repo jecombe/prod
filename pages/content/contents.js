@@ -167,7 +167,7 @@ export default function Contents() {
                 <br /> To request location verification, it costs you 1 ZAMA.
                 <br />
                 If you are within a 5 km radius, you win the NFT GeoSpace
-                associated with that location.
+                associated with that location and 2 token SpaceCoin (SPC)
               </p>
             </div>
 
@@ -180,18 +180,49 @@ export default function Contents() {
           <div className={styles.blockTwo}>
             <h1>Earn NFT Geospace</h1>
             <p>
-              Win an NFT and unlock the right to put it back into the game with
-              your own tax.
+              Find the location of the NFT and win it, along with 2 SpaceCoin
+              tokens.
             </p>
           </div>
           <div className={styles.lineBlock}></div>
 
+          <div className={styles.blockPut}>
+            <h1>Put your GeoSpace back into play. </h1>
+            <p>
+              Put your NFT back into play with your own ZAMA tax for one round.
+            </p>
+          </div>
+
+          <div className={styles.lineBlock}></div>
+
           <div className={styles.blockThree}>
             <h1>Stake NFT GeoSpace</h1>
+            <p>Staking NFTs allows you to unlock exciting benefits:</p>
+            <ul>
+              <li>
+                <strong>
+                  <u>Stake 1 NFT:</u>
+                </strong>{" "}
+                Earn SPC tokens every 24 hours. <br />
+              </li>
+              <li>
+                <strong>
+                  <u>Stake 3 NFTs:</u>
+                </strong>{" "}
+                Unlock the right to create a Geospace NFT.
+              </li>
+            </ul>
+          </div>
+          <div className={styles.lineBlock}></div>
+
+          <div className={styles.blockTwo}>
+            <h1>Create NFT GeoSpace</h1>
             <p>
-              Once you have 3 NFTs, you can stake them to unlock the right to
-              create a Geospace NFT with a valid GPS point (i.e., with an
-              available Google Street View). This includes your tax.
+              If you have previously staked 3 Geospace NFTs, You can choose a
+              valid GPS point with an available Google Street View for your
+              creation. This process includes your tax (Zama) for the first
+              round. To create a Geospace NFT, you will need to pay 1 SPC token.
+              You receive very time
             </p>
           </div>
         </div>
