@@ -1015,6 +1015,19 @@ const Profil = () => {
             </p>
           </div>
         )}
+        {ownedNFTs.length === 0 &&
+          stakedNFTs.length === 0 &&
+          resetNFT.length === 0 && (
+            <>
+              <div className={styles.containerAccess}>
+                <Link href="/game/game">
+                  <button className={`${styles.backHome} center-left-button`}>
+                    PLAY
+                  </button>
+                </Link>
+              </div>
+            </>
+          )}
         {stakedNFTs.length >= 3 && ( // Condition pour afficher le bouton si le nombre de NFTs stakés est supérieur à 3
           <div className={styles.containerAccess}>
             <form>
@@ -1060,17 +1073,6 @@ const Profil = () => {
             )}
           </div>
         )}
-
-        {ownedNFTs.length === 0 &&
-          stakedNFTs.length === 0 &&
-          resetNFT.length === 0 && (
-            // Condition pour afficher le bouton si le nombre de NFTs stakés est supérieur à 3
-            <Link href="/game/game">
-              <button className={`${styles.backHome} center-left-button`}>
-                PLAY
-              </button>
-            </Link>
-          )}
       </div>
     </LoadScript>
   );
