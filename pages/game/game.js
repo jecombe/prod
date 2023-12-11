@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Web3 from "web3";
 import {
   GoogleMap,
@@ -35,6 +35,10 @@ export default function GamePage() {
   const [markers, setMarkers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMeta, setIsLoadingMeta] = useState(false);
+  const [isLoadingData, setIsLoadingData] = useState(false);
+  const [isLoadingGps, setIsLoadingDataGps] = useState(false);
+  const isMountedRef = useRef(true);
+
   const [isTransactionSuccessful, setIsTransactionSuccessful] = useState(false);
   const [isTransactionFailed, setIsTransactionFailed] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
@@ -46,25 +50,288 @@ export default function GamePage() {
   const [nft, setNft] = useState({});
   const [accountAddress, setAccountAddress] = useState("0x");
   const [accountBalance, setAccountBalance] = useState(0);
+  const [balanceSpc, setBalanceSPC] = useState(0);
+  const [feesNftMap, setFeesNftMap] = useState({});
+
   const [isMetaMaskInitialized, setIsMetaMaskInitialized] = useState(false);
   const [showWinMessage, setShowWinMessage] = useState(false);
   const [isPlay, setIsPlay] = useState(true);
 
+  const [balance, setBalance] = useState(0);
+  const [ownedNFTs, setOwnedNFTs] = useState([]);
+  const [stakedNFTs, setStakedNFTs] = useState([]);
+  const [createdNFTs, setCreatedNFTs] = useState([]);
+  const [creationNFT, setCreationNFT] = useState([]);
+  const [resetNFT, setResetNFT] = useState([]);
+  const [assamblage, setAssamblage] = useState([]);
+
+  const handleAccountsChanged = async () => {
+    setBalance(0);
+    setBalanceSPC(0);
+    setAccountAddress("0x");
+    await initialize();
+    await manageData();
+  };
+
+  useEffect(() => {
+    const init = async () => {
+      if (isMountedRef.current) {
+        await checkNetwork();
+        await initialize();
+      }
+
+      if (window.ethereum) {
+        window.ethereum.on("accountsChanged", handleAccountsChanged);
+      }
+    };
+
+    init();
+    return () => {
+      // Cleanup the subscription when the component unmounts
+      if (window.ethereum) {
+        window.ethereum.off("accountsChanged", handleAccountsChanged);
+      }
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  const manageData = async () => {
+    try {
+      if (signer && contract) {
+        updateAccountInfo();
+        initializeContract();
+        fetchData();
+      }
+    } catch (error) {
+      console.error("manageData", error);
+      setIsLoadingData(false); // Set loading to false when data processing is complete
+      return error;
+      // Handle errors
+    } finally {
+      setIsLoadingData(false); // Set loading to false when data processing is complete
+    }
+  };
+
+  const manageDataGps = async (isMounted) => {
+    try {
+      if (signer && contract) {
+        await fetchGpsData(isMounted);
+        // Perform data-related logic here
+      }
+    } catch (error) {
+      console.error("manageDataGps", error);
+      setIsLoadingDataGps(false);
+      return error;
+      // Handle errors
+    } finally {
+      setIsLoadingDataGps(false);
+      //setIsLoadingData(false); // Set loading to false when data processing is complete
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    if (isMounted) {
+      setIsLoadingData(true);
+
+      manageData();
+    }
+
+    // Cleanup function
+    return () => {
+      isMounted = false;
+    };
+  }, [signer, contract]); // Add dependency on 'signer' and 'contract'
+
+  useEffect(() => {
+    let isMounted = true;
+    if (isMounted && signer && contract) {
+      setIsLoadingDataGps(true);
+
+      manageDataGps(isMounted);
+    }
+
+    // Cleanup function
+    return () => {
+      isMounted = false;
+    };
+  }, [signer, contract]); // Add dependency on 'signer' and 'contract'
+
+  // useEffect(() => {
+  //   setIsLoadingData(true);
+  //   let isMounted = true;
+  //   if (isMounted) {
+  //     manageData();
+  //     manageDataGps();
+  //   }
+
+  //   // Cleanup function
+  //   return () => {
+  //     isMounted = false;
+  //   };
+  // }, [signer, contract]); // Add dependency on 'signer'
+
+  // useEffect(() => {
+  //   setIsLoadingDataGps(true);
+  //   let isMounted = true;
+  //   if (isMounted) {
+  //     manageDataGps(isMounted);
+  //   }
+
+  //   // Cleanup function
+  //   return () => {
+  //     isMounted = false;
+  //   };
+  // }, [signer, contract]); // Add dependency on 'signer'
+
+  const getSignerContract = async () => {
+    const sign = await initMetaMask();
+    const fhevmInstance = await getFhevmInstance();
+    const contractGame = new ethers.Contract(process.env.CONTRACT, abi, sign);
+    return { sign, fhevmInstance, contractGame };
+  };
+  const getAllOwnedNfts = (ownedNFTsU, stakedNFTsU, resetNFTU, createdNFTs) => {
+    const assambly = [];
+    if (ownedNFTsU.length > 0) {
+      assambly.push(ownedNFTsU);
+    }
+    if (stakedNFTsU.length > 0) {
+      assambly.push(stakedNFTsU);
+    }
+    if (resetNFTU.length > 0) {
+      assambly.push(resetNFTU);
+    }
+    if (createdNFTs.length > 0) {
+      assambly.push(createdNFTs);
+    }
+    return assambly.reduce((acc, currentArray) => acc.concat(currentArray), []);
+  };
+
+  // const updateBalances = async (web3) => {
+  //   try {
+  //     const balance = await web3.eth.getBalance(accountAddress);
+  //     const balanceCoin = await contract.getBalanceCoinSpace(accountAddress);
+
+  //     const etherBalance = Math.round(web3.utils.fromWei(balance, "ether"));
+  //     const etherBalanceCoin = Math.round(
+  //       web3.utils.fromWei(balanceCoin, "ether")
+  //     );
+
+  //     setAccountBalance(etherBalance);
+  //     setBalanceSPC(etherBalanceCoin);
+  //   } catch (error) {
+  //     console.error("Error updating balances:", error);
+  //   }
+  // };
+
+  const initialize = async () => {
+    const { sign, fhevmInstance, contractGame } = await getSignerContract();
+
+    setFhevm(fhevmInstance);
+    setSigner(sign);
+    setContract(contractGame);
+
+    setIsLoadingData(true);
+  };
+
+  // Fonction fetchData optimisée
+  const fetchData = async () => {
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const userAddress = await signer.getAddress();
+      console.log(contract);
+      // Créez un tableau de promesses
+      const promises = [
+        contract.getNFTsStakedByOwner(userAddress),
+        contract.getOwnedNFTs(userAddress),
+        contract.getResetNFTsAndFeesByOwner(userAddress),
+        contract.getNftCreationAndFeesByUser(userAddress),
+        provider.getBalance(userAddress),
+        contract.getBalanceCoinSpace(userAddress),
+      ];
+
+      const [
+        nftsStake,
+        nftsOwned,
+        nftsRAndFees,
+        nftsCreationFees,
+        balanceWei,
+        balanceWeiCoinSpace,
+      ] = await Promise.all(promises);
+      const balanceEther = Math.round(
+        ethers.utils.formatUnits(balanceWei, "ether")
+      );
+      const balanceCoinSpace = ethers.utils.formatUnits(
+        balanceWeiCoinSpace,
+        "ether"
+      );
+
+      const ownedNFTs = nftsOwned.map((tokenId) => tokenId.toNumber());
+
+      const stakedNFTs = nftsStake.map((tokenId) => tokenId.toNumber());
+      const resetNFTs = nftsRAndFees[0].map((tokenId) => tokenId.toNumber());
+      const feesNft = nftsRAndFees[1].map((tokenId) => tokenId.toString());
+      const creationNFTs = nftsCreationFees[0].map((tokenId) =>
+        tokenId.toNumber()
+      );
+      const creationNFTsFees = nftsCreationFees[1].map((tokenId) =>
+        tokenId.toString()
+      );
+
+      const nftsCreaFee = creationNFTs.map((id, index) => ({
+        id,
+        fee: Math.round(
+          ethers.utils.formatUnits(creationNFTsFees[index], "ether")
+        ),
+      }));
+      setCreatedNFTs(creationNFTs);
+
+      const feesNftMap = {};
+      feesNft.forEach((fee, index) => {
+        const valueEth = Math.round(ethers.utils.formatUnits(fee, "ether"));
+
+        feesNftMap[resetNFTs[index]] = valueEth;
+      });
+
+      setFeesNftMap(feesNftMap);
+
+      const filteredOwnedNFTs = ownedNFTs.filter(
+        (tokenId) =>
+          !resetNFTs.includes(tokenId) && !stakedNFTs.includes(tokenId)
+      );
+      setOwnedNFTs(filteredOwnedNFTs);
+      setAccountBalance(balanceEther);
+      setBalanceSPC(balanceCoinSpace);
+      setStakedNFTs(stakedNFTs);
+      setResetNFT(resetNFTs);
+      setCreationNFT(nftsCreaFee);
+      const assamblage = getAllOwnedNfts(
+        filteredOwnedNFTs,
+        stakedNFTs,
+        resetNFTs,
+        creationNFTs
+      );
+      setAssamblage(assamblage);
+
+      return assamblage;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      return error;
+    }
+  };
+
   const updateAccountInfo = async () => {
     if (typeof window !== "undefined" && window.ethereum) {
-      const web3 = new Web3(window.ethereum);
       try {
         const accounts = await window.ethereum.request({
           method: "eth_requestAccounts",
         });
         const address = accounts[0];
         setAccountAddress(`${address}`);
-
-        const balance = await web3.eth.getBalance(address);
-        const etherBalance = web3.utils.fromWei(balance, "ether");
-        setAccountBalance(etherBalance);
       } catch (error) {
         console.error("error updating account info:", error);
+        setAccountAddress("0x");
+        return error;
       }
     } else {
       setAccountAddress("0x");
@@ -93,39 +360,27 @@ export default function GamePage() {
       await new Promise((resolve) => setTimeout(resolve, 1000));
     } catch (error) {
       console.error("Error connecting to Fhenix Devnet:", error);
+      return error;
     }
   };
 
   async function initializeContract() {
     try {
-      setIsLoadingMeta(true);
-      const signer = await initMetaMask();
-      const fhevmInstance = await getFhevmInstance();
-
-      setSigner(signer);
-      const contract = new ethers.Contract(process.env.CONTRACT, abi, signer);
-      setFhevm(fhevmInstance);
-      setContract(contract);
-      setIsMetaMaskInitialized(true);
-
-      if (window.ethereum) {
-        window.ethereum.on("accountsChanged", updateAccountInfo);
-      }
-      setIsLoadingMeta(false);
-
+      const addrSigner = await signer.getAddress();
+      console.log("INIT CONTRACT", addrSigner, contract);
       contract.on("GpsCheckResult", async (userAddress, result, tokenId) => {
-        const addrSigner = await signer.getAddress();
         if (userAddress === addrSigner) {
           if (result) {
-            const result = await axios.post(
-              `${process.env.SERVER}${process.env.ROUTE_NFT_RESET}`,
-              {
-                nftIds: [Number(tokenId.toString())],
-                fee: { [Number(tokenId.toString())]: 0 },
-                isReset: false,
-                isWinner: true,
-              }
-            );
+            console.log("YOU WIN NFT", tokenId);
+            // await axios.post(
+            //   `${process.env.SERVER}${process.env.ROUTE_NFT_RESET}`,
+            //   {
+            //     nftIds: [Number(tokenId.toString())],
+            //     fee: { [Number(tokenId.toString())]: 0 },
+            //     isReset: false,
+            //     isWinner: true,
+            //   }
+            // );
 
             setShowWinMessage(true);
 
@@ -133,7 +388,8 @@ export default function GamePage() {
             setSuccessMessage("You Win NFT");
             setIsTransactionFailed(false);
             setIsLoading(false);
-            setTimeout(() => {
+            setTimeout(async () => {
+              // await fetchData();
               setShowWinMessage(false);
               setIsTransactionSuccessful(false);
               setIsTransactionFailed(false);
@@ -156,14 +412,16 @@ export default function GamePage() {
         }
       });
     } catch (error) {
-      console.error("Error initialize contract mounted:", error);
+      console.error("Error initializing contract:", error);
       setIsLoading(false);
-      setIsLoadingMeta(false);
+      // setIsLoadingMeta(false);
       setIsTransactionSuccessful(false);
       setIsTransactionFailed(false);
       setIsMiniMapDisabled(true);
+      return error;
     }
   }
+
   const checkNetwork = async () => {
     if (window.ethereum) {
       try {
@@ -177,110 +435,17 @@ export default function GamePage() {
 
           if (userResponse) {
             await connectToZamaDevnet();
-            await initializeContract();
+            const { sign, contract } = await getSignerContract();
+            await initializeContract(sign, contract);
           }
         }
       } catch (error) {
         console.error("Error checking network:", error);
+        return error;
       }
     }
   };
 
-  useEffect(() => {
-    alert("Attention: The game is under development, and bugs may occur.");
-
-    checkNetwork();
-    initializeContract();
-  }, []);
-
-  useEffect(() => {
-    if (isMetaMaskInitialized) {
-      updateAccountInfo();
-    }
-  }, [isMetaMaskInitialized]);
-
-  useEffect(() => {
-    fetchGpsData();
-  }, []);
-
-  // useEffect(() => {
-  //   getOption().then((options) => {
-  //     setOptControl(options);
-  //     // Faites quelque chose avec les options (par exemple, définissez-les dans l'état)
-  //     // setState(options);
-  //   });
-  // }, []);
-
-  const handleMiniMapClick = async (e) => {
-    const newMarker = {
-      lat: e.latLng.lat(),
-      lng: e.latLng.lng(),
-    };
-    setMarkers((prevMarkers) => [newMarker]);
-    setPositionMiniMap(newMarker);
-  };
-
-  async function fetchGpsData() {
-    try {
-      const response = await fetch(`${process.env.SERVER}${process.env.ROUTE}`);
-      const data = await response.json();
-      var bytes = CryptoJS.AES.decrypt(data, process.env.KEY);
-      var decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
-      setPosition({
-        lat: decryptedData.latitude,
-        lng: decryptedData.longitude,
-      });
-      setNft({
-        tokenId: decryptedData.id,
-        tax: decryptedData.tax,
-      });
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  }
-
-  /* const getOption = () => {
-    return new Promise((resolve) => {
-      if (window.google && window.google.maps) {
-        resolve({
-          addressControl: false,
-          linksControl: false,
-          panControl: true,
-          zoomControl: false,
-          showRoadLabels: false,
-          enableCloseButton: false,
-          panControlOptions: {
-            position: window.google.maps.ControlPosition.LEFT_TOP,
-          },
-        });
-      } else {
-        // Attendez que l'événement "tilesloaded" soit déclenché pour résoudre la promesse
-        const tilesLoadedListener = () => {
-          resolve({
-            addressControl: false,
-            linksControl: false,
-            panControl: true,
-            zoomControl: false,
-            showRoadLabels: false,
-            enableCloseButton: false,
-            panControlOptions: {
-              position: window.google.maps.ControlPosition.LEFT_TOP,
-            },
-          });
-          // Retirez l'écouteur après résolution de la promesse
-          window.google.maps.event.removeListener(tilesLoadedListener);
-        };
-
-        // Ajoutez l'écouteur à l'événement "tilesloaded"
-        window.google.maps.event.addListenerOnce(
-          map,
-          "tilesloaded",
-          tilesLoadedListener
-        );
-      }
-    });
-  };
-*/
   const gestOption = () => {
     return {
       addressControl: false,
@@ -291,11 +456,20 @@ export default function GamePage() {
       enableCloseButton: false,
       panControlOptions: {
         position:
-          window.google && window.google.maps
+          typeof window !== "undefined" && window.google && window.google.maps
             ? window.google.maps.ControlPosition.LEFT_TOP
             : undefined,
       },
     };
+  };
+
+  const handleMiniMapClick = async (e) => {
+    const newMarker = {
+      lat: e.latLng.lat(),
+      lng: e.latLng.lng(),
+    };
+    setMarkers((prevMarkers) => [newMarker]);
+    setPositionMiniMap(newMarker);
   };
 
   const handleConfirmGps = async () => {
@@ -324,9 +498,10 @@ export default function GamePage() {
       const rep = await transaction.wait();
       console.log(rep);
     } catch (error) {
-      console.error(error);
+      console.error("handleConfirmGps", error);
       setIsLoading(false);
       setIsMiniMapDisabled(true);
+      return error;
     }
   };
 
@@ -338,38 +513,45 @@ export default function GamePage() {
     };
   };
 
-  if (!signer && !isLoadingMeta) {
-    return (
-      <ErrorMetamask message="Please connect to MetaMask and go to zama devnet" />
-    );
-  }
-
   const MuteButton = ({ onClick }) => {
     return (
       <button onClick={onClick}>
         {isPlay ? (
-          <Image
-            src="/volume-2.svg"
-            alt="volume2"
-            height={30}
-            width={30}
-            loading="lazy"
-          />
+          <Image src="/volume-2.svg" alt="volume2" height={30} width={30} />
         ) : (
-          <Image
-            src="/volume-x.svg"
-            alt="volumex"
-            loading="lazy"
-            height={30}
-            width={30}
-          />
+          <Image src="/volume-x.svg" alt="volumex" height={30} width={30} />
         )}
       </button>
     );
   };
 
-  if (isLoadingMeta) return <Loading />;
-
+  async function fetchGpsData() {
+    try {
+      const response = await fetch(`${process.env.SERVER}${process.env.ROUTE}`);
+      const data = await response.json();
+      var bytes = CryptoJS.AES.decrypt(data, process.env.KEY);
+      var decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+      setPosition({
+        lat: decryptedData.latitude,
+        lng: decryptedData.longitude,
+      });
+      setNft({
+        tokenId: decryptedData.id,
+        tax: decryptedData.tax,
+      });
+    } catch (error) {
+      console.error("fetchGpsData:", error);
+      return error;
+    }
+  }
+  if (!signer) {
+    return (
+      <ErrorMetamask message="Please connect to MetaMask and go to zama devnet" />
+    );
+  }
+  if (isLoadingData && isLoadingGps) {
+    return <Loading />;
+  }
   return (
     <LoadScript
       googleMapsApiKey={process.env.API_MAP}
@@ -394,13 +576,17 @@ export default function GamePage() {
         <MuteButton onClick={() => setIsPlay(!isPlay)} />
 
         <div className={style.accountInfo}>
-          <p>My address: {accountAddress}</p>
-          <p>My balance: {accountBalance} ZAMA</p>
+          <p>{accountAddress}</p>
+          <p>{accountBalance} ZAMA</p>
+          <p>{balanceSpc} SpaceCoin</p>
         </div>
 
         <div className={style.infoNft}>
           <p>GeoSpace: {nft.tokenId}</p>
           <p>Fees: {nft.tax + 1} ZAMA</p>
+          {assamblage.includes(nft.tokenId) && (
+            <p style={{ color: "red" }}>You are the owner</p>
+          )}
         </div>
         <button
           onClick={fetchGpsData}
@@ -447,7 +633,7 @@ export default function GamePage() {
             ))}
           </GoogleMap>
           {isLoading && (
-            <div className={style.loadingIndicator}>Loading...</div>
+            <div className={style.loadingIndicator}>Pending...</div>
           )}
           {isTransactionSuccessful && (
             <div className={style.overlay}>
@@ -459,11 +645,13 @@ export default function GamePage() {
               <div className={style.failureMessage}>{failureMessage}</div>
             </div>
           )}
-          <div className={style.containerButton}>
-            <a className={style.button} onClick={handleConfirmGps}>
-              Guess
-            </a>
-          </div>
+          {!assamblage.includes(nft.tokenId) && (
+            <div className={style.containerButton}>
+              <a className={style.button} onClick={handleConfirmGps}>
+                Guess
+              </a>
+            </div>
+          )}
         </div>
       </div>
     </LoadScript>

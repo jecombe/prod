@@ -51,6 +51,10 @@
   color: antiquewhite;
   font-size: 14px;
 }
+.owner {
+  color: rgb(131, 18, 7);
+  font-size: 14px;
+}
 .muteButton {
   width: 20px; /* Largeur initiale */
   height: 20px;

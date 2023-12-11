@@ -98,9 +98,7 @@ const Profil = () => {
 
   const handleChainChanged = async () => {
     // Mettez à jour le contrat et le signer après un changement de réseau
-    setContract(null);
-    setContractCoin(null);
-    setSigner(null);
+
     await initializeMetaMask();
     await fetchData();
   };
@@ -109,11 +107,23 @@ const Profil = () => {
     if (window.ethereum) {
       window.ethereum.on("chainChanged", handleChainChanged);
     }
-
     return () => {
       // Nettoyer le gestionnaire d'événements lorsque le composant est démonté
       if (window.ethereum) {
         window.ethereum.off("chainChanged", handleChainChanged);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (window.ethereum) {
+      window.ethereum.on("accountsChanged", handleAccountsChanged);
+    }
+
+    return () => {
+      // Cleanup the subscription when the component unmounts
+      if (window.ethereum) {
+        window.ethereum.off("accountsChanged", handleAccountsChanged);
       }
     };
   }, []);
@@ -131,9 +141,9 @@ const Profil = () => {
       setContract(contract);
       setContractCoin(contractCoin);
       setIsMetaMaskInitialized(true);
-      if (window.ethereum) {
-        window.ethereum.on("accountsChanged", handleAccountsChanged);
-      }
+      // if (window.ethereum) {
+      //   window.ethereum.on("accountsChanged", handleAccountsChanged);
+      // }
     } catch (error) {
       console.error("Error initializing MetaMask:", error);
       setIsLoading(false);
@@ -343,14 +353,14 @@ const Profil = () => {
     const newAccount = accounts[0];
 
     setAccount(newAccount);
-    const signer = await initMetaMask();
-    setSigner(signer);
-
-    setBalance(0);
-    setBalanceSPC(0);
-    setOwnedNFTs([]);
-    setStakedNFTs([]);
-    fetchData();
+    // const signer = await initMetaMask();
+    // setSigner(signer);
+    await initializeMetaMask();
+    // setBalance(0);
+    // setBalanceSPC(0);
+    // setOwnedNFTs([]);
+    // setStakedNFTs([]);
+    await fetchData();
   };
 
   const stakeSelectedNFTs = async () => {
@@ -404,15 +414,15 @@ const Profil = () => {
 
       const rep = await contract.resetNFT(selectedNFTs, feesArray);
       await rep.wait();
-      const result = await axios.post(
-        `${process.env.SERVER}${process.env.ROUTE_NFT_RESET}`,
-        {
-          nftIds: selectedNFTs,
-          fee: feesNftMap,
-          isReset: true,
-          isWinner: false,
-        }
-      );
+      // const result = await axios.post(
+      //   `${process.env.SERVER}${process.env.ROUTE_NFT_RESET}`,
+      //   {
+      //     nftIds: selectedNFTs,
+      //     fee: feesNftMap,
+      //     isReset: true,
+      //     isWinner: false,
+      //   }
+      // );
       setIsTransactionResetPending(false); // Set transaction pending state
 
       setResetNFT((prevResetNFTs) => [...prevResetNFTs, ...selectedNFTs]);
@@ -464,12 +474,12 @@ const Profil = () => {
 
       const rep = await contract.cancelResetNFT(selectedResetNFTs);
       await rep.wait();
-      await axios.post(`${process.env.SERVER}${process.env.ROUTE_NFT_RESET}`, {
-        nftIds: selectedResetNFTs,
-        fee: feesNftMap,
-        isReset: false,
-        isWinner: false,
-      });
+      // await axios.post(`${process.env.SERVER}${process.env.ROUTE_NFT_RESET}`, {
+      //   nftIds: selectedResetNFTs,
+      //   fee: feesNftMap,
+      //   isReset: false,
+      //   isWinner: false,
+      // });
       setIsTransactionClaimPending(false); // Set transaction pending state
 
       setSelectedResetNFTs([]);
