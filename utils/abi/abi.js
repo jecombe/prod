@@ -119,6 +119,12 @@ const abi = [
         name: "isReset",
         type: "bool",
       },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "tax",
+        type: "uint256",
+      },
     ],
     name: "ResetNFT",
     type: "event",
@@ -140,6 +146,37 @@ const abi = [
       },
     ],
     name: "RewardWithERC20",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "user",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "timestamp",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "bool",
+        name: "isStake",
+        type: "bool",
+      },
+    ],
+    name: "StakingNFT",
     type: "event",
   },
   {
@@ -1431,6 +1468,19 @@ const abi = [
   {
     inputs: [],
     name: "withdraw",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_amount",
+        type: "uint256",
+      },
+    ],
+    name: "withdrawToken",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

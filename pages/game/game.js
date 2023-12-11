@@ -18,10 +18,17 @@ import Loading from "../loading/loading";
 import axios from "axios";
 import ReactPlayer from "react-player"; // Importez ReactPlayer
 import Image from "next/image";
-
+import { css } from "@emotion/react";
+import { PropagateLoader } from "react-spinners";
 const lib = ["places"];
 
 export default function GamePage() {
+  const override = css`
+    display: block;
+    margin: 0 auto;
+    border-color: red; // Adjust the color as needed
+  `;
+
   const containerStyle = {
     width: "100%",
     height: "90vh",
@@ -64,6 +71,7 @@ export default function GamePage() {
   const [creationNFT, setCreationNFT] = useState([]);
   const [resetNFT, setResetNFT] = useState([]);
   const [assamblage, setAssamblage] = useState([]);
+  const [nftId, setNftId] = useState(0);
 
   const handleAccountsChanged = async () => {
     setBalance(0);
@@ -371,30 +379,23 @@ export default function GamePage() {
       contract.on("GpsCheckResult", async (userAddress, result, tokenId) => {
         if (userAddress === addrSigner) {
           if (result) {
-            console.log("YOU WIN NFT", tokenId);
-            // await axios.post(
-            //   `${process.env.SERVER}${process.env.ROUTE_NFT_RESET}`,
-            //   {
-            //     nftIds: [Number(tokenId.toString())],
-            //     fee: { [Number(tokenId.toString())]: 0 },
-            //     isReset: false,
-            //     isWinner: true,
-            //   }
-            // );
-
+            const readable = Number(tokenId.toString());
+            console.log("YOU WIN NFT", readable);
             setShowWinMessage(true);
-
             setIsTransactionSuccessful(true);
-            setSuccessMessage("You Win NFT");
+            setNftId(readable);
+            setSuccessMessage(`You Win NFT ${readable}`);
             setIsTransactionFailed(false);
             setIsLoading(false);
             setTimeout(async () => {
-              // await fetchData();
+              setNftId(0);
               setShowWinMessage(false);
               setIsTransactionSuccessful(false);
               setIsTransactionFailed(false);
               setMarkers([]);
               setIsMiniMapDisabled(true);
+              await fetchData();
+              await fetchGpsData();
             }, 5000);
           } else {
             setIsTransactionFailed(true);
@@ -598,7 +599,7 @@ export default function GamePage() {
       {showWinMessage && (
         <div className={style.overlay}>
           <div className={style.winMessage}>
-            You Win Geospace! Go to your profil...
+            You Win Geospace {nftId}! Go to your profil...
           </div>
         </div>
       )}
@@ -633,7 +634,14 @@ export default function GamePage() {
             ))}
           </GoogleMap>
           {isLoading && (
-            <div className={style.loadingIndicator}>Pending...</div>
+            <div className={style.loadingIndicator}>
+              <PropagateLoader
+                css={override}
+                size={10}
+                color={"#107a20"}
+                loading={true}
+              />
+            </div>
           )}
           {isTransactionSuccessful && (
             <div className={style.overlay}>

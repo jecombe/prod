@@ -10,6 +10,8 @@ import { getFhevmInstance } from "../../utils/fhevmInstance";
 import Loading from "../loading/loading";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import { parseUnits } from "ethers/lib/utils";
+import { css } from "@emotion/react";
+import { PropagateLoader, CircleLoader } from "react-spinners";
 
 // Fonction utilitaire pour créer un carré autour d'un point avec des décimales
 function createSquareAroundPointWithDecimals(
@@ -40,6 +42,17 @@ function createSquareAroundPointWithDecimals(
 
 // Composant Profil
 const Profil = () => {
+  const override = css`
+    display: block;
+    margin: 0 auto;
+    border-color: red; // Adjust the color as needed
+  `;
+
+  const overrideCircle = css`
+    display: block;
+    margin: 0 auto;
+    border-color: red; // Ajustez la couleur selon vos besoins
+  `;
   // États
   const [account, setAccount] = useState("");
   const [balance, setBalance] = useState(0);
@@ -329,13 +342,6 @@ const Profil = () => {
         setCreationNFT(nftsCreaFee);
         const assamblage = getAllOwnedNfts();
         if (assamblage.length > 0) {
-          // const rep = await axios.post(
-          //   `${process.env.SERVER}${process.env.ROUTE_TELEGRAM}`,
-          //   {
-          //     isAccess: true,
-          //     userName: 1019053159,
-          //   }
-          // );
           setAccessGovernance(true);
         } else {
           setAccessGovernance(false);
@@ -414,15 +420,7 @@ const Profil = () => {
 
       const rep = await contract.resetNFT(selectedNFTs, feesArray);
       await rep.wait();
-      // const result = await axios.post(
-      //   `${process.env.SERVER}${process.env.ROUTE_NFT_RESET}`,
-      //   {
-      //     nftIds: selectedNFTs,
-      //     fee: feesNftMap,
-      //     isReset: true,
-      //     isWinner: false,
-      //   }
-      // );
+
       setIsTransactionResetPending(false); // Set transaction pending state
 
       setResetNFT((prevResetNFTs) => [...prevResetNFTs, ...selectedNFTs]);
@@ -474,12 +472,7 @@ const Profil = () => {
 
       const rep = await contract.cancelResetNFT(selectedResetNFTs);
       await rep.wait();
-      // await axios.post(`${process.env.SERVER}${process.env.ROUTE_NFT_RESET}`, {
-      //   nftIds: selectedResetNFTs,
-      //   fee: feesNftMap,
-      //   isReset: false,
-      //   isWinner: false,
-      // });
+
       setIsTransactionClaimPending(false); // Set transaction pending state
 
       setSelectedResetNFTs([]);
@@ -508,68 +501,69 @@ const Profil = () => {
         return;
       }
 
-      // const rep = await axios.post(
-      //   `${process.env.SERVER}${process.env.ROUTE_PROFIL_CHECK_NEW_GPS}`,
-      //   {
-      //     latitude,
-      //     longitude,
-      //   }
-      // );
-
-      const amountInWei = ethers.utils.parseUnits(number.toString(), "ether");
-
-      //      if (rep.data.success) {
-      const location = createSquareAroundPointWithDecimals(
-        latitude,
-        longitude,
-        5
-      );
-
-      const obj = [
-        fhevm.encrypt32(location.northLat),
-        fhevm.encrypt32(location.southLat),
-        fhevm.encrypt32(location.eastLon),
-        fhevm.encrypt32(location.westLon),
-        fhevm.encrypt32(location.lat),
-        fhevm.encrypt32(location.lng),
-      ];
-
-      const objFees = [amountInWei];
-      const erc20Contract = new ethers.Contract(process.env.TOKEN, abi, signer);
-      const approvalAmount = parseUnits("80", 18);
-
-      const approvalTx = await erc20Contract.approve(
-        process.env.CONTRACT,
-        approvalAmount
-      );
-
-      await approvalTx.wait();
-
-      const rep = await contract.createGpsOwnerNft(obj, objFees);
-      await rep.wait();
-      const id = await contract.totalSupply();
-
-      await axios.post(
-        `${process.env.SERVER}${process.env.ROUTE_PROFIL_NEW_GPS}`,
+      const rep = await axios.post(
+        `${process.env.SERVER}${process.env.ROUTE_PROFIL_CHECK_NEW_GPS}`,
         {
-          nftId: Number(id.toString()),
-          addressOwner: account,
+          latitude,
+          longitude,
         }
       );
 
-      setCreationNFT((prevCreationNFT) => [
-        ...prevCreationNFT,
-        {
-          id: Number(id.toString()),
-          fee: number,
-        },
-      ]);
-      setIsTransactionCreatePending(false); // Set transaction pending state
-      // } else {
-      //   setIsTransactionCreatePending(false); // Set transaction pending state
-      //   alert("street view non accessible, please enter another street view");
-      //   console.error("Street View Non Disponible");
-      // }
+      console.log(rep);
+
+      const amountInWei = ethers.utils.parseUnits(number.toString(), "ether");
+
+      if (rep.data.success) {
+        const location = createSquareAroundPointWithDecimals(
+          latitude,
+          longitude,
+          5
+        );
+
+        const obj = [
+          fhevm.encrypt32(location.northLat),
+          fhevm.encrypt32(location.southLat),
+          fhevm.encrypt32(location.eastLon),
+          fhevm.encrypt32(location.westLon),
+          fhevm.encrypt32(location.lat),
+          fhevm.encrypt32(location.lng),
+        ];
+
+        const objFees = [amountInWei];
+        const erc20Contract = new ethers.Contract(
+          process.env.TOKEN,
+          abi,
+          signer
+        );
+        const feesCreation = await axios.get(
+          `${process.env.SERVER}${process.env.ROUTE_GET_FEES_CREATION}`
+        );
+        const approvalAmount = parseUnits(feesCreation.data, 18);
+        console.log(approvalAmount);
+        const approvalTx = await erc20Contract.approve(
+          process.env.CONTRACT,
+          approvalAmount
+        );
+
+        await approvalTx.wait();
+
+        const rep = await contract.createGpsOwnerNft(obj, objFees);
+        await rep.wait();
+        const id = await contract.totalSupply();
+
+        setCreationNFT((prevCreationNFT) => [
+          ...prevCreationNFT,
+          {
+            id: Number(id.toString()),
+            fee: number,
+          },
+        ]);
+        setIsTransactionCreatePending(false); // Set transaction pending state
+      } else {
+        setIsTransactionCreatePending(false); // Set transaction pending state
+        alert("street view non accessible, please enter another street view");
+        console.error("Street View Non Disponible");
+      }
     } catch (error) {
       setIsTransactionCreatePending(false); // Set transaction pending state
 
@@ -698,7 +692,12 @@ const Profil = () => {
 
               {isMapsLoadingData ? (
                 // Affichez le bouton en tant que <p> lorsqu'il est en cours de chargement
-                <p>Pending...</p>
+                <PropagateLoader
+                  css={override}
+                  size={10}
+                  color={"#a88314"}
+                  loading={true}
+                />
               ) : (
                 // Affichez le bouton en tant que <a> avec le texte approprié
                 <a
@@ -810,7 +809,12 @@ const Profil = () => {
                       </ul>
                       <div className={styles.buttonContainer}>
                         {isTransactionStakePending ? (
-                          <p>Pending...</p>
+                          <CircleLoader
+                            css={overrideCircle}
+                            size={30}
+                            color={"#107a20"}
+                            loading={true}
+                          />
                         ) : (
                           <a
                             className={styles.red2Button}
@@ -821,7 +825,12 @@ const Profil = () => {
                         )}
 
                         {isTransactionResetPending ? (
-                          <p>Pending...</p>
+                          <CircleLoader
+                            css={overrideCircle}
+                            size={30}
+                            color={"#107a20"}
+                            loading={true}
+                          />
                         ) : (
                           <a
                             className={`${styles.red2Button} ${styles.buttonSpacing}`}
@@ -878,7 +887,12 @@ const Profil = () => {
                         </ul>
 
                         {isTransactionUnstakePending ? (
-                          <p>Pending...</p>
+                          <CircleLoader
+                            css={overrideCircle}
+                            size={30}
+                            color={"#a81419"}
+                            loading={true}
+                          />
                         ) : (
                           <a className={styles.redButton} onClick={unstakeNFTs}>
                             Unstake
@@ -925,7 +939,12 @@ const Profil = () => {
                           ))}
                         </ul>
                         {isTransactionClaimPending ? (
-                          <p>Pending...</p>
+                          <CircleLoader
+                            css={overrideCircle}
+                            size={30}
+                            color={"#a81419"}
+                            loading={true}
+                          />
                         ) : (
                           <a className={styles.redButton} onClick={claimNft}>
                             Cancel
@@ -993,7 +1012,12 @@ const Profil = () => {
                 </label>
               </form>
               {isTransactionCreatePending ? (
-                <p>Pending...</p>
+                <CircleLoader
+                  css={overrideCircle}
+                  size={30}
+                  color={"#a88314"}
+                  loading={true}
+                />
               ) : (
                 <a className={styles.accessButton} onClick={createGps}>
                   Create Gps
