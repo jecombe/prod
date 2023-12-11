@@ -18,6 +18,22 @@
   margin: 0; /* Supprimez la marge par défaut du titre */
 }
 
+.secondContainer {
+  /* flex-grow: 1; /* Faites en sorte que ce conteneur occupe tout l'espace disponible */
+  /* text-align: center; */
+
+  width: 50%; /* Ajustez la largeur selon vos besoins */
+  margin: auto; /* Centre la div horizontalement */
+  padding: 10px; /* Ajoute un espace intérieur */
+  border: 1px solid #ccc;
+}
+
+.secondContainer h1 {
+  color: rgb(188, 121, 21);
+  font-size: 50px;
+  margin: 0; /* Supprimez la marge par défaut du titre */
+}
+
 /* Appliquer la rotation lorsqu'un élément est survolé */
 
 .headerContainer {

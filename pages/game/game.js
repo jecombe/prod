@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import Web3 from "web3";
 import {
   GoogleMap,
   LoadScript,
@@ -12,10 +11,8 @@ import abi from "../../utils/abi/abi";
 import { getFhevmInstance } from "../../utils/fhevmInstance";
 import initMetaMask from "../../utils/metamask";
 import Link from "next/link";
-import ErrorMetamask from "../errorPage/metamask";
 import CryptoJS from "crypto-js";
 import Loading from "../loading/loading";
-import axios from "axios";
 import ReactPlayer from "react-player"; // Importez ReactPlayer
 import Image from "next/image";
 import { css } from "@emotion/react";
@@ -546,9 +543,7 @@ export default function GamePage() {
     }
   }
   if (!signer) {
-    return (
-      <ErrorMetamask message="Please connect to MetaMask and go to zama devnet" />
-    );
+    return <Loading />;
   }
   if (isLoadingData && isLoadingGps) {
     return <Loading />;

@@ -77,6 +77,8 @@ const Profil = () => {
   const [decryptedNFTS, setDecrypted] = useState([]);
   const [errorsFetch, setErrorFetch] = useState("");
   const [isAccessGovernance, setAccessGovernance] = useState(false);
+  const [isAccessCreate, setAccessCreate] = useState(false);
+
   const [isTransactionStakePending, setIsTransactionStakePending] =
     useState(false);
   const [isTransactionUnstakePending, setIsTransactionUnstakePending] =
@@ -341,6 +343,9 @@ const Profil = () => {
         setResetNFT(resetNFTs);
         setCreationNFT(nftsCreaFee);
         const assamblage = getAllOwnedNfts();
+        if (stakedNFTs.length >= 3) {
+          setAccessCreate(true);
+        } else setAccessCreate(false);
         if (assamblage.length > 0) {
           setAccessGovernance(true);
         } else {
@@ -351,6 +356,8 @@ const Profil = () => {
     } catch (error) {
       console.error("Error fetching data:", error);
       setErrorFetch("Error fetching data");
+      setAccessCreate(false);
+
       return error;
     }
   };
@@ -497,7 +504,18 @@ const Profil = () => {
       const longitude = parseFloat(longitudeInput.replace(",", "."));
 
       if (isNaN(number) || isNaN(latitude) || isNaN(longitude)) {
-        console.error("Invalid input");
+        alert("Invalid input");
+        setIsTransactionCreatePending(false); // Set transaction pending state
+
+        return;
+      }
+
+      if (number < 0 || latitude < 0 || longitude < 0) {
+        alert(
+          "Please set a positive value because now the smart contract only handles positive numbers (uint)"
+        );
+        setIsTransactionCreatePending(false); // Set transaction pending state
+
         return;
       }
 
@@ -508,8 +526,6 @@ const Profil = () => {
           longitude,
         }
       );
-
-      console.log(rep);
 
       const amountInWei = ethers.utils.parseUnits(number.toString(), "ether");
 
@@ -674,6 +690,9 @@ const Profil = () => {
           <h1>My Profil</h1>
         </div>
         <div className={styles.balanceAndAddress}>
+          <p>
+            {stakedNFTs.length >= 3 ? "You have access to create GeoSpace" : ""}
+          </p>
           <p>{account}</p>
           <p>{balance} ZAMA</p>
           <p>{balanceSPC} SPC</p>
@@ -979,64 +998,79 @@ const Profil = () => {
             </div>
           </div>
         )}
-        <div className={styles.containerAccess}>
-          {stakedNFTs.length >= 3 && ( // Condition pour afficher le bouton si le nombre de NFTs stakés est supérieur à 3
-            <>
-              <form>
-                <label>
-                  Fees:
-                  <input
-                    type="number"
-                    value={numberInput}
-                    onChange={(e) =>
-                      setNumberInput(Math.max(0, parseInt(e.target.value)))
-                    }
-                    min="0"
-                  />
-                </label>
-                <label>
-                  Latitude:
-                  <input
-                    type="number"
-                    value={latitudeInput}
-                    onChange={(e) => setLatitudeInput(e.target.value)}
-                  />
-                </label>
-                <label>
-                  Longitude:
-                  <input
-                    type="number"
-                    value={longitudeInput}
-                    onChange={(e) => setLongitudeInput(e.target.value)}
-                  />
-                </label>
-              </form>
-              {isTransactionCreatePending ? (
-                <CircleLoader
-                  css={overrideCircle}
-                  size={30}
-                  color={"#a88314"}
-                  loading={true}
+        {stakedNFTs.length >= 3 && (
+          <div className={styles.secondContainer}>
+            <h1>Create GeoSpace</h1>
+            <h2>Include your tax in ZAMA for one round</h2>
+            <p>
+              You must have a valid GPS coordinate, meaning it should have an
+              available Google Street View. <br /> <br />
+              Go to Google Maps, enter Street View mode, navigate to the desired
+              location. <br /> <br />
+              Go to the search bar, and find the two values after the @ symbol.
+              The first value is the latitude, and the second is the longitude.{" "}
+              <br /> <br />
+              Copy and paste these values into the form here. <br /> <br /> It
+              will cost you 1 SpaceCoin.
+            </p>
+          </div>
+        )}
+        {stakedNFTs.length >= 3 && ( // Condition pour afficher le bouton si le nombre de NFTs stakés est supérieur à 3
+          <div className={styles.containerAccess}>
+            <form>
+              <label>
+                Fees:
+                <input
+                  type="number"
+                  value={numberInput}
+                  onChange={(e) =>
+                    setNumberInput(Math.max(0, parseInt(e.target.value)))
+                  }
+                  min="0"
                 />
-              ) : (
-                <a className={styles.accessButton} onClick={createGps}>
-                  Create Gps
-                </a>
-              )}
-            </>
-          )}
-
-          {ownedNFTs.length === 0 &&
-            stakedNFTs.length === 0 &&
-            resetNFT.length === 0 && (
-              // Condition pour afficher le bouton si le nombre de NFTs stakés est supérieur à 3
-              <Link href="/game/game">
-                <button className={`${styles.backHome} center-left-button`}>
-                  PLAY
-                </button>
-              </Link>
+              </label>
+              <label>
+                Latitude:
+                <input
+                  type="number"
+                  value={latitudeInput}
+                  onChange={(e) => setLatitudeInput(e.target.value)}
+                />
+              </label>
+              <label>
+                Longitude:
+                <input
+                  type="number"
+                  value={longitudeInput}
+                  onChange={(e) => setLongitudeInput(e.target.value)}
+                />
+              </label>
+            </form>
+            {isTransactionCreatePending ? (
+              <CircleLoader
+                css={overrideCircle}
+                size={30}
+                color={"#a88314"}
+                loading={true}
+              />
+            ) : (
+              <a className={styles.accessButton} onClick={createGps}>
+                Create Gps
+              </a>
             )}
-        </div>
+          </div>
+        )}
+
+        {ownedNFTs.length === 0 &&
+          stakedNFTs.length === 0 &&
+          resetNFT.length === 0 && (
+            // Condition pour afficher le bouton si le nombre de NFTs stakés est supérieur à 3
+            <Link href="/game/game">
+              <button className={`${styles.backHome} center-left-button`}>
+                PLAY
+              </button>
+            </Link>
+          )}
       </div>
     </LoadScript>
   );
