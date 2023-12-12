@@ -74,17 +74,6 @@ export default function Contents() {
             Connect to Zama Devnet
           </button>
           <br />
-          <div className={styles.one}>
-            <Image src="/metamask.gif" alt="my gif" height={500} width={300} />
-          </div>
-          <p>
-            From the homepage of your wallet, click on the network selector in
-            the top left, and then on Add network
-          </p>
-          <div className={styles.two}>
-            <Image src="/metamask2.gif" alt="my gif" height={500} width={600} />
-          </div>
-          <br />
           <p>
             Add these informations to access to blockchain:
             <br />
