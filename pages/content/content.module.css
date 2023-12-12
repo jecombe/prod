@@ -138,12 +138,27 @@
 
 .blockTwo {
   flex: 1;
-  text-align: right; /* Aligner le texte à droite */
+  text-align: center; /* Aligner le texte à droite */
   margin-left: 10px; /* Ajouter un espace entre blockTwo et blockThree */
   line-height: 1.5;
 
   color: #fff; /* Couleur du texte (blanc) */
   font-family: "Montserrat", sans-serif; /* Police de caractères */
+
+  width: 50%; /* Ajustez la largeur selon vos besoins */
+  padding: 10px; /* Ajoute un espace intérieur */
+  /* border: 1px solid #ccc; */
+}
+.blockTest {
+  flex: 1;
+  text-align: left; /* Aligner le texte à gauche */
+  line-height: 1.5;
+  color: #fff; /* Couleur du texte (blanc) */
+  font-family: "Montserrat", sans-serif; /* Police de caractères */
+  width: 50%; /* Ajustez la largeur selon vos besoins */
+  padding: 10px; /* Ajoute un espace intérieur */
+  /* border: 1px solid #ccc; */
+  margin-right: auto; /* Décale la div vers la gauche */
 }
 
 .blockPut {
@@ -160,14 +175,20 @@
 .blockPlay h1 {
   color: blanchedalmond;
 }
+.blockAll h2 {
+  color: blanchedalmond;
+}
 
 .blockThree {
   flex: 1;
   text-align: left; /* Aligner le texte à gauche */
   line-height: 1.5;
-
   color: #fff; /* Couleur du texte (blanc) */
   font-family: "Montserrat", sans-serif; /* Police de caractères */
+  width: 50%; /* Ajustez la largeur selon vos besoins */
+  padding: 10px; /* Ajoute un espace intérieur */
+  /* border: 1px solid #ccc; */
+  margin-left: auto; /* Décale la div vers la droite */
 }
 .lineBlock {
   border-top: 1px solid #000; /* Couleur de la ligne (noir) */

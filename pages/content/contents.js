@@ -141,41 +141,27 @@ export default function Contents() {
               Later on, a migration will be carried out to the{" "}
               <a href="https://www.fhenix.io/">Fhenix</a> blockchain.
             </p>
-          </div>
-          <div className={styles.lineBlock}></div>
-
-          <div className={styles.blockOne}>
-            <div className={styles.discover}>
-              <h1>Discover the world</h1>
-              <p>
-                Discover the world in your own pace and earn NFT Geospace in our
-                single player mode.
-                <br />
-                It&#39;s A Web3 GeoGuessr. The smart contract records GPS points
-                in an encrypted manner.
-                <br /> To request location verification, it costs you 1 ZAMA.
-                <br />
-                If you are within a 5 km radius, you win the NFT GeoSpace
-                associated with that location and 2 token SpaceCoin (SPC)
-              </p>
-            </div>
-
-            <div className={styles.box}>
-              {/* Image de la terre et animation vont ici */}
-            </div>
-          </div>
-          <div className={styles.lineBlock}></div>
-
-          <div className={styles.blockTwo}>
-            <h1>Earn NFT Geospace</h1>
+            <h2>Discover the world</h2>
             <p>
-              Find the location of the NFT and win it, along with 2 SpaceCoin
-              tokens.
+              It&#39;s a Web3 geoguessr; the goal is to find NFTs scattered
+              around the globe. <br />
+              It&#39;s up to you to discover the location of the NFTs. The smart
+              contract utilizes Fully Homomorphic Encryption (FHE) to ensure
+              data confidentiality while performing distance calculations.
             </p>
           </div>
           <div className={styles.lineBlock}></div>
 
-          <div className={styles.blockPut}>
+          <div className={styles.blockTest}>
+            <h1>Earn NFT Geospace and SpaceCoin</h1>
+            <p>
+              Find the location and win a nft GeoSpace 2 SpaceCoin tokens
+              available for GeoSpace creation.
+            </p>
+          </div>
+          <div className={styles.lineBlock}></div>
+
+          <div className={styles.blockThree}>
             <h1>Put your GeoSpace back into play. </h1>
             <p>
               Put your NFT back into play with your own ZAMA tax for one round.
@@ -184,7 +170,7 @@ export default function Contents() {
 
           <div className={styles.lineBlock}></div>
 
-          <div className={styles.blockThree}>
+          <div className={styles.blockTest}>
             <h1>Stake NFT GeoSpace</h1>
             <p>Staking NFTs allows you to unlock exciting benefits:</p>
             <ul>
@@ -192,7 +178,7 @@ export default function Contents() {
                 <strong>
                   <u>Stake 1 NFT:</u>
                 </strong>{" "}
-                Earn SPC tokens every 24 hours. <br />
+                Earn SPC (SpaceCoin) tokens every 24 hours. <br />
               </li>
               <li>
                 <strong>
@@ -209,9 +195,10 @@ export default function Contents() {
             <p>
               If you have previously staked 3 Geospace NFTs, You can choose a
               valid GPS point with an available Google Street View for your
-              creation. This process includes your tax (Zama) for the first
-              round. To create a Geospace NFT, you will need to pay 1 SPC token.
-              You receive very time
+              creation. <br />
+              This process includes your tax (Zama) for the first round. <br />
+              To create a Geospace NFT, you will need to pay 1 SPC token. <br />
+              The fees are then distributed to all creators of NFTs on Geospace.
             </p>
           </div>
         </div>
