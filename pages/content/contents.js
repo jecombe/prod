@@ -153,24 +153,25 @@ export default function Contents() {
           <div className={styles.lineBlock}></div>
 
           <div className={styles.blockTest}>
-            <h1>Earn NFT Geospace and SpaceCoin</h1>
+            <h1>Earn Geospace and SpaceCoin</h1>
             <p>
-              Find the location and win a nft GeoSpace 2 SpaceCoin tokens
+              Find the location and win a nft GeoSpace, and 2 SpaceCoin tokens
               available for GeoSpace creation.
             </p>
           </div>
           <div className={styles.lineBlock}></div>
 
           <div className={styles.blockThree}>
-            <h1>Put your GeoSpace back into play. </h1>
+            <h1>Put your GeoSpace back into play</h1>
             <p>
-              Put your NFT back into play with your own ZAMA tax for one round.
+              Put your GeoSpace back into play with your own ZAMA tax for one
+              round.
             </p>
           </div>
 
           <div className={styles.lineBlock}></div>
 
-          <div className={styles.blockTest}>
+          <div className={styles.blockTest2}>
             <h1>Stake NFT GeoSpace</h1>
             <p>Staking NFTs allows you to unlock exciting benefits:</p>
             <ul>
@@ -191,7 +192,7 @@ export default function Contents() {
           <div className={styles.lineBlock}></div>
 
           <div className={styles.blockTwo}>
-            <h1>Create NFT GeoSpace</h1>
+            <h1>Create NFT</h1>
             <p>
               If you have previously staked 3 Geospace NFTs, You can choose a
               valid GPS point with an available Google Street View for your

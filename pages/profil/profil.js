@@ -377,7 +377,10 @@ const Profil = () => {
   };
 
   const stakeSelectedNFTs = async () => {
-    if (selectedNFTs.length === 0) return;
+    if (selectedNFTs.length === 0) {
+      alert("Please select NFTs to stake");
+      return;
+    }
 
     try {
       setIsTransactionStakePending(true); // Set transaction pending state
@@ -402,7 +405,10 @@ const Profil = () => {
   };
 
   const resetNFTs = async () => {
-    if (selectedNFTs.length === 0) return;
+    if (selectedNFTs.length === 0) {
+      alert("Please select NFTs to reset");
+      return;
+    }
 
     try {
       setIsTransactionResetPending(true); // Set transaction pending state
@@ -446,7 +452,10 @@ const Profil = () => {
   };
 
   const unstakeNFTs = async () => {
-    if (selectedStakedNFTs.length === 0) return;
+    if (selectedStakedNFTs.length === 0) {
+      ("Please select NFTs to unstake");
+      return;
+    }
 
     try {
       setIsTransactionUnstakePending(true); // Set transaction pending state
@@ -472,7 +481,10 @@ const Profil = () => {
   };
 
   const claimNft = async () => {
-    if (selectedResetNFTs.length === 0) return;
+    if (selectedResetNFTs.length === 0) {
+      alert("Please select NFTs to cancel reset");
+      return;
+    }
 
     try {
       setIsTransactionClaimPending(true); // Set transaction pending state
@@ -782,7 +794,9 @@ const Profil = () => {
             )}
 
             <div className={styles.containerInfos}>
-              <div style={{ display: "flex" }}>
+              <div className={`${styles.displayContainer}`}>
+                {/* <div style={{ display: "flex", flexDirection: "column" }}> */}
+
                 <div style={{ flex: 1 }}>
                   <div className={`${styles.yourNFTs}`}>
                     <h2>Your available GeoSpace</h2>

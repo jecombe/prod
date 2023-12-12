@@ -1,11 +1,20 @@
+/* .blockAll {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 100vh;
+} */
+
 .blockAll {
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Centrer verticalement */
   align-items: center; /* Centrer horizontalement */
   text-align: center; /* Centrer le texte horizontalement */
-  min-height: 100vh; /* Hauteur minimale de 100% de la hauteur de la fenêtre */
+  min-height: 50vh;
 }
+
 .blockAll h1 {
   font-size: 50px;
 }
@@ -61,69 +70,6 @@
   transform: rotateX(6deg) rotateY(6deg) rotateZ(6deg);
 }
 
-/* Pour les écrans de taille inférieure ou égale à 600 pixels (ajustez la largeur en conséquence) */
-@media (max-width: 1000px) {
-  .box {
-    display: none; /* Masquer la terre lorsque la taille de l'écran est réduite */
-  }
-
-  .mobile-image {
-    width: 100%; /* La nouvelle image occupera la largeur complète de son conteneur */
-    height: auto; /* Ajustement de la hauteur automatique pour conserver les proportions */
-    /* Ajoutez votre nouvelle image de remplacement ici */
-  }
-}
-@media (max-width: 570px) {
-  .one img {
-    height: 300px;
-    width: auto;
-  }
-  .two img {
-    height: 350px;
-    width: auto;
-  }
-  .three img {
-    height: 150px;
-    width: 300px;
-  }
-  .four img {
-    height: 150px;
-    width: auto;
-  }
-  .centerImage {
-    height: 100px;
-
-    width: 150px;
-  }
-  .blockAll h2 {
-    font-size: 20px;
-    color: #000;
-  }
-  .blockAll p {
-    font-size: 15px;
-  }
-  .blockPlay p {
-    font-size: 15px;
-  }
-}
-
-@keyframes movimiento {
-  0% {
-    background-position: 0 0;
-  }
-  100% {
-    background-position: 355px 0;
-  }
-}
-
-@keyframes stars {
-  0% {
-    background-position: 0 0;
-  }
-  100% {
-    background-position: 0 100%;
-  }
-}
 .blockOne {
   display: flex; /* Utilisation de flex pour les éléments enfants */
   flex-direction: row; /* Affichage en ligne des éléments */
@@ -150,6 +96,18 @@
   /* border: 1px solid #ccc; */
 }
 .blockTest {
+  flex: 1;
+  text-align: left; /* Aligner le texte à gauche */
+  line-height: 1.5;
+  color: #fff; /* Couleur du texte (blanc) */
+  font-family: "Montserrat", sans-serif; /* Police de caractères */
+  width: 50%; /* Ajustez la largeur selon vos besoins */
+  padding: 10px; /* Ajoute un espace intérieur */
+  /* border: 1px solid #ccc; */
+  margin-right: auto; /* Décale la div vers la gauche */
+}
+
+.blockTest2 {
   flex: 1;
   text-align: left; /* Aligner le texte à gauche */
   line-height: 1.5;
@@ -257,4 +215,115 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+/* Pour les écrans de taille inférieure ou égale à 600 pixels (ajustez la largeur en conséquence) */
+@media (max-width: 1000px) {
+  .box {
+    display: none; /* Masquer la terre lorsque la taille de l'écran est réduite */
+  }
+
+  .mobile-image {
+    width: 100%; /* La nouvelle image occupera la largeur complète de son conteneur */
+    height: auto; /* Ajustement de la hauteur automatique pour conserver les proportions */
+    /* Ajoutez votre nouvelle image de remplacement ici */
+  }
+}
+
+@media (max-width: 570px) {
+  .blockTest {
+    display: flex;
+    flex-direction: column;
+    align-items: auto; /* Centrer horizontalement */
+    text-align: auto; /* Centrer le texte horizontalement */
+    min-height: 50vh;
+  }
+
+  .blockThree,
+  .blockTest,
+  .blockTwo {
+    text-align: center; /* Aligner le texte au centre */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centrer horizontalement */
+    text-align: center; /* Centrer le texte horizontalement */
+    min-height: 50vh;
+    margin-left: auto; /* Décale la div vers la droite */
+    margin-right: auto; /* Décale la div vers la gauche */
+  }
+
+  .blockPlay p,
+  .blockTest p,
+  .blockTest2 p,
+  .blockThree p {
+    width: 100%; /* Étendre le paragraphe sur toute la largeur disponible */
+    text-align: center; /* Centrer le texte horizontalement */
+  }
+  .blockAll h1 {
+    font-size: 50px;
+    margin-bottom: 10px; /* Ajouter une marge en bas pour séparer du paragraphe suivant */
+  }
+
+  .blockAll p {
+    font-size: 20px;
+    width: 100%;
+    margin-bottom: 20px; /* Ajouter une marge en bas pour séparer du paragraphe suivant */
+  }
+
+  .blockPlay h1 {
+    font-size: 60px;
+    margin-bottom: 10px; /* Ajouter une marge en bas pour séparer du paragraphe suivant */
+  }
+
+  .blockPlay h2 {
+    font-size: 25px;
+    margin-bottom: 10px; /* Ajouter une marge en bas pour séparer du paragraphe suivant */
+  }
+
+  .two img {
+    height: 350px;
+    width: auto;
+  }
+  .three img {
+    height: 150px;
+    width: 300px;
+  }
+  .four img {
+    height: 150px;
+    width: auto;
+  }
+  .centerImage {
+    height: 100px;
+
+    width: 150px;
+  }
+  .blockThree {
+    text-align: center; /* Aligner le texte à droite */ /* Ajoute un espace intérieur */
+    /* border: 1px solid #ccc; */
+  }
+
+  .blockAll p {
+    font-size: 15px;
+  }
+  .blockPlay p {
+    font-size: 15px;
+  }
+}
+
+@keyframes movimiento {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 355px 0;
+  }
+}
+
+@keyframes stars {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 100%;
+  }
 }
