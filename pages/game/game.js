@@ -264,21 +264,21 @@ export default function GamePage() {
 
       const stakedNFTs = nftsStake.map((tokenId) => tokenId.toNumber());
       const resetNFTs = nftsRAndFees[0].map((tokenId) => tokenId.toNumber());
-      const feesNft = nftsRAndFees[1].map((tokenId) => tokenId.toString());
+      // const feesNft = nftsRAndFees[1].map((tokenId) => tokenId.toString());
       const creationNFTs = nftsCreationFees[0].map((tokenId) =>
         tokenId.toNumber()
       );
-      const creationNFTsFees = nftsCreationFees[1].map((tokenId) =>
-        tokenId.toString()
-      );
+      // const creationNFTsFees = nftsCreationFees[1].map((tokenId) =>
+      //   tokenId.toString()
+      // );
 
-      const nftsCreaFee = creationNFTs.map((id, index) => ({
-        id,
-        fee: Math.round(
-          ethers.utils.formatUnits(creationNFTsFees[index], "ether")
-        ),
-      }));
-      setCreatedNFTs(creationNFTs);
+      // const nftsCreaFee = creationNFTs.map((id, index) => ({
+      //   id,
+      //   fee: Math.round(
+      //     ethers.utils.formatUnits(creationNFTsFees[index], "ether")
+      //   ),
+      // }));
+      //setCreatedNFTs(creationNFTs);
 
       // const feesNftMap = {};
       // feesNft.forEach((fee, index) => {
@@ -293,12 +293,12 @@ export default function GamePage() {
         (tokenId) =>
           !resetNFTs.includes(tokenId) && !stakedNFTs.includes(tokenId)
       );
-      setOwnedNFTs(filteredOwnedNFTs);
+      // setOwnedNFTs(filteredOwnedNFTs);
       setAccountBalance(balanceEther);
       setBalanceSPC(balanceCoinSpace);
-      setStakedNFTs(stakedNFTs);
-      setResetNFT(resetNFTs);
-      setCreationNFT(nftsCreaFee);
+      // setStakedNFTs(stakedNFTs);
+      // setResetNFT(resetNFTs);
+      // setCreationNFT(nftsCreaFee);
       const assamblage = getAllOwnedNfts(
         filteredOwnedNFTs,
         stakedNFTs,
