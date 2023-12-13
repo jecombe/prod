@@ -38,7 +38,6 @@ export default function GamePage() {
 
   const [markers, setMarkers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isLoadingMeta, setIsLoadingMeta] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(false);
   const [isLoadingGps, setIsLoadingDataGps] = useState(false);
   const isMountedRef = useRef(true);
@@ -47,7 +46,6 @@ export default function GamePage() {
   const [isTransactionFailed, setIsTransactionFailed] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [failureMessage, setFailureMessage] = useState("");
-  const [isMiniMapDisabled, setIsMiniMapDisabled] = useState(true);
   const [fhevm, setFhevm] = useState(null);
   const [contract, setContract] = useState(null);
   const [signer, setSigner] = useState(null);
@@ -55,23 +53,15 @@ export default function GamePage() {
   const [accountAddress, setAccountAddress] = useState("0x");
   const [accountBalance, setAccountBalance] = useState(0);
   const [balanceSpc, setBalanceSPC] = useState(0);
-  const [feesNftMap, setFeesNftMap] = useState({});
+  // const [feesNftMap, setFeesNftMap] = useState({});
 
-  const [isMetaMaskInitialized, setIsMetaMaskInitialized] = useState(false);
+  // const [isMetaMaskInitialized, setIsMetaMaskInitialized] = useState(false);
   const [showWinMessage, setShowWinMessage] = useState(false);
   const [isPlay, setIsPlay] = useState(true);
 
-  const [balance, setBalance] = useState(0);
-  const [ownedNFTs, setOwnedNFTs] = useState([]);
-  const [stakedNFTs, setStakedNFTs] = useState([]);
-  const [createdNFTs, setCreatedNFTs] = useState([]);
-  const [creationNFT, setCreationNFT] = useState([]);
-  const [resetNFT, setResetNFT] = useState([]);
   const [assamblage, setAssamblage] = useState([]);
-  const [nftId, setNftId] = useState(0);
 
   const handleAccountsChanged = async () => {
-    setBalance(0);
     setBalanceSPC(0);
     setAccountAddress("0x");
     await initialize();
@@ -290,14 +280,14 @@ export default function GamePage() {
       }));
       setCreatedNFTs(creationNFTs);
 
-      const feesNftMap = {};
-      feesNft.forEach((fee, index) => {
-        const valueEth = Math.round(ethers.utils.formatUnits(fee, "ether"));
+      // const feesNftMap = {};
+      // feesNft.forEach((fee, index) => {
+      //   const valueEth = Math.round(ethers.utils.formatUnits(fee, "ether"));
 
-        feesNftMap[resetNFTs[index]] = valueEth;
-      });
+      //   feesNftMap[resetNFTs[index]] = valueEth;
+      // });
 
-      setFeesNftMap(feesNftMap);
+      // setFeesNftMap(feesNftMap);
 
       const filteredOwnedNFTs = ownedNFTs.filter(
         (tokenId) =>
@@ -379,17 +369,14 @@ export default function GamePage() {
             console.log("YOU WIN NFT", readable);
             setShowWinMessage(true);
             setIsTransactionSuccessful(true);
-            setNftId(readable);
             setSuccessMessage(`You Win NFT ${readable}`);
             setIsTransactionFailed(false);
             setIsLoading(false);
-            setNftId(0);
 
             setTimeout(async () => {
               setShowWinMessage(false);
               setIsTransactionSuccessful(false);
               setIsTransactionFailed(false);
-              setIsMiniMapDisabled(true);
               await fetchData();
               await fetchGpsData();
             }, 5000);
@@ -403,7 +390,6 @@ export default function GamePage() {
             setTimeout(() => {
               setIsTransactionSuccessful(false);
               setIsTransactionFailed(false);
-              setIsMiniMapDisabled(true);
               setMarkers([]);
             }, 5000);
           }
@@ -413,10 +399,8 @@ export default function GamePage() {
       console.error("Error initializing contract:", error);
       setIsLoading(false);
       setMarkers([]);
-      // setIsLoadingMeta(false);
       setIsTransactionSuccessful(false);
       setIsTransactionFailed(false);
-      setIsMiniMapDisabled(true);
       return error;
     }
   }
@@ -477,7 +461,6 @@ export default function GamePage() {
       return;
     }
     setIsLoading(true);
-    setIsMiniMapDisabled(false);
     try {
       const attConvert = Math.trunc(positionMiniMap.lat * 1e5);
       const lngConvert = Math.trunc(positionMiniMap.lng * 1e5);
@@ -511,7 +494,6 @@ export default function GamePage() {
     } catch (error) {
       console.error("handleConfirmGps", error);
       setIsLoading(false);
-      setIsMiniMapDisabled(true);
       return error;
     }
   };
@@ -618,7 +600,7 @@ export default function GamePage() {
       {showWinMessage && (
         <div className={style.overlay}>
           <div className={style.winMessage}>
-            You Win Geospace {nftId}! Go to your profil...
+            You Win Geospace {nft.tokenId}! Go to your profil...
           </div>
         </div>
       )}

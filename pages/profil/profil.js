@@ -91,8 +91,8 @@ const Profil = () => {
   const [feesNftMap, setFeesNftMap] = useState({});
   const [decryptedNFTS, setDecrypted] = useState([]);
   const [errorsFetch, setErrorFetch] = useState("");
-  const [isAccessGovernance, setAccessGovernance] = useState(false);
-  const [isAccessCreate, setAccessCreate] = useState(false);
+  // const [isAccessGovernance, setAccessGovernance] = useState(false);
+  // const [isAccessCreate, setAccessCreate] = useState(false);
 
   const [isTransactionStakePending, setIsTransactionStakePending] =
     useState(false);
@@ -374,15 +374,15 @@ const Profil = () => {
         setStakedNFTs(stakedNFTs);
         setResetNFT(resetNFTs);
         setCreationNFT(nftsCreaFee);
-        const assamblage = getAllOwnedNfts();
-        if (stakedNFTs.length >= 3) {
-          setAccessCreate(true);
-        } else setAccessCreate(false);
-        if (assamblage.length > 0) {
-          setAccessGovernance(true);
-        } else {
-          setAccessGovernance(false);
-        }
+        // const assamblage = getAllOwnedNfts();
+        // if (stakedNFTs.length >= 3) {
+        //   setAccessCreate(true);
+        // } else setAccessCreate(false);
+        // if (assamblage.length > 0) {
+        //   setAccessGovernance(true);
+        // } else {
+        //   setAccessGovernance(false);
+        // }
         setIsLoading(false);
       }
     } catch (error) {
