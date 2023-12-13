@@ -27,11 +27,33 @@
   margin: auto; /* Centre la div horizontalement */
   padding: 10px; /* Ajoute un espace intérieur */
   border: 1px solid #ccc;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  justify-content: flex-end;
+}
+.access {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+}
+.access a {
+  color: rgb(188, 121, 21);
 }
 
 .secondContainer h1 {
   color: rgb(188, 121, 21);
   font-size: 50px;
+  margin: 0; /* Supprimez la marge par défaut du titre */
+}
+
+.secondContainer h2 {
+  color: #ffffff;
+  text-align: center; /* Add this line to center the text */
+
   margin: 0; /* Supprimez la marge par défaut du titre */
 }
 
@@ -95,6 +117,9 @@
   margin-top: 70px;
   flex-wrap: wrap; /* Allow items to wrap to the next line if there's not enough space */
 }
+.containerInfos h2 {
+  color: #ffffff;
+}
 .titleMap {
   display: flex;
   align-items: center;
@@ -121,10 +146,6 @@
 }
 
 .container h3,
-.container h2 {
-  color: #fbfdfd;
-}
-
 .container p {
   color: antiquewhite;
 }
@@ -142,6 +163,9 @@
 
   cursor: pointer;
   margin-right: 20px;
+}
+
+.loaderPending {
 }
 
 .buttonContainer {
@@ -198,21 +222,11 @@
   background-position: 0 100%;
   transition: background-position 0.3s;
   padding: 5px 10px;
-
   cursor: pointer;
-  margin-right: 20px;
+  margin-top: 10px; /* Ajoute un espace entre le formulaire et le bouton */
 }
 .accessButton:hover {
   background-position: 0 0;
-}
-.createGpsButton {
-  background-color: #4caf50; /* Couleur de fond pour le bouton */
-  color: white; /* Couleur du texte pour le bouton */
-  padding: 10px 20px; /* Espacement intérieur du bouton */
-  border: none; /* Supprimer la bordure du bouton */
-  border-radius: 5px; /* Coins arrondis */
-  cursor: pointer; /* Curseur de la souris en forme de main */
-  /* Autres styles CSS personnalisés si nécessaire */
 }
 
 /* Style de bouton violet pour "Create GPS" */
@@ -235,7 +249,7 @@
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
-@media screen and (max-width: 570px) {
+@media screen and (max-width: 870px) {
   .displayContainer {
     flex-direction: column;
   }

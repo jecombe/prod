@@ -244,7 +244,6 @@ export default function GamePage() {
     try {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const userAddress = await signer.getAddress();
-      console.log(contract);
       // Créez un tableau de promesses
       const promises = [
         contract.getNFTsStakedByOwner(userAddress),
@@ -384,12 +383,12 @@ export default function GamePage() {
             setSuccessMessage(`You Win NFT ${readable}`);
             setIsTransactionFailed(false);
             setIsLoading(false);
+            setNftId(0);
+
             setTimeout(async () => {
-              setNftId(0);
               setShowWinMessage(false);
               setIsTransactionSuccessful(false);
               setIsTransactionFailed(false);
-              setMarkers([]);
               setIsMiniMapDisabled(true);
               await fetchData();
               await fetchGpsData();
@@ -399,6 +398,7 @@ export default function GamePage() {
             setFailureMessage("Sorry, you lost.");
             setIsTransactionSuccessful(false);
             setIsLoading(false);
+            setMarkers([]);
 
             setTimeout(() => {
               setIsTransactionSuccessful(false);
@@ -412,6 +412,7 @@ export default function GamePage() {
     } catch (error) {
       console.error("Error initializing contract:", error);
       setIsLoading(false);
+      setMarkers([]);
       // setIsLoadingMeta(false);
       setIsTransactionSuccessful(false);
       setIsTransactionFailed(false);
@@ -483,6 +484,18 @@ export default function GamePage() {
       const lat = fhevm.encrypt32(attConvert);
       const lng = fhevm.encrypt32(lngConvert);
       const value = 1 + nft.tax;
+      const gasEstimation = await contract.estimateGas.checkGps(
+        lat,
+        lng,
+        nft.tokenId,
+        {
+          value: ethers.utils.parseEther(`${value}`),
+        }
+      );
+      const gasLimit = gasEstimation.mul(120).div(100);
+      console.log(
+        `Gas estimation estimation ${gasEstimation} Gwei\nGas estimation with error marge: ${gasLimit}`
+      );
 
       const transaction = await contract["checkGps(bytes,bytes,uint256)"](
         lat,
@@ -490,7 +503,7 @@ export default function GamePage() {
         nft.tokenId,
         {
           value: ethers.utils.parseEther(`${value}`),
-          gasLimit: 10000000,
+          gasLimit,
         }
       );
       const rep = await transaction.wait();
@@ -525,6 +538,7 @@ export default function GamePage() {
 
   async function fetchGpsData() {
     try {
+      setMarkers([]);
       const response = await fetch(`${process.env.SERVER}${process.env.ROUTE}`);
       const data = await response.json();
       var bytes = CryptoJS.AES.decrypt(data, process.env.KEY);
@@ -648,7 +662,7 @@ export default function GamePage() {
               <div className={style.failureMessage}>{failureMessage}</div>
             </div>
           )}
-          {!assamblage.includes(nft.tokenId) && (
+          {!assamblage.includes(nft.tokenId) && !isLoading && (
             <div className={style.containerButton}>
               <a className={style.button} onClick={handleConfirmGps}>
                 Guess
