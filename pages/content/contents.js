@@ -155,8 +155,8 @@ export default function Contents() {
           <div className={styles.blockTest}>
             <h1>Earn Geospace and SpaceCoin</h1>
             <p>
-              Find the location and win a nft GeoSpace, and 2 SpaceCoin tokens
-              available for GeoSpace creation.
+              Find the location (around 5km radius) and win a nft GeoSpace, and
+              2 SpaceCoin tokens available for GeoSpace creation.
             </p>
           </div>
           <div className={styles.lineBlock}></div>

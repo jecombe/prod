@@ -124,7 +124,7 @@ export default function GamePage() {
         // Perform data-related logic here
       }
     } catch (error) {
-      console.error("manageDataGps", error);
+      console.log(position);
       setIsLoadingDataGps(false);
       return error;
       // Handle errors
@@ -552,8 +552,18 @@ export default function GamePage() {
         tax: decryptedData.tax,
       });
     } catch (error) {
-      console.error("fetchGpsData:", error);
-      return error;
+      setPosition({
+        lat: 0,
+        lng: 0,
+      });
+      setNft({
+        tokenId: 0,
+        tax: 0,
+      });
+      alert(
+        "Either no NFT is found, or an error occurs ! Contact support discord / telegram"
+      );
+      throw `fetchGps ${error}`;
     }
   }
   if (!signer) {

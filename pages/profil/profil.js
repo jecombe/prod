@@ -870,9 +870,10 @@ const Profil = () => {
                   <div className={`${styles.yourNFTs}`}>
                     <h2>Your available GeoSpace</h2>
                     <p>
-                      just select nft to stake or to put your NFT back into play
+                      Just select nft to stake or to put your NFT back into play
                       with your fees. (default is set on 0)
                     </p>
+
                     <React.Fragment>
                       <ul>
                         {ownedNFTs.map((tokenId) => (
@@ -952,8 +953,12 @@ const Profil = () => {
                     <div className={`${styles.yourStakedNft}`}>
                       <h2>Staked GeoSpaces</h2>
                       <p>
-                        just stake 3 GeoSpaces to have the right to unlock the
+                        Just stake 3 GeoSpaces to have the right to unlock the
                         creation of NFTs.
+                      </p>
+                      <p>
+                        If you have at least 1 GeoSpace staked, then you receive
+                        1 SpaceCoin daily.
                       </p>
 
                       {stakedNFTs.length > 0 ? (
@@ -1080,7 +1085,12 @@ const Profil = () => {
                   <div style={{ flex: 1 }}>
                     <div className={`${styles.yourCreationNft}`}>
                       <h2>NFTs Creation</h2>
-                      <p>just see nft your nft creation</p>
+                      <p>Just see nft your nft creation</p>
+                      <p>
+                        You receive the creation fees (SpaceCoin) of GeoSpace
+                        shared with other creators.{" "}
+                      </p>
+
                       <React.Fragment>
                         <ul>
                           {creationNFT.map((tokenId) => (
