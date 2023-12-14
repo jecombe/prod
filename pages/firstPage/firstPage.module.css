@@ -21,31 +21,21 @@
 .subtitle {
   font-size: 30px;
   text-align: center;
-  color: #fafafa;
+  -webkit-text-stroke: 2px rgb(0, 0, 0); /* Ajoute une bordure noire de 2 pixels autour du texte */
+
+  color: green;
   /* -webkit-text-stroke: 2px green; Ajoute une bordure noire de 2 pixels autour du texte */
   position: relative;
   z-index: 1; /* Assurez-vous que le texte est au-dessus de l'élément avec le fond coloré */
 }
 
-.subtitle::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: -20px; /* Ajustez la valeur négative pour ajouter de la largeur à gauche du texte */
-  width: calc(
-    100% + 40px
-  ); /* Ajustez la largeur pour prendre en compte la marge des deux côtés */
-  height: 50px;
-  background-color: black;
-  z-index: -1;
-  transform: translateY(-50%);
-}
 .preli {
   font-size: 40px;
   text-align: center;
   color: #ffffff;
   /* color: rgb(118, 20, 20); */
   height: auto;
+
   -webkit-text-stroke: 4px rgb(39, 13, 142); /* Ajoute une bordure noire de 2 pixels autour du texte */
 }
 .playButton {
