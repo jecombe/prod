@@ -56,7 +56,12 @@
 
   margin: 0; /* Supprimez la marge par défaut du titre */
 }
+.secondContainer ul {
+  color: rgb(188, 121, 21);
+  font-family: "Bungee", sans-serif; /* Utilisation de la police personnalisée */
 
+  margin: 0; /* Supprimez la marge par défaut du titre */
+}
 /* Appliquer la rotation lorsqu'un élément est survolé */
 
 .headerContainer {

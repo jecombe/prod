@@ -1117,32 +1117,42 @@ const Profil = () => {
         )}
         {stakedNFTs.length >= 3 && (
           <div className={styles.secondContainer} ref={createGeoSpaceRef}>
-            <h1>Create GeoSpace</h1>
+            <div>
+              <h1>Create GeoSpace</h1>
 
-            <h2>
-              Include your tax in ZAMA for one round and receives a portion of
-              the creation fees in SpaceCoin along with all other creators.
-            </h2>
-            <p>
-              ⚠️ Be careful ⚠️ <br />
-              For now, Zama does not handle negative integers. So you need to
-              use positive latitude and longitude values. <br /> <br />
-              You must have a valid GPS coordinate, meaning it should have an
-              available Google Street View. <br /> <br />
-              Go to Google Maps, enter Street View mode, navigate to the desired
-              location. <br /> <br />
-              Go to the search bar, and find the two values after the @ symbol.
-              The first value is the latitude, and the second is the longitude.{" "}
-              <br /> <br />
-              Copy and paste these values into the form here. <br /> <br /> It
-              will cost you 1 SpaceCoin. <br /> <br />
-              ⚠️ Be careful ⚠️ <br />
-              Your transaction will occur in two steps: <br /> <br />
-              1) Approve the use of 1 token from your wallet to the NftGuessr
-              contract.
-              <br /> <br /> 2) Minting transaction for NFT GeoSpace. <br />
-              Please be patient during the creation time, thank you.
-            </p>
+              <h2>
+                Include your tax in ZAMA for one round and receives a portion of
+                the creation fees in SpaceCoin along with all other creators.
+              </h2>
+              <h3>⚠️ Be careful ⚠️</h3>
+              <p>
+                For now, Zama does not handle negative integers. So you need to
+                use positive latitude and longitude values.
+              </p>
+              <p>
+                You must have a valid GPS coordinate, meaning it should have an
+                available Google Street View.
+              </p>
+              <p>
+                Go to Google Maps, enter Street View mode, navigate to the
+                desired location.
+              </p>
+              <p>
+                Go to the search bar, and find the two values after the @
+                symbol. The first value is the latitude, and the second is the
+                longitude. Copy and paste these values into the form here.
+              </p>
+              <p>It will cost you 1 SpaceCoin.</p>
+              <h3>⚠️ Be careful ⚠️ </h3>
+              <p>Your transaction will occur in two steps:</p>
+              <ul>
+                1) Approve the use of 1 token from your wallet to the NftGuessr
+                contract.
+              </ul>
+              <ul>2) Minting transaction for NFT GeoSpace.</ul>
+              <p> Please be patient during the creation time, thank you.</p>
+            </div>
+
             <form>
               <label>
                 Fees:

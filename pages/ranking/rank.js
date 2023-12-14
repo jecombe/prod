@@ -97,57 +97,47 @@ const Ranking = () => {
       <div className={styles.containerInfos}>
         <h1>Stats</h1>
         <h2>Owners of GeoSpace NFTs</h2>
-        <div className={styles.tableContainer}>
-          <table className={styles.table}>
-            <thead className={styles.thead}>
-              <tr className={styles.tr}>
-                <th className={styles.th}>Holder</th>
-                <th className={styles.th}>GeoSpace Owned</th>
-                <th className={styles.th}>GeoSpace Staked</th>
-                <th className={styles.th}>GeoSpace Back in game</th>
-                <th className={styles.th}>GeoSpace creation</th>
+        <div>
+          <table>
+            <thead>
+              <tr>
+                <th>Holder</th>
+                <th>GeoSpace Owned</th>
+                <th>GeoSpace Staked</th>
+                <th>GeoSpace Back in game</th>
+                <th>GeoSpace creation</th>
               </tr>
             </thead>
-            <tbody className={styles.tbody}>
+            <tbody>
               {Object.keys(holders).map((address, index) => (
-                <tr className={styles.tr} key={index}>
-                  <td data-label="Holder">
-                    <div className={styles.fieldContainer}>
-                      <p>
-                        {address.toLowerCase() ===
-                        process.env.CONTRACT.toLowerCase()
-                          ? "NFTGuessr smart contract"
-                          : address}
-                      </p>
-                    </div>
+                <tr key={index}>
+                  <td data-label="Hoooolder">
+                    <p>
+                      {address.toLowerCase() ===
+                      process.env.CONTRACT.toLowerCase()
+                        ? "NFTGuessr smart contract"
+                        : `${address.substring(0, 10)}...`}
+                    </p>
                   </td>
-                  <td data-label="GeoSpace Owned" className={styles.td}>
-                    <div className={styles.fieldContainer}>
-                      <p>
-                        {holders[address].nfts.length > 0
-                          ? holders[address].nfts.join(", ")
-                          : []}
-                      </p>
-                    </div>
+                  <td data-label="GeoSpace Owned">
+                    <p>
+                      {holders[address].nfts.length > 0
+                        ? holders[address].nfts.join(", ")
+                        : []}
+                    </p>
                   </td>
-                  <td data-label="GeoSpace Staked" className={styles.td}>
-                    <div className={styles.fieldContainer}>
-                      <p>
-                        {holders[address].nftsStake.length > 0
-                          ? holders[address].nftsStake.join(", ")
-                          : []}
-                      </p>
-                    </div>
+                  <td data-label="GeoSpace Staked">
+                    <p>
+                      {holders[address].nftsStake.length > 0
+                        ? holders[address].nftsStake.join(", ")
+                        : []}
+                    </p>
                   </td>
-                  <td data-label="GeoSpace Back in game" className={styles.td}>
-                    <div className={styles.fieldContainer}>
-                      <p>{createList(holders[address]?.nftsReset || [])}</p>
-                    </div>
+                  <td data-label="GeoSpace Back in game">
+                    <p>{createList(holders[address]?.nftsReset || [])}</p>
                   </td>
-                  <td data-label="GeoSpace Creations" className={styles.td}>
-                    <div className={styles.fieldContainer}>
-                      <p>{createList(holders[address]?.nftsCreation || [])}</p>
-                    </div>
+                  <td data-label="GeoSpace Creations">
+                    <p>{createList(holders[address]?.nftsCreation || [])}</p>
                   </td>
                 </tr>
               ))}
@@ -156,49 +146,48 @@ const Ranking = () => {
         </div>
 
         <h2>Game Statistics</h2>
-        <div className={styles.statsContainer}>
-          <p className={styles.contract}>
-            NFTGuessr:{" "}
-            <span className={styles.dynamicValue}>{process.env.CONTRACT}</span>
-          </p>
-          <p className={styles.contract}>
-            SpaceCoin:{" "}
-            <span className={styles.dynamicValue}>{process.env.TOKEN}</span>
-          </p>
-          <p className={styles.fees}>
-            Fees Guess: <span className={styles.dynamicValue}>{fees} ZAMA</span>
-          </p>
-          <p className={styles.fees}>
-            Fees Creation NFTs GeoSpace:{" "}
-            <span className={styles.dynamicValue}>
-              {feesCreation} SPC (SpaceCoin)
-            </span>
-          </p>
-          <p className={styles.fees}>
-            Reward winner:{" "}
-            <span className={styles.dynamicValue}>
-              {rewardUser} SPC (SpaceCoin)
-            </span>
-          </p>
-          <p className={styles.fees}>
-            Reward staker:{" "}
-            <span className={styles.dynamicValue}>
-              {rewardUsers} SPC (SpaceCoin)
-            </span>
-          </p>
-          <p className={styles.totalNft}>
-            Total Number of NFTs:{" "}
-            <span className={styles.dynamicValue}>{numberNft}</span>
-          </p>
-          {/* <p className={styles.totalStake}>
-            Total Number of NFTs staking:{" "}
-            <span className={styles.dynamicValue}>{numberNftStake}</span>
-          </p> */}
-          <p className={styles.minimumStake}>
-            Minimum stake GeoSpace to access creation:{" "}
-            <span className={styles.dynamicValue}>{numberNftStakeMinimum}</span>
-          </p>
+        <div className={styles.contractInfo}>
+          <h3>NFTGuessr contract:</h3>
+          <p>{process.env.CONTRACT}</p>
         </div>
+        <div className={styles.contractInfo}>
+          <h3>SpaceCoin contract:</h3>
+          <p>{process.env.TOKEN}</p>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Fees Guess</th>
+              <th>Fees Creation NFTs GeoSpace</th>
+              <th>Reward winner</th>
+              <th>Reward staker</th>
+              <th>Total Number of NFTs</th>
+              <th>Minimum stake GeoSpace to access creation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-label="Fees Guess">
+                <p>{fees} ZAMA</p>
+              </td>
+              <td data-label="Fees Creation NFTs GeoSpace<">
+                <p>{feesCreation} SPC</p>
+              </td>
+              <td data-label="Reward winner">
+                <p>{rewardUser} SPC</p>
+              </td>
+              <td data-label="Reward staker">
+                <p>{rewardUsers} SPC</p>
+              </td>
+              <td data-label="Total number of NFTs">
+                <p>{numberNft}</p>
+              </td>
+              <td data-label="Minimum stake GeoSpace to access creation">
+                <p>{numberNftStakeMinimum}</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   );
