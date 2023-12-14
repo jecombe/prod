@@ -150,6 +150,9 @@
   .dynamicValue {
     word-break: break-all;
   }
+  .contractInfo p {
+    font-size: 10px;
+  }
 }
 
 /* Additional styles for other elements */
