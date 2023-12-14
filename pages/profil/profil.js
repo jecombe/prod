@@ -625,7 +625,7 @@ const Profil = () => {
         const approvalTx = await erc20Contract.approve(
           process.env.CONTRACT,
           approvalAmount,
-          { gasLimit }
+          { gasLimit: gasEstimation }
         );
 
         await approvalTx.wait();
