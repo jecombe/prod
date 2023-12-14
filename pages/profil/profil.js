@@ -633,9 +633,15 @@ const Profil = () => {
         const gasEstimationCreate =
           await contract.estimateGas.createGpsOwnerNft(obj, objFees);
         const gasLimitCreate = getMargeErrorTx(gasEstimationCreate);
+        let whatFees = gasLimitCreate;
+
+        if (Number(gasEstimation) < 1000000 && gasLimitCreate > 1000000) {
+          whatFees = gasEstimation;
+        }
         const rep = await contract.createGpsOwnerNft(obj, objFees, {
           gasLimit: gasLimitCreate,
         });
+
         await rep.wait();
         const id = await contract.totalSupply();
 

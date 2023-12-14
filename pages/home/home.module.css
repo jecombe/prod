@@ -54,7 +54,7 @@
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  filter: grayscale(25%); /* Ajoutez le filtre souhaité ici */
+  /* filter: grayscale(25%); */
   z-index: -1;
 }
 
