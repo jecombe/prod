@@ -147,11 +147,11 @@ const Ranking = () => {
 
         <h2>Game Statistics</h2>
         <div className={styles.contractInfo}>
-          <h3>NFTGuessr contract:</h3>
+          <h3>NFTGuessr contract</h3>
           <p>{process.env.CONTRACT}</p>
         </div>
         <div className={styles.contractInfo}>
-          <h3>SpaceCoin contract:</h3>
+          <h3>SpaceCoin contract</h3>
           <p>{process.env.TOKEN}</p>
         </div>
         <table>
