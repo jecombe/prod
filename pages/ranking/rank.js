@@ -170,7 +170,7 @@ const Ranking = () => {
               <td data-label="Fees Guess">
                 <p>{fees} ZAMA</p>
               </td>
-              <td data-label="Fees Creation NFTs GeoSpace<">
+              <td data-label="Fees Creation NFTs GeoSpace">
                 <p>{feesCreation} SPC</p>
               </td>
               <td data-label="Reward winner">
