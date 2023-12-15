@@ -71,6 +71,9 @@ const Profil = () => {
   // États
   const [account, setAccount] = useState("");
   const [balance, setBalance] = useState(0);
+  const [balanceNftGsr, setBalanceNftGsr] = useState(0);
+  const [balanceNftGsrSpc, setBalanceNftGsrSpc] = useState(0);
+
   const [ownedNFTs, setOwnedNFTs] = useState([]);
   const [stakedNFTs, setStakedNFTs] = useState([]);
   const [createdNFTs, setCreatedNFTs] = useState([]);
@@ -86,6 +89,8 @@ const Profil = () => {
   const [numberInput, setNumberInput] = useState(0);
   const [latitudeInput, setLatitudeInput] = useState("");
   const [longitudeInput, setLongitudeInput] = useState("");
+  const [qtyWithdraw, setQtyWithdraw] = useState("");
+
   const [resetNFT, setResetNFT] = useState([]);
   const [creationNFT, setCreationNFT] = useState([]);
   const [feesNftMap, setFeesNftMap] = useState({});
@@ -341,6 +346,7 @@ const Profil = () => {
         const creationNFTs = nftsCreationFees[0].map((tokenId) =>
           tokenId.toNumber()
         );
+        console.log(creationNFT);
         const creationNFTsFees = nftsCreationFees[1].map((tokenId) =>
           tokenId.toString()
         );
@@ -366,7 +372,21 @@ const Profil = () => {
           (tokenId) =>
             !resetNFTs.includes(tokenId) && !stakedNFTs.includes(tokenId)
         );
+        if (userAddress === process.env.OWNER) {
+          const balanceEth = await provider.getBalance(process.env.CONTRACT);
 
+          const balanceSpc = await contract.getBalanceCoinSpace(
+            process.env.CONTRACT
+          );
+
+          const valueREth = ethers.utils.formatUnits(balanceEth, "ether");
+          console.log(valueREth);
+          const valueSpc = Number(
+            ethers.utils.formatUnits(balanceSpc, "ether")
+          );
+          setBalanceNftGsr(valueREth);
+          setBalanceNftGsrSpc(valueSpc);
+        }
         setOwnedNFTs(filteredOwnedNFTs);
         setAccount(userAddress);
         setBalance(balanceEther);
@@ -388,7 +408,7 @@ const Profil = () => {
     } catch (error) {
       console.error("Error fetching data:", error);
       setErrorFetch("Error fetching data");
-      setAccessCreate(false);
+      // setAccessCreate(false);
 
       return error;
     }
@@ -551,6 +571,120 @@ const Profil = () => {
       setIsTransactionClaimPending(false); // Set transaction pending state
 
       console.error("Error reset claim NFTs:", error);
+    }
+  };
+  const withdrawSpaceCoin = async () => {
+    const number = qtyWithdraw;
+
+    if (isNaN(number)) {
+      alert("Invalid input");
+      setIsTransactionCreatePending(false); // Set transaction pending state
+
+      return;
+    }
+    const amountInWei = ethers.utils.parseUnits(number.toString(), "ether");
+
+    const gasEstimation = await contract.estimateGas.withdrawToken(amountInWei);
+    const gasLimit = getMargeErrorTx(gasEstimation);
+    const rep = await contract.withdrawToken(amountInWei, {
+      gasLimit,
+    });
+    await rep.wait();
+  };
+  const withdrawZama = async () => {
+    try {
+      const gasEstimation = await contract.estimateGas.withdraw();
+      const gasLimit = getMargeErrorTx(gasEstimation);
+      const rep = await contract.withdraw({
+        gasLimit,
+      });
+      await rep.wait();
+    } catch (error) {
+      return error;
+    }
+  };
+
+  const createGpsOwner = async () => {
+    try {
+      setIsTransactionCreatePending(true); // Set transaction pending state
+
+      const number = numberInput;
+      const latitude = parseFloat(latitudeInput.replace(",", "."));
+      const longitude = parseFloat(longitudeInput.replace(",", "."));
+
+      if (isNaN(number) || isNaN(latitude) || isNaN(longitude)) {
+        alert("Invalid input");
+        setIsTransactionCreatePending(false); // Set transaction pending state
+
+        return;
+      }
+
+      if (number < 0 || latitude < 0 || longitude < 0) {
+        alert(
+          "Please set a positive value because now the smart contract only handles positive numbers (uint)"
+        );
+        setIsTransactionCreatePending(false); // Set transaction pending state
+
+        return;
+      }
+
+      const rep = await axios.post(
+        `${process.env.SERVER}${process.env.ROUTE_PROFIL_CHECK_NEW_GPS}`,
+        {
+          latitude,
+          longitude,
+        }
+      );
+
+      const amountInWei = ethers.utils.parseUnits(number.toString(), "ether");
+
+      if (rep.data.success) {
+        const location = createSquareAroundPointWithDecimals(
+          latitude,
+          longitude,
+          5
+        );
+
+        const obj = [
+          fhevm.encrypt32(location.northLat),
+          fhevm.encrypt32(location.southLat),
+          fhevm.encrypt32(location.eastLon),
+          fhevm.encrypt32(location.westLon),
+          fhevm.encrypt32(location.lat),
+          fhevm.encrypt32(location.lng),
+        ];
+
+        const objFees = [amountInWei];
+        const gasEstimationCreate = await contract.estimateGas.createGpsOwner(
+          obj,
+          objFees
+        );
+        const gasLimitCreate = getMargeErrorTx(gasEstimationCreate);
+
+        const rep = await contract.createGpsOwner(obj, objFees, {
+          gasLimit: gasLimitCreate,
+        });
+
+        await rep.wait();
+        const id = await contract.totalSupply();
+
+        setCreationNFT((prevCreationNFT) => [
+          ...prevCreationNFT,
+          {
+            id: Number(id.toString()),
+            fee: number,
+          },
+        ]);
+        setIsTransactionCreatePending(false); // Set transaction pending state
+      } else {
+        setIsTransactionCreatePending(false); // Set transaction pending state
+        alert("street view non accessible, please enter another street view");
+        console.error("Street View Non Disponible");
+      }
+    } catch (error) {
+      setIsTransactionCreatePending(false); // Set transaction pending state
+
+      console.error("Error creating GPS NFT:", error);
     }
   };
 
@@ -729,6 +863,9 @@ const Profil = () => {
     //   console.error("Error handling map interaction:", error);
     // }
   };
+
+  const setWithdrawQty = () => {};
+
   if (!signer && !isLoading) {
     return (
       <ErrorMetamask message="Please connect to MetaMask and go to zama devnet" />
@@ -778,6 +915,7 @@ const Profil = () => {
           <p>{balanceSPC} SPC</p>
         </div>
         {ownedNFTs.length === 0 &&
+        createdNFTs.length === 0 &&
         resetNFT.length === 0 &&
         stakedNFTs.length === 0 ? (
           <div className={styles.needToPlay}>
@@ -1195,6 +1333,150 @@ const Profil = () => {
               </a>
             )}
           </div>
+        )}
+        {account === process.env.OWNER && (
+          <>
+            <div className={styles.firstContainer}>
+              <h1>Admin panel</h1>
+            </div>
+            <div className={styles.balanceAndAddress}>
+              <p>{balanceNftGsr} ZAMA</p>
+              <p>{balanceNftGsrSpc} SPC</p>
+            </div>
+            <div className={styles.containerInfos}>
+              <div className={`${styles.displayContainer}`}>
+                <div style={{ flex: 1 }}>
+                  <div className={`${styles.yourNFTs}`}>
+                    <React.Fragment>
+                      {isTransactionStakePending ? (
+                        <CircleLoader
+                          css={overrideCircle}
+                          size={30}
+                          color={"#107a20"}
+                          loading={true}
+                        />
+                      ) : (
+                        <a className={styles.red2Button} onClick={withdrawZama}>
+                          Withdraw ZAMA
+                        </a>
+                      )}
+
+                      {isTransactionResetPending ? (
+                        <CircleLoader
+                          css={overrideCircle}
+                          size={30}
+                          color={"#107a20"}
+                          loading={true}
+                        />
+                      ) : (
+                        // <a
+                        //   className={`${styles.red2Button} ${styles.buttonSpacing}`}
+                        //   onClick={resetNFTs}
+                        // >
+                        <>
+                          <form>
+                            <input
+                              type="number"
+                              value={qtyWithdraw}
+                              onChange={(e) => setQtyWithdraw(e.target.value)}
+                            />
+                          </form>
+
+                          <a
+                            className={`${styles.red2Button} ${styles.buttonSpacing}`}
+                            onClick={withdrawSpaceCoin}
+                          >
+                            Withdraw SPC
+                          </a>
+                        </>
+                      )}
+                    </React.Fragment>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.secondContainer}>
+              <div>
+                <h1>Create GeoSpace</h1>
+
+                <h2>
+                  Include your tax in ZAMA for one round and receives a portion
+                  of the creation fees in SpaceCoin along with all other
+                  creators.
+                </h2>
+                <h3>⚠️ Be careful ⚠️</h3>
+                <p>
+                  For now, Zama does not handle negative integers. So you need
+                  to use positive latitude and longitude values.
+                </p>
+                <p>
+                  You must have a valid GPS coordinate, meaning it should have
+                  an available Google Street View.
+                </p>
+                <p>
+                  Go to Google Maps, enter Street View mode, navigate to the
+                  desired location.
+                </p>
+                <p>
+                  Go to the search bar, and find the two values after the @
+                  symbol. The first value is the latitude, and the second is the
+                  longitude. Copy and paste these values into the form here.
+                </p>
+                <p>It will cost you 1 SpaceCoin.</p>
+                <h3>⚠️ Be careful ⚠️ </h3>
+                <p>Your transaction will occur in two steps:</p>
+                <ul>
+                  1) Approve the use of 1 token from your wallet to the
+                  NftGuessr contract.
+                </ul>
+                <ul>2) Minting transaction for NFT GeoSpace.</ul>
+                <p> Please be patient during the creation time, thank you.</p>
+              </div>
+
+              <form>
+                <label>
+                  Fees:
+                  <input
+                    type="number"
+                    value={numberInput}
+                    onChange={(e) =>
+                      setNumberInput(Math.max(0, parseInt(e.target.value)))
+                    }
+                    min="0"
+                  />
+                </label>
+                <label>
+                  Latitude:
+                  <input
+                    type="number"
+                    value={latitudeInput}
+                    onChange={(e) => setLatitudeInput(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Longitude:
+                  <input
+                    type="number"
+                    value={longitudeInput}
+                    onChange={(e) => setLongitudeInput(e.target.value)}
+                  />
+                </label>
+              </form>
+              {isTransactionCreatePending ? (
+                <CircleLoader
+                  css={overrideCircle}
+                  size={30}
+                  color={"#a88314"}
+                  loading={true}
+                />
+              ) : (
+                <a className={styles.accessButton} onClick={createGpsOwner}>
+                  Create Gps
+                </a>
+              )}
+            </div>
+          </>
         )}
         {ownedNFTs.length === 0 &&
           stakedNFTs.length === 0 &&
