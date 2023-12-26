@@ -76,6 +76,60 @@
   z-index: 1;
   transition: width 0.2s, height 0.2s; /* Ajoute une transition en douceur */
 }
+.firstContainer {
+  flex-grow: 1; /* Faites en sorte que ce conteneur occupe tout l'espace disponible */
+  text-align: center;
+  margin-top: 30px;
+}
+
+.firstContainer h1 {
+  color: rgb(188, 121, 21);
+  font-size: 50px;
+  margin: 0; /* Supprimez la marge par défaut du titre */
+}
+.dropdownContainer {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2; /* Ajoutez ou ajustez cette propriété pour définir la priorité d'empilement */
+  display: inline-block;
+}
+
+.dropdownButton {
+  background-color: #4caf50; /* Couleur du bouton principal */
+  color: white;
+  padding: 10px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+}
+
+.dropdownContent {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+.dropdownContent button {
+  width: 100%;
+  padding: 10px;
+  text-align: left;
+  border: none;
+  background-color: #f9f9f9;
+  cursor: pointer;
+}
+
+.dropdownContent button:hover {
+  background-color: #ddd;
+}
+
+.dropdownContainer:hover .dropdownContent {
+  display: block;
+}
 
 .miniMapContainer:hover {
   width: 300px; /* Largeur lors du survol */

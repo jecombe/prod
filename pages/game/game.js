@@ -1,4 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { ethers } from "ethers";
+import { getFhevmInstance } from "../../utils/fhevmInstance";
+import abi from "../../utils/abi/abi";
+
+import Link from "next/link";
 import {
   GoogleMap,
   LoadScript,
@@ -6,20 +11,16 @@ import {
   StreetViewPanorama,
 } from "@react-google-maps/api";
 import style from "./map.module.css";
-import { ethers } from "ethers";
-import abi from "../../utils/abi/abi";
-import { getFhevmInstance } from "../../utils/fhevmInstance";
-import initMetaMask from "../../utils/metamask";
-import Link from "next/link";
-import CryptoJS from "crypto-js";
-import Loading from "../loading/loading";
-import ReactPlayer from "react-player"; // Importez ReactPlayer
-import Image from "next/image";
-import { css } from "@emotion/react";
 import { PropagateLoader } from "react-spinners";
+import CryptoJS from "crypto-js";
+
+import { css } from "@emotion/react";
+import Loading from "../loading/loading";
+
+const init = { lat: 0, lng: 0 };
 const lib = ["places"];
 
-export default function GamePage() {
+const ConnectButton = () => {
   const override = css`
     display: block;
     margin: 0 auto;
@@ -31,334 +32,29 @@ export default function GamePage() {
     height: "90vh",
   };
 
-  const init = { lat: 0, lng: 0 };
-
   const [position, setPosition] = useState(init);
-  const [positionMiniMap, setPositionMiniMap] = useState(init);
+  const [showWinMessage, setShowWinMessage] = useState(false);
 
+  const [chain, setChain] = useState("");
+  const [accountBalance, setAccountBalance] = useState(null);
+  const [accountAddress, setAccountAddress] = useState(null);
   const [markers, setMarkers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(false);
-  const [isLoadingGps, setIsLoadingDataGps] = useState(false);
-  const isMountedRef = useRef(true);
+  const [balanceSpc, setBalanceSPC] = useState(0);
+  const [failureMessage, setFailureMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
+  const [nft, setNft] = useState({});
+  const [assamblage, setAssamblage] = useState([]);
+  const [positionMiniMap, setPositionMiniMap] = useState(init);
   const [isTransactionSuccessful, setIsTransactionSuccessful] = useState(false);
   const [isTransactionFailed, setIsTransactionFailed] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
-  const [failureMessage, setFailureMessage] = useState("");
+  //const [signer, setSigner] = useState(null);
   const [fhevm, setFhevm] = useState(null);
   const [contract, setContract] = useState(null);
-  const [signer, setSigner] = useState(null);
-  const [nft, setNft] = useState({});
-  const [accountAddress, setAccountAddress] = useState("0x");
-  const [accountBalance, setAccountBalance] = useState(0);
-  const [balanceSpc, setBalanceSPC] = useState(0);
-  // const [feesNftMap, setFeesNftMap] = useState({});
 
-  // const [isMetaMaskInitialized, setIsMetaMaskInitialized] = useState(false);
-  const [showWinMessage, setShowWinMessage] = useState(false);
-  const [isPlay, setIsPlay] = useState(true);
-
-  const [assamblage, setAssamblage] = useState([]);
-
-  const handleAccountsChanged = async () => {
-    setBalanceSPC(0);
-    setAccountAddress("0x");
-    await initialize();
-    await manageData();
-  };
-
-  useEffect(() => {
-    const init = async () => {
-      if (isMountedRef.current) {
-        await checkNetwork();
-        await initialize();
-      }
-
-      if (window.ethereum) {
-        window.ethereum.on("accountsChanged", handleAccountsChanged);
-      }
-    };
-
-    init();
-    return () => {
-      // Cleanup the subscription when the component unmounts
-      if (window.ethereum) {
-        window.ethereum.off("accountsChanged", handleAccountsChanged);
-      }
-      isMountedRef.current = false;
-    };
-  }, []);
-
-  const manageData = async () => {
-    try {
-      if (signer && contract) {
-        updateAccountInfo();
-        initializeContract();
-        fetchData();
-      }
-    } catch (error) {
-      console.error("manageData", error);
-      setIsLoadingData(false); // Set loading to false when data processing is complete
-      return error;
-      // Handle errors
-    } finally {
-      setIsLoadingData(false); // Set loading to false when data processing is complete
-    }
-  };
-
-  const manageDataGps = async (isMounted) => {
-    try {
-      if (signer && contract) {
-        await fetchGpsData(isMounted);
-        // Perform data-related logic here
-      }
-    } catch (error) {
-      console.log(position);
-      setIsLoadingDataGps(false);
-      return error;
-      // Handle errors
-    } finally {
-      setIsLoadingDataGps(false);
-      //setIsLoadingData(false); // Set loading to false when data processing is complete
-    }
-  };
-
-  useEffect(() => {
-    let isMounted = true;
-    if (isMounted) {
-      setIsLoadingData(true);
-
-      manageData();
-    }
-
-    // Cleanup function
-    return () => {
-      isMounted = false;
-    };
-  }, [signer, contract]); // Add dependency on 'signer' and 'contract'
-
-  useEffect(() => {
-    let isMounted = true;
-    if (isMounted && signer && contract) {
-      setIsLoadingDataGps(true);
-
-      manageDataGps(isMounted);
-    }
-
-    // Cleanup function
-    return () => {
-      isMounted = false;
-    };
-  }, [signer, contract]); // Add dependency on 'signer' and 'contract'
-
-  // useEffect(() => {
-  //   setIsLoadingData(true);
-  //   let isMounted = true;
-  //   if (isMounted) {
-  //     manageData();
-  //     manageDataGps();
-  //   }
-
-  //   // Cleanup function
-  //   return () => {
-  //     isMounted = false;
-  //   };
-  // }, [signer, contract]); // Add dependency on 'signer'
-
-  // useEffect(() => {
-  //   setIsLoadingDataGps(true);
-  //   let isMounted = true;
-  //   if (isMounted) {
-  //     manageDataGps(isMounted);
-  //   }
-
-  //   // Cleanup function
-  //   return () => {
-  //     isMounted = false;
-  //   };
-  // }, [signer, contract]); // Add dependency on 'signer'
-
-  const getSignerContract = async () => {
-    const sign = await initMetaMask();
-    const fhevmInstance = await getFhevmInstance();
-    const contractGame = new ethers.Contract(process.env.CONTRACT, abi, sign);
-    return { sign, fhevmInstance, contractGame };
-  };
-  const getAllOwnedNfts = (ownedNFTsU, stakedNFTsU, resetNFTU, createdNFTs) => {
-    const assambly = [];
-    if (ownedNFTsU.length > 0) {
-      assambly.push(ownedNFTsU);
-    }
-    if (stakedNFTsU.length > 0) {
-      assambly.push(stakedNFTsU);
-    }
-    if (resetNFTU.length > 0) {
-      assambly.push(resetNFTU);
-    }
-    if (createdNFTs.length > 0) {
-      assambly.push(createdNFTs);
-    }
-    return assambly.reduce((acc, currentArray) => acc.concat(currentArray), []);
-  };
-
-  // const updateBalances = async (web3) => {
-  //   try {
-  //     const balance = await web3.eth.getBalance(accountAddress);
-  //     const balanceCoin = await contract.getBalanceCoinSpace(accountAddress);
-
-  //     const etherBalance = Math.round(web3.utils.fromWei(balance, "ether"));
-  //     const etherBalanceCoin = Math.round(
-  //       web3.utils.fromWei(balanceCoin, "ether")
-  //     );
-
-  //     setAccountBalance(etherBalance);
-  //     setBalanceSPC(etherBalanceCoin);
-  //   } catch (error) {
-  //     console.error("Error updating balances:", error);
-  //   }
-  // };
-
-  const initialize = async () => {
-    const { sign, fhevmInstance, contractGame } = await getSignerContract();
-
-    setFhevm(fhevmInstance);
-    setSigner(sign);
-    setContract(contractGame);
-
-    setIsLoadingData(true);
-  };
-
-  // Fonction fetchData optimisée
-  const fetchData = async () => {
-    try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const userAddress = await signer.getAddress();
-      // Créez un tableau de promesses
-      const promises = [
-        contract.getNFTsStakedByOwner(userAddress),
-        contract.getOwnedNFTs(userAddress),
-        contract.getResetNFTsAndFeesByOwner(userAddress),
-        contract.getNftCreationAndFeesByUser(userAddress),
-        provider.getBalance(userAddress),
-        contract.getBalanceCoinSpace(userAddress),
-      ];
-
-      const [
-        nftsStake,
-        nftsOwned,
-        nftsRAndFees,
-        nftsCreationFees,
-        balanceWei,
-        balanceWeiCoinSpace,
-      ] = await Promise.all(promises);
-      const balanceEther = Math.round(
-        ethers.utils.formatUnits(balanceWei, "ether")
-      );
-      const balanceCoinSpace = ethers.utils.formatUnits(
-        balanceWeiCoinSpace,
-        "ether"
-      );
-
-      const ownedNFTs = nftsOwned.map((tokenId) => tokenId.toNumber());
-
-      const stakedNFTs = nftsStake.map((tokenId) => tokenId.toNumber());
-      const resetNFTs = nftsRAndFees[0].map((tokenId) => tokenId.toNumber());
-      // const feesNft = nftsRAndFees[1].map((tokenId) => tokenId.toString());
-      const creationNFTs = nftsCreationFees[0].map((tokenId) =>
-        tokenId.toNumber()
-      );
-      // const creationNFTsFees = nftsCreationFees[1].map((tokenId) =>
-      //   tokenId.toString()
-      // );
-
-      // const nftsCreaFee = creationNFTs.map((id, index) => ({
-      //   id,
-      //   fee: Math.round(
-      //     ethers.utils.formatUnits(creationNFTsFees[index], "ether")
-      //   ),
-      // }));
-      //setCreatedNFTs(creationNFTs);
-
-      // const feesNftMap = {};
-      // feesNft.forEach((fee, index) => {
-      //   const valueEth = Math.round(ethers.utils.formatUnits(fee, "ether"));
-
-      //   feesNftMap[resetNFTs[index]] = valueEth;
-      // });
-
-      // setFeesNftMap(feesNftMap);
-
-      const filteredOwnedNFTs = ownedNFTs.filter(
-        (tokenId) =>
-          !resetNFTs.includes(tokenId) && !stakedNFTs.includes(tokenId)
-      );
-      // setOwnedNFTs(filteredOwnedNFTs);
-      setAccountBalance(balanceEther);
-      setBalanceSPC(balanceCoinSpace);
-      // setStakedNFTs(stakedNFTs);
-      // setResetNFT(resetNFTs);
-      // setCreationNFT(nftsCreaFee);
-      const assamblage = getAllOwnedNfts(
-        filteredOwnedNFTs,
-        stakedNFTs,
-        resetNFTs,
-        creationNFTs
-      );
-      setAssamblage(assamblage);
-
-      return assamblage;
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      return error;
-    }
-  };
-
-  const updateAccountInfo = async () => {
-    if (typeof window !== "undefined" && window.ethereum) {
-      try {
-        const accounts = await window.ethereum.request({
-          method: "eth_requestAccounts",
-        });
-        const address = accounts[0];
-        setAccountAddress(`${address}`);
-      } catch (error) {
-        console.error("error updating account info:", error);
-        setAccountAddress("0x");
-        return error;
-      }
-    } else {
-      setAccountAddress("0x");
-    }
-  };
-
-  const connectToZamaDevnet = async () => {
-    try {
-      await window.ethereum.request({
-        method: "wallet_addEthereumChain",
-        params: [
-          {
-            chainId: "0x1f49",
-            chainName: "Zama Network",
-            nativeCurrency: {
-              name: "ZAMA",
-              symbol: "ZAMA",
-              decimals: 18,
-            },
-            rpcUrls: ["https://devnet.zama.ai"],
-            blockExplorerUrls: ["https://main.explorer.zama.ai"],
-          },
-        ],
-      });
-
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    } catch (error) {
-      console.error("Error connecting to Fhenix Devnet:", error);
-      return error;
-    }
-  };
-
-  async function initializeContract() {
+  async function initializeContract(signer, contract) {
     try {
       const addrSigner = await signer.getAddress();
       console.log("INIT CONTRACT", addrSigner, contract);
@@ -377,7 +73,7 @@ export default function GamePage() {
               setShowWinMessage(false);
               setIsTransactionSuccessful(false);
               setIsTransactionFailed(false);
-              await fetchData();
+              // await fetchData();
               await fetchGpsData();
             }, 5000);
           } else {
@@ -397,38 +93,15 @@ export default function GamePage() {
       });
     } catch (error) {
       console.error("Error initializing contract:", error);
+      console.error("Error initializing contract:", error);
       setIsLoading(false);
       setMarkers([]);
       setIsTransactionSuccessful(false);
       setIsTransactionFailed(false);
       return error;
+      return error;
     }
   }
-
-  const checkNetwork = async () => {
-    if (window.ethereum) {
-      try {
-        const networkId = await window.ethereum.request({
-          method: "eth_chainId",
-        });
-        if (networkId !== "0x1f49") {
-          const userResponse = window.confirm(
-            "Please switch to Zama Devnet network to use this application. Do you want to switch now?"
-          );
-
-          if (userResponse) {
-            await connectToZamaDevnet();
-            const { sign, contract } = await getSignerContract();
-            await initializeContract(sign, contract);
-          }
-        }
-      } catch (error) {
-        console.error("Error checking network:", error);
-        return error;
-      }
-    }
-  };
-
   const gestOption = () => {
     return {
       addressControl: false,
@@ -446,6 +119,230 @@ export default function GamePage() {
     };
   };
 
+  const streetViewPanoramaOptions = useMemo(() => {
+    return {
+      id: "street-view",
+      containerStyle,
+      options: gestOption(),
+      position,
+      visible: true,
+    };
+  }, [position]);
+
+  const opt = () => {
+    return {
+      disableDefaultUI: true,
+      zoomControl: true,
+      scrollwheel: true, // Active la roulette de la souris pour le zoom
+    };
+  };
+  async function fetchGpsData(chainI) {
+    try {
+      setMarkers([]);
+      let chainId;
+      if (!chain) chainId = chainI;
+      else chainId = chain;
+      console.log("============>", chain);
+      const response = await fetch(
+        `${process.env.SERVER}${process.env.ROUTE}?chain=${chainId}`
+      );
+      const data = await response.json();
+      console.log(data);
+
+      var bytes = CryptoJS.AES.decrypt(data, process.env.KEY);
+      var decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+      console.log(decryptedData);
+      setPosition({
+        lat: decryptedData.latitude,
+        lng: decryptedData.longitude,
+      });
+      setNft({
+        tokenId: decryptedData.id,
+        tax: decryptedData.tax,
+      });
+    } catch (error) {
+      setPosition({
+        lat: 0,
+        lng: 0,
+      });
+      setNft({
+        tokenId: 0,
+        tax: 0,
+      });
+      alert(
+        "Either no NFT is found, or an error occurs ! Contact support discord / telegram"
+      );
+      throw `fetchGps ${error}`;
+    }
+  }
+
+  const getAllOwnedNfts = (ownedNFTsU, stakedNFTsU, resetNFTU, createdNFTs) => {
+    const assambly = [];
+    if (ownedNFTsU.length > 0) {
+      assambly.push(ownedNFTsU);
+    }
+    if (stakedNFTsU.length > 0) {
+      assambly.push(stakedNFTsU);
+    }
+    if (resetNFTU.length > 0) {
+      assambly.push(resetNFTU);
+    }
+    if (createdNFTs.length > 0) {
+      assambly.push(createdNFTs);
+    }
+    return assambly.reduce((acc, currentArray) => acc.concat(currentArray), []);
+  };
+
+  const getContract = (chain) => {
+    if (chain === "zama") {
+      return process.env.CONTRACT;
+    } else if (chain === "inco") {
+      return process.env.CONTRACT_INCO;
+    } else if (chain === "fhenix") {
+      return process.env.CONTRACT_FHENIX;
+    }
+  };
+
+  const connectToDevnet = async (selectedChain) => {
+    setIsLoadingData(true);
+    try {
+      let chainParams;
+
+      if (selectedChain === "zama") {
+        chainParams = {
+          chainId: "0x1f49",
+          chainName: "Zama Network",
+          nativeCurrency: {
+            name: "ZAMA",
+            symbol: "ZAMA",
+            decimals: 18,
+          },
+          rpcUrls: ["https://devnet.zama.ai"],
+          blockExplorerUrls: ["https://main.explorer.zama.ai"],
+        };
+      }
+      if (selectedChain === "inco") {
+        console.log("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK");
+
+        chainParams = {
+          chainId: "0x2382",
+          chainName: "Inco Network",
+          nativeCurrency: {
+            name: "INCO",
+            symbol: "INCO",
+            decimals: 18,
+          },
+          rpcUrls: ["https://evm-rpc.inco.network/"],
+          blockExplorerUrls: ["https://explorer.inco.network/"],
+        };
+      }
+
+      if (selectedChain === "fhenix") {
+        chainParams = {
+          chainId: "0x1538",
+          chainName: "Fhenix DevNet",
+          nativeCurrency: {
+            name: "FHE",
+            symbol: "tFHE",
+            decimals: 18,
+          },
+          rpcUrls: ["https://fhenode.fhenix.io/new/evm"],
+          blockExplorerUrls: ["https://demoexplorer.fhenix.io/"],
+        };
+      }
+
+      await window.ethereum.request({
+        method: "wallet_addEthereumChain",
+        params: [chainParams],
+      });
+      setChain(selectedChain);
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const fhevmInstance = await getFhevmInstance();
+
+      const contractAddr = getContract(selectedChain);
+
+      const signer = provider.getSigner();
+      console.log(signer);
+
+      // setSigner(signer);
+      const contractGame = new ethers.Contract(contractAddr, abi, signer);
+      setContract(contractGame);
+      setFhevm(fhevmInstance);
+      console.log(contractGame, provider);
+      const userAddress = await signer.getAddress();
+      console.log("?????????????????????????????????????", userAddress);
+      // Créez un tableau de promesses
+      const promises = [
+        contractGame.getNFTsStakedByOwner(userAddress),
+        contractGame.getOwnedNFTs(userAddress),
+        contractGame.getResetNFTsAndFeesByOwner(userAddress),
+        contractGame.getNftCreationAndFeesByUser(userAddress),
+        provider.getBalance(userAddress),
+        contractGame.getBalanceCoinSpace(userAddress),
+      ];
+
+      const [
+        nftsStake,
+        nftsOwned,
+        nftsRAndFees,
+        nftsCreationFees,
+        balanceWei,
+        balanceWeiCoinSpace,
+      ] = await Promise.all(promises);
+      const balanceEther = Math.round(
+        ethers.utils.formatUnits(balanceWei, "ether")
+      );
+      const balanceCoinSpace = ethers.utils.formatUnits(
+        balanceWeiCoinSpace,
+        "ether"
+      );
+      // console.log(balanceCoinSpace);
+      const ownedNFTs = nftsOwned.map((tokenId) => tokenId.toNumber());
+
+      const stakedNFTs = nftsStake.map((tokenId) => tokenId.toNumber());
+      const resetNFTs = nftsRAndFees[0].map((tokenId) => tokenId.toNumber());
+      // const feesNft = nftsRAndFees[1].map((tokenId) => tokenId.toString());
+      const creationNFTs = nftsCreationFees[0].map((tokenId) =>
+        tokenId.toNumber()
+      );
+      const filteredOwnedNFTs = ownedNFTs.filter(
+        (tokenId) =>
+          !resetNFTs.includes(tokenId) && !stakedNFTs.includes(tokenId)
+      );
+      const assamblage = getAllOwnedNfts(
+        filteredOwnedNFTs,
+        stakedNFTs,
+        resetNFTs,
+        creationNFTs
+      );
+      setAssamblage(assamblage);
+      setAccountBalance(balanceEther);
+      setAccountAddress(userAddress);
+
+      initializeContract(signer, contractGame);
+      fetchGpsData(selectedChain);
+      setBalanceSPC(balanceCoinSpace);
+      setIsLoadingData(false);
+    } catch (error) {
+      console.error(`Error connecting to ${selectedChain} Devnet:`, error);
+      setIsLoadingData(false);
+    }
+  };
+
+  const handleSelectChange = (event) => {
+    connectToDevnet(event);
+  };
+
+  const handleAccountsChanged = async (newAccounts) => {
+    console.log("Accounts changed:", newAccounts);
+
+    // Mettez à jour les données ici si nécessaire
+    if (newAccounts.length > 0) {
+      await connectToDevnet(chain);
+    }
+  };
   const handleMiniMapClick = async (e) => {
     const newMarker = {
       lat: e.latLng.lat(),
@@ -454,7 +351,6 @@ export default function GamePage() {
     setMarkers((prevMarkers) => [newMarker]);
     setPositionMiniMap(newMarker);
   };
-
   const handleConfirmGps = async () => {
     if (!positionMiniMap.lat || !positionMiniMap.lng) {
       alert("You need to place a pin");
@@ -464,6 +360,7 @@ export default function GamePage() {
     try {
       const attConvert = Math.trunc(positionMiniMap.lat * 1e5);
       const lngConvert = Math.trunc(positionMiniMap.lng * 1e5);
+      console.log(attConvert, lngConvert, nft.tokenId);
       const lat = fhevm.encrypt32(attConvert);
       const lng = fhevm.encrypt32(lngConvert);
       const value = 1 + nft.tax;
@@ -498,171 +395,145 @@ export default function GamePage() {
     }
   };
 
-  const opt = () => {
-    return {
-      disableDefaultUI: true,
-      zoomControl: true,
-      scrollwheel: true, // Active la roulette de la souris pour le zoom
+  useEffect(() => {
+    // Ajouter un gestionnaire d'événements pour les changements de compte
+    const handleAccountsChangedEvent = (newAccounts) =>
+      handleAccountsChanged(newAccounts);
+    window.ethereum.on("accountsChanged", handleAccountsChangedEvent);
+
+    // Nettoyer l'écouteur d'événements lorsque le composant est démonté
+    return () => {
+      window.ethereum.off("accountsChanged", handleAccountsChangedEvent);
     };
-  };
-
-  const MuteButton = ({ onClick }) => {
-    return (
-      <button onClick={onClick}>
-        {isPlay ? (
-          <Image src="/volume-2.svg" alt="volume2" height={30} width={30} />
-        ) : (
-          <Image src="/volume-x.svg" alt="volumex" height={30} width={30} />
-        )}
-      </button>
-    );
-  };
-
-  async function fetchGpsData() {
-    try {
-      setMarkers([]);
-      const response = await fetch(`${process.env.SERVER}${process.env.ROUTE}`);
-      const data = await response.json();
-      var bytes = CryptoJS.AES.decrypt(data, process.env.KEY);
-      var decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
-      setPosition({
-        lat: decryptedData.latitude,
-        lng: decryptedData.longitude,
-      });
-      setNft({
-        tokenId: decryptedData.id,
-        tax: decryptedData.tax,
-      });
-    } catch (error) {
-      setPosition({
-        lat: 0,
-        lng: 0,
-      });
-      setNft({
-        tokenId: 0,
-        tax: 0,
-      });
-      alert(
-        "Either no NFT is found, or an error occurs ! Contact support discord / telegram"
-      );
-      throw `fetchGps ${error}`;
-    }
-  }
-  if (!signer) {
-    return <Loading />;
-  }
-  if (isLoadingData && isLoadingGps) {
-    return <Loading />;
-  }
+  }, [chain]); // Assurez-vous de ne pas ajouter l'écouteur à chaque re-render
+  if (isLoadingData) return <Loading />;
   return (
     <LoadScript
       googleMapsApiKey={process.env.API_MAP}
       libraries={lib}
       onLoad={() => console.log("Google Maps loaded successfully.")}
     >
-      <ReactPlayer
-        url="/summer.mp3"
-        playing={isPlay}
-        loop={true}
-        volume={0.1}
-        width="0px"
-        height="0px"
-      />
+      {chain ? (
+        <div>
+          <div className={style.headerContainer}>
+            <Link href="/">
+              <button className={`${style.newCoordinate} center-left-button`}>
+                Back Home
+              </button>
+            </Link>
 
-      <div className={style.headerContainer}>
-        <Link href="/">
-          <button className={`${style.newCoordinate} center-left-button`}>
-            Back Home
-          </button>
-        </Link>
-        <MuteButton onClick={() => setIsPlay(!isPlay)} />
-
-        <div className={style.accountInfo}>
-          <p>{accountAddress}</p>
-          <p>{accountBalance} ZAMA</p>
-          <p>{balanceSpc} SpaceCoin</p>
-        </div>
-
-        <div className={style.infoNft}>
-          <p>GeoSpace: {nft.tokenId}</p>
-          <p>Fees: {nft.tax + 1} ZAMA</p>
-          {assamblage.includes(nft.tokenId) && (
-            <p style={{ color: "red" }}>You are the owner</p>
+            <div className={style.accountInfo}>
+              <p>{accountAddress}</p>
+              <p>
+                {accountBalance} {chain}
+              </p>
+              <p>{balanceSpc} SpaceCoin</p>
+            </div>
+            <div className={style.infoNft}>
+              <p>GeoSpace: {nft.tokenId}</p>
+              <p>
+                Fees: {nft.tax + 1} {chain}
+              </p>
+              {assamblage.includes(nft.tokenId) && (
+                <p style={{ color: "red" }}>You are the owner</p>
+              )}
+            </div>
+            <button
+              onClick={fetchGpsData}
+              className={`${style.newCoordinate} center-left-button`}
+            >
+              New coordinates
+            </button>
+          </div>
+          {showWinMessage && (
+            <div className={style.overlay}>
+              <div className={style.winMessage}>
+                You Win Geospace {nft.tokenId}! Go to your profil...
+              </div>
+            </div>
           )}
+          <div style={style.map}>
+            {console.log(position)}
+            <GoogleMap
+              mapContainerStyle={containerStyle}
+              // center={position}
+              zoom={1}
+            >
+              <StreetViewPanorama {...streetViewPanoramaOptions} />
+            </GoogleMap>
+            <div className={style.miniMapContainer}>
+              <GoogleMap
+                mapContainerStyle={{
+                  width: "100%",
+                  height: "100%",
+                }}
+                center={positionMiniMap}
+                zoom={1}
+                options={opt()}
+                onClick={handleMiniMapClick}
+              >
+                {markers.map((marker, index) => (
+                  <Marker key={index} position={marker} />
+                ))}
+              </GoogleMap>
+              {isLoading && (
+                <div className={style.loadingIndicator}>
+                  <PropagateLoader
+                    css={override}
+                    size={10}
+                    color={"#107a20"}
+                    loading={true}
+                  />
+                </div>
+              )}
+              {isTransactionSuccessful && (
+                <div className={style.overlay}>
+                  <div className={style.successMessage}>{successMessage}</div>
+                </div>
+              )}
+              {isTransactionFailed && (
+                <div className={style.overlay}>
+                  <div className={style.failureMessage}>{failureMessage}</div>
+                </div>
+              )}
+              {!assamblage.includes(nft.tokenId) && !isLoading && (
+                <div className={style.containerButton}>
+                  <a className={style.button} onClick={handleConfirmGps}>
+                    Guess
+                  </a>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-        <button
-          onClick={fetchGpsData}
-          className={`${style.newCoordinate} center-left-button`}
-        >
-          New coordinates
-        </button>
-      </div>
-      {showWinMessage && (
-        <div className={style.overlay}>
-          <div className={style.winMessage}>
-            You Win Geospace {nft.tokenId}! Go to your profil...
+      ) : (
+        <div>
+          <div className={style.headerContainer}>
+            <Link href="/">
+              <button className={`${style.newCoordinate} center-left-button`}>
+                Back Home
+              </button>
+            </Link>
+          </div>
+          <div className={style.firstContainer}>
+            <h1>Start playing</h1>
+
+            <div className={style.dropdownContainer}>
+              <button className={`${style.dropdownButton}`}>
+                Choose Network
+              </button>
+              <div className={style.dropdownContent}>
+                <button onClick={() => handleSelectChange("inco")}>
+                  Inco Network
+                </button>
+                <button onClick={() => handleSelectChange("zama")}>Zama</button>
+              </div>
+            </div>
           </div>
         </div>
       )}
-      <div style={style.map}>
-        <GoogleMap
-          mapContainerStyle={containerStyle}
-          center={position}
-          zoom={1}
-        >
-          <StreetViewPanorama
-            id="street-view"
-            containerStyle={containerStyle}
-            options={gestOption()}
-            position={position}
-            visible={true}
-          />
-        </GoogleMap>
-
-        <div className={style.miniMapContainer}>
-          <GoogleMap
-            mapContainerStyle={{
-              width: "100%",
-              height: "100%",
-            }}
-            center={positionMiniMap}
-            zoom={1}
-            options={opt()}
-            onClick={handleMiniMapClick}
-          >
-            {markers.map((marker, index) => (
-              <Marker key={index} position={marker} />
-            ))}
-          </GoogleMap>
-          {isLoading && (
-            <div className={style.loadingIndicator}>
-              <PropagateLoader
-                css={override}
-                size={10}
-                color={"#107a20"}
-                loading={true}
-              />
-            </div>
-          )}
-          {isTransactionSuccessful && (
-            <div className={style.overlay}>
-              <div className={style.successMessage}>{successMessage}</div>
-            </div>
-          )}
-          {isTransactionFailed && (
-            <div className={style.overlay}>
-              <div className={style.failureMessage}>{failureMessage}</div>
-            </div>
-          )}
-          {!assamblage.includes(nft.tokenId) && !isLoading && (
-            <div className={style.containerButton}>
-              <a className={style.button} onClick={handleConfirmGps}>
-                Guess
-              </a>
-            </div>
-          )}
-        </div>
-      </div>
     </LoadScript>
   );
-}
+};
+
+export default ConnectButton;

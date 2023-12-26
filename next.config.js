@@ -27,6 +27,11 @@ module.exports = {
     ROUTE_TELEGRAM: process.env.ROUTE_TELEGRAM,
     API_KEY: process.env.API_KEY,
     TOKEN: process.env.TOKEN,
+    CONTRACT_INCO: process.env.CONTRACT_INCO,
+    TOKEN_INCO: process.env.TOKEN_INCO,
+    PROVIDER_INCO: process.env.PROVIDER_INCO,
+    CONTRACT_FHENIX: process.env.CONTRACT_FHENIX,
+    TOKEN_FHENIX: process.env.TOKEN_FHENIX,
   },
   webpack: (config) => {
     // Ajoutez ici la configuration de résolution pour 'tfhe_bg.wasm'

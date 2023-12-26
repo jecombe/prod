@@ -452,6 +452,19 @@ const abi = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "contractOwner",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "bytes[]",
@@ -682,40 +695,25 @@ const abi = [
         name: "tokenId",
         type: "uint256",
       },
+      {
+        internalType: "bytes32",
+        name: "publicKey",
+        type: "bytes32",
+      },
     ],
     name: "getNFTLocation",
     outputs: [
       {
         components: [
           {
-            internalType: "uint32",
-            name: "northLat",
-            type: "uint32",
-          },
-          {
-            internalType: "uint32",
-            name: "southLat",
-            type: "uint32",
-          },
-          {
-            internalType: "uint32",
-            name: "eastLon",
-            type: "uint32",
-          },
-          {
-            internalType: "uint32",
-            name: "westLon",
-            type: "uint32",
-          },
-          {
-            internalType: "uint256",
+            internalType: "bytes",
             name: "lat",
-            type: "uint256",
+            type: "bytes",
           },
           {
-            internalType: "uint256",
+            internalType: "bytes",
             name: "lng",
-            type: "uint256",
+            type: "bytes",
           },
         ],
         internalType: "struct NFTLocation",
@@ -733,40 +731,25 @@ const abi = [
         name: "tokenId",
         type: "uint256",
       },
+      {
+        internalType: "bytes32",
+        name: "publicKey",
+        type: "bytes32",
+      },
     ],
     name: "getNFTLocationForOwner",
     outputs: [
       {
         components: [
           {
-            internalType: "uint32",
-            name: "northLat",
-            type: "uint32",
-          },
-          {
-            internalType: "uint32",
-            name: "southLat",
-            type: "uint32",
-          },
-          {
-            internalType: "uint32",
-            name: "eastLon",
-            type: "uint32",
-          },
-          {
-            internalType: "uint32",
-            name: "westLon",
-            type: "uint32",
-          },
-          {
-            internalType: "uint256",
+            internalType: "bytes",
             name: "lat",
-            type: "uint256",
+            type: "bytes",
           },
           {
-            internalType: "uint256",
+            internalType: "bytes",
             name: "lng",
-            type: "uint256",
+            type: "bytes",
           },
         ],
         internalType: "struct NFTLocation",

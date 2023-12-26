@@ -137,9 +137,8 @@ export default function Contents() {
             <p>
               For now, the game is available and in development on the{" "}
               <a href="https://www.zama.ai/">Zama </a>
-              devnet <br />
-              Later on, a migration will be carried out to the{" "}
-              <a href="https://www.fhenix.io/">Fhenix</a> blockchain.
+              devnet and <a href="https://www.inco.network/">Inco Network </a>
+              future deployment on this.
             </p>
             <h2>Discover the world</h2>
             <p>
