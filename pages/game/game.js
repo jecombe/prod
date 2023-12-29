@@ -114,7 +114,6 @@ export default function GamePage() {
         // Perform data-related logic here
       }
     } catch (error) {
-      console.log(position);
       setIsLoadingDataGps(false);
       return error;
       // Handle errors
