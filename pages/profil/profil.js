@@ -13,6 +13,7 @@ import { parseUnits } from "ethers/lib/utils";
 import { css } from "@emotion/react";
 import { PropagateLoader, CircleLoader } from "react-spinners";
 import { useRef } from "react";
+import { getTokenSignature } from "../../utils/fhevm";
 
 // Fonction utilitaire pour créer un carré autour d'un point avec des décimales
 function createSquareAroundPointWithDecimals(
@@ -96,6 +97,8 @@ const Profil = () => {
   const [feesNftMap, setFeesNftMap] = useState({});
   const [decryptedNFTS, setDecrypted] = useState([]);
   const [errorsFetch, setErrorFetch] = useState("");
+  const [pubKey, setPublicKey] = useState(null);
+
   // const [isAccessGovernance, setAccessGovernance] = useState(false);
   // const [isAccessCreate, setAccessCreate] = useState(false);
 
@@ -190,27 +193,27 @@ const Profil = () => {
   //   initializeMetaMask();
   // }, []);
 
-  const callDecrypt = async (ownedNfts, userAddress, gasFees) => {
-    const promises = ownedNfts.map((tokenId, index) =>
-      contract.getNFTLocationForOwner(tokenId, {
-        from: userAddress,
-        gasLimit: gasFees[index],
-      })
-    );
+  // const callDecrypt = async (ownedNfts, userAddress, gasFees) => {
+  //   const promises = ownedNfts.map((tokenId, index) =>
+  //     contract.getNFTLocationForOwner(tokenId, {
+  //       from: userAddress,
+  //       gasLimit: gasFees[index],
+  //     })
+  //   );
 
-    return Promise.all(promises);
-  };
-  const callDecryptGas = async (ownedNfts, userAddress) => {
-    const promises = [];
-    for (const tokenId of ownedNfts) {
-      promises.push(
-        contract.estimateGas.getNFTLocationForOwner(tokenId, {
-          from: userAddress,
-        })
-      );
-    }
-    return Promise.all(promises);
-  };
+  //   return Promise.all(promises);
+  // };
+  // const callDecryptGas = async (ownedNfts, userAddress) => {
+  //   const promises = [];
+  //   for (const tokenId of ownedNfts) {
+  //     promises.push(
+  //       contract.estimateGas.getNFTLocationForOwner(tokenId, {
+  //         from: userAddress,
+  //       })
+  //     );
+  //   }
+  //   return Promise.all(promises);
+  // };
   const formaterNombre = (nombre) => {
     const nombreEnChaine = nombre.toString();
 
@@ -229,8 +232,8 @@ const Profil = () => {
   const setMarkerArray = (array) => {
     if (array.length > 0) {
       const markersData = array.map((marker, i) => {
-        const lat = Number(marker[4]);
-        const lng = Number(marker[5]);
+        const lat = Number(marker[0]);
+        const lng = Number(marker[1]);
 
         const latConvert = Number(formaterNombre(lat));
         const lngConvert = Number(formaterNombre(lng));
@@ -267,21 +270,105 @@ const Profil = () => {
     }
     return assambly.reduce((acc, currentArray) => acc.concat(currentArray), []);
   };
+  // const fetchDecrypt = async () => {
+  //   if (signer) {
+  //     try {
+  //       setLoadingDataMap(true);
+  //       const assamblage = getAllOwnedNfts();
+  //       const decryptedLocations = await callDecryptGas(assamblage, account);
+  //       console.log(decryptedLocations);
+  //       const gasFees = [];
+  //       decryptedLocations.forEach((value, index) => {
+  //         const gasLimit = getMargeErrorTx(value);
+  //         gasFees.push(gasLimit);
+  //       });
+  //       const decryptedGps = await callDecrypt(assamblage, account, gasFees);
+  //       setDecrypted(decryptedGps);
+  //       setMarkerArray(decryptedGps);
+  //       setLoadingDataMap(false);
+  //     } catch (error) {
+  //       console.error("error get decrypt", error);
+  //       setLoadingDataMap(false);
+  //       return error;
+  //     }
+  //   }
+  // };
+  const callDecryptGas = async (
+    ownedNfts,
+    userAddress,
+    publicKey,
+    addrContract
+  ) => {
+    const promises = [];
+    console.log(pubKey);
+    for (const tokenId of ownedNfts) {
+      promises.push(
+        contract.getNFTLocationForOwner(tokenId, publicKey, {
+          from: userAddress,
+        })
+      );
+    }
+    return Promise.all(promises);
+  };
+
+  // const callDecrypt = async (ownedNfts, userAddress, gasFees) => {
+  //   const promises = ownedNfts.map((tokenId, index) =>
+  //     contract.getNFTLocation(tokenId, pubKey, {
+  //       from: userAddress,
+  //       gasLimit: 10000000, //gasFees[index],
+  //     })
+  //   );
+
+  //   return Promise.all(promises);
+  // };
+
+  const allDecrypt = (tableau, contract) => {
+    // Vous pouvez remplacer cette fonction par votre propre logique de calcul
+    return tableau.map((valeur) => fhevm.decrypt(contract, valeur)); // Exemple : multiplier chaque valeur par 2
+  };
+
   const fetchDecrypt = async () => {
     if (signer) {
       try {
         setLoadingDataMap(true);
         const assamblage = getAllOwnedNfts();
-        const decryptedLocations = await callDecryptGas(assamblage, account);
+        const addrContract = process.env.CONTRACT;
+        const { publicKey, signature } = await getTokenSignature(
+          addrContract,
+          account
+        );
+        // setPublicKey(publicKey);
+        // setSignature(signature);
+        const decryptedLocations = await callDecryptGas(
+          assamblage,
+          account,
+          publicKey,
+          addrContract
+        );
+        for (let i = 0; i < decryptedLocations.length; i++) {
+          decryptedLocations[i] = allDecrypt(
+            decryptedLocations[i],
+            addrContract
+          );
+        }
         console.log(decryptedLocations);
-        const gasFees = [];
-        decryptedLocations.forEach((value, index) => {
-          const gasLimit = getMargeErrorTx(value);
-          gasFees.push(gasLimit);
-        });
-        const decryptedGps = await callDecrypt(assamblage, account, gasFees);
-        setDecrypted(decryptedGps);
-        setMarkerArray(decryptedGps);
+
+        // console.log(r);
+        //console.log(decryptedLocations);
+        // const gasFees = [];
+        // decryptedLocations.forEach((value, index) => {
+        //   const gasLimit = getMargeErrorTx(value);
+        //   gasFees.push(gasLimit);
+        // });
+
+        // const decryptedGps = await callDecrypt(assamblage, account, gasFees);
+        // console.log(
+        //   "?????????????????????????????????????????????????????????????3",
+        //   decryptedGps
+        // );
+        setDecrypted(decryptedLocations);
+        setMarkerArray(decryptedLocations);
+        console.log(markers);
         setLoadingDataMap(false);
       } catch (error) {
         console.error("error get decrypt", error);
