@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import initMetaMask from "../../utils/metamask";
 import abi from "../../utils/abi/abi";
+import abiGame from "../../utils/abi/game";
+import abiCoin from "../../utils/abi/coin";
+
 import styles from "./profil.module.css";
 import ErrorMetamask from "../errorPage/metamask";
 import Link from "next/link";
@@ -76,14 +79,12 @@ const Profil = () => {
   const [balanceNftGsrSpc, setBalanceNftGsrSpc] = useState(0);
 
   const [ownedNFTs, setOwnedNFTs] = useState([]);
-  const [stakedNFTs, setStakedNFTs] = useState([]);
   const [createdNFTs, setCreatedNFTs] = useState([]);
 
   const [isLoading, setIsLoading] = useState(true);
   const [signer, setSigner] = useState(null);
   const [contract, setContract] = useState(null);
   const [selectedNFTs, setSelectedNFTs] = useState([]);
-  const [selectedStakedNFTs, setSelectedStakedNFTs] = useState([]);
   const [selectedResetNFTs, setSelectedResetNFTs] = useState([]);
 
   const [fhevm, setFhevm] = useState(null);
@@ -123,7 +124,13 @@ const Profil = () => {
   const [showMap, setShowMap] = useState(false);
   const [balanceSPC, setBalanceSPC] = useState(0);
   const [contractCoin, setContractCoin] = useState(null);
+  const [contractGame, setContractGame] = useState(null);
+
   const createGeoSpaceRef = useRef(null);
+  const [balanceStake, setBalanceStake] = useState(null);
+  const [balanceRewardCreator, setBalanceRewardCreator] = useState(null);
+  const [balanceRewardStake, setBalanceRewardStake] = useState(null);
+  const [balanceRewardOwner, setBalanceRewardOwner] = useState(null);
 
   const [position, setPosition] = useState({ lat: 0, lng: 0 });
   const lib = ["places"];
@@ -173,12 +180,18 @@ const Profil = () => {
       const signer = await initMetaMask();
       const contract = new ethers.Contract(process.env.CONTRACT, abi, signer);
       const contractCoin = new ethers.Contract(process.env.TOKEN, abi, signer);
+      const contractGame = new ethers.Contract(
+        process.env.GAME,
+        abiGame,
+        signer
+      );
 
       const fhevmInstance = await getFhevmInstance();
       setFhevm(fhevmInstance);
       setSigner(signer);
       setContract(contract);
       setContractCoin(contractCoin);
+      setContractGame(contractGame);
       setIsMetaMaskInitialized(true);
       // if (window.ethereum) {
       //   window.ethereum.on("accountsChanged", handleAccountsChanged);
@@ -259,9 +272,6 @@ const Profil = () => {
     if (ownedNFTs.length > 0) {
       assambly.push(ownedNFTs);
     }
-    if (stakedNFTs.length > 0) {
-      assambly.push(stakedNFTs);
-    }
     if (resetNFT.length > 0) {
       assambly.push(resetNFT);
     }
@@ -297,13 +307,13 @@ const Profil = () => {
     ownedNfts,
     userAddress,
     publicKey,
-    addrContract
+    signature
   ) => {
     const promises = [];
     console.log(pubKey);
     for (const tokenId of ownedNfts) {
       promises.push(
-        contract.getNFTLocationForOwner(tokenId, publicKey, {
+        contractGame.getNFTLocationForOwner(tokenId, publicKey, signature, {
           from: userAddress,
         })
       );
@@ -332,9 +342,9 @@ const Profil = () => {
       try {
         setLoadingDataMap(true);
         const assamblage = getAllOwnedNfts();
-        const addrContract = process.env.CONTRACT;
+        //const addrContract = process.env.CONTRACT;
         const { publicKey, signature } = await getTokenSignature(
-          addrContract,
+          process.env.GAME,
           account
         );
         // setPublicKey(publicKey);
@@ -343,12 +353,12 @@ const Profil = () => {
           assamblage,
           account,
           publicKey,
-          addrContract
+          signature
         );
         for (let i = 0; i < decryptedLocations.length; i++) {
           decryptedLocations[i] = allDecrypt(
             decryptedLocations[i],
-            addrContract
+            process.env.GAME
           );
         }
         console.log(decryptedLocations);
@@ -399,41 +409,77 @@ const Profil = () => {
       if (signer) {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const userAddress = await signer.getAddress();
+        const r = await contractGame.lifePointTotal(userAddress);
+        console.log("==================", r.toString());
         // Créez un tableau de promesses
         const promises = [
-          contract.getNFTsStakedByOwner(userAddress),
-          contract.getOwnedNFTs(userAddress),
-          contract.getResetNFTsAndFeesByOwner(userAddress),
-          contract.getNftCreationAndFeesByUser(userAddress),
+          contractGame.getOwnedNFTs(userAddress),
+          contractGame.getResetNFTsAndFeesByOwner(userAddress),
+          contractGame.getNftCreationAndFeesByUser(userAddress),
           provider.getBalance(userAddress),
           contract.getBalanceCoinSpace(userAddress),
+          contract.balanceRewardStaker(userAddress),
+          contract.balanceRewardCreator(userAddress),
+          contract.balanceRewardCreatorOwnerFees(userAddress),
+          contract.stakedBalance(userAddress),
+          contractGame.userFees(
+            "0x95977386303e586B3C9765B51c8A77b7A18efb84",
+            3
+          ),
+          contractGame.ownerNft(3),
+
+          //contractGame.get
         ];
 
         const [
-          nftsStake,
           nftsOwned,
           nftsRAndFees,
           nftsCreationFees,
           balanceWei,
           balanceWeiCoinSpace,
+          balanceRewardStake,
+          balanceRewardCreator,
+          balanceRewardCreatorOwner,
+          balanceStake,
+          userFees,
+          ownerNft,
         ] = await Promise.all(promises);
+        const rewardStake = ethers.utils.formatUnits(
+          balanceRewardStake,
+          "ether"
+        );
+        const usrFees = ethers.utils.formatUnits(userFees, "ether");
+        console.log(usrFees, ownerNft);
+        const rewardOwner = ethers.utils.formatUnits(
+          balanceRewardCreatorOwner,
+          "ether"
+        );
+
+        console.log(
+          `stake: ${balanceRewardStake}, creator: ${balanceRewardCreator.toString()}, owner : ${rewardOwner}`
+        );
+        const balanceStakeEth = Math.round(
+          ethers.utils.formatUnits(balanceStake, "ether")
+        );
+        setBalanceStake(balanceStakeEth);
         const balanceEther = Math.round(
           ethers.utils.formatUnits(balanceWei, "ether")
         );
+        setBalanceRewardStake(rewardStake);
+        setBalanceRewardCreator(balanceRewardCreator.toString());
+        setBalanceRewardOwner(rewardOwner);
         const balanceCoinSpace = ethers.utils.formatUnits(
           balanceWeiCoinSpace,
           "ether"
         );
 
         const ownedNFTs = nftsOwned.map((tokenId) => tokenId.toNumber());
-
-        const stakedNFTs = nftsStake.map((tokenId) => tokenId.toNumber());
+        console.log(ownedNFTs);
         const resetNFTs = nftsRAndFees[0].map((tokenId) => tokenId.toNumber());
         const feesNft = nftsRAndFees[1].map((tokenId) => tokenId.toString());
         const creationNFTs = nftsCreationFees[0].map((tokenId) =>
           tokenId.toNumber()
         );
-        console.log(creationNFT);
         const creationNFTsFees = nftsCreationFees[1].map((tokenId) =>
           tokenId.toString()
         );
@@ -456,8 +502,7 @@ const Profil = () => {
         setFeesNftMap(feesNftMap);
 
         const filteredOwnedNFTs = ownedNFTs.filter(
-          (tokenId) =>
-            !resetNFTs.includes(tokenId) && !stakedNFTs.includes(tokenId)
+          (tokenId) => !resetNFTs.includes(tokenId)
         );
         if (userAddress === process.env.OWNER) {
           const balanceEth = await provider.getBalance(process.env.CONTRACT);
@@ -467,7 +512,6 @@ const Profil = () => {
           );
 
           const valueREth = ethers.utils.formatUnits(balanceEth, "ether");
-          console.log(valueREth);
           const valueSpc = Number(
             ethers.utils.formatUnits(balanceSpc, "ether")
           );
@@ -478,25 +522,13 @@ const Profil = () => {
         setAccount(userAddress);
         setBalance(balanceEther);
         setBalanceSPC(balanceCoinSpace);
-        setStakedNFTs(stakedNFTs);
         setResetNFT(resetNFTs);
         setCreationNFT(nftsCreaFee);
-        // const assamblage = getAllOwnedNfts();
-        // if (stakedNFTs.length >= 3) {
-        //   setAccessCreate(true);
-        // } else setAccessCreate(false);
-        // if (assamblage.length > 0) {
-        //   setAccessGovernance(true);
-        // } else {
-        //   setAccessGovernance(false);
-        // }
         setIsLoading(false);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
       setErrorFetch("Error fetching data");
-      // setAccessCreate(false);
-
       return error;
     }
   };
@@ -505,45 +537,8 @@ const Profil = () => {
     const newAccount = accounts[0];
 
     setAccount(newAccount);
-    // const signer = await initMetaMask();
-    // setSigner(signer);
     await initializeMetaMask();
-    // setBalance(0);
-    // setBalanceSPC(0);
-    // setOwnedNFTs([]);
-    // setStakedNFTs([]);
     await fetchData();
-  };
-
-  const stakeSelectedNFTs = async () => {
-    if (selectedNFTs.length === 0) {
-      alert("Please select NFTs to stake");
-      return;
-    }
-
-    try {
-      setIsTransactionStakePending(true); // Set transaction pending state
-
-      const gasEstimation = await contract.estimateGas.stakeNFT(selectedNFTs);
-      const gasLimit = getMargeErrorTx(gasEstimation);
-      const rep = await contract.stakeNFT(selectedNFTs, { gasLimit });
-
-      await rep.wait();
-      setIsTransactionStakePending(false); // Set transaction pending state
-
-      setStakedNFTs((prevStakedNFTs) => [...prevStakedNFTs, ...selectedNFTs]);
-
-      const updatedOwnedNFTs = ownedNFTs.filter(
-        (tokenId) => !selectedNFTs.includes(tokenId)
-      );
-      setOwnedNFTs(updatedOwnedNFTs);
-
-      setSelectedNFTs([]);
-    } catch (error) {
-      setIsTransactionStakePending(false); // Set transaction pending state
-
-      console.error("Error staking NFTs:", error);
-    }
   };
 
   const resetNFTs = async () => {
@@ -600,35 +595,6 @@ const Profil = () => {
     }
   };
 
-  const unstakeNFTs = async () => {
-    if (selectedStakedNFTs.length === 0) {
-      ("Please select NFTs to unstake");
-      return;
-    }
-
-    try {
-      setIsTransactionUnstakePending(true); // Set transaction pending state
-
-      const rep = await contract.unstakeNFT(selectedStakedNFTs);
-      await rep.wait();
-      setIsTransactionUnstakePending(false); // Set transaction pending state
-
-      setSelectedStakedNFTs([]);
-      const updatedStakedNFTs = stakedNFTs.filter(
-        (tokenId) => !selectedStakedNFTs.includes(tokenId)
-      );
-      setStakedNFTs(updatedStakedNFTs);
-      setOwnedNFTs((prevOwnedNFTs) => [
-        ...prevOwnedNFTs,
-        ...selectedStakedNFTs,
-      ]);
-    } catch (error) {
-      setIsTransactionUnstakePending(false); // Set transaction pending state
-
-      console.error("Error unstaking NFTs:", error);
-    }
-  };
-
   const claimNft = async () => {
     if (selectedResetNFTs.length === 0) {
       alert("Please select NFTs to cancel reset");
@@ -660,6 +626,181 @@ const Profil = () => {
       console.error("Error reset claim NFTs:", error);
     }
   };
+
+  const unStakeSpc = async () => {
+    const number = qtyWithdraw;
+    setIsTransactionUnstakePending(true);
+
+    if (isNaN(number)) {
+      alert("Invalid input");
+      setIsTransactionUnstakePending(false);
+
+      return;
+    }
+    const erc20Contract = new ethers.Contract(process.env.TOKEN, abi, signer);
+    // const amountInWei = ethers.utils.parseUnits(number.toString(), "ether");
+
+    // const gasEstimation = await contract.estimateGas.withdrawToken(amountInWei);
+    // const gasLimit = getMargeErrorTx(gasEstimation);
+    // const rep = await contract.withdrawToken(amountInWei, {
+    //   gasLimit,
+    // });
+    // await rep.wait();
+    try {
+      const approvalAmount = parseUnits(number, 18);
+      console.log(approvalAmount);
+
+      const gasEstimationStake = await contract.estimateGas.unstakeSPC(
+        approvalAmount
+      );
+      const gasLimitStake = getMargeErrorTx(gasEstimationStake);
+      const rep = await contract.unstakeSPC(approvalAmount, {
+        gasLimit: gasLimitStake,
+      });
+      await rep.wait();
+      setIsTransactionUnstakePending(false);
+    } catch (error) {
+      console.error(error);
+      setIsTransactionUnstakePending(false);
+    }
+  };
+
+  const stakeSpc = async () => {
+    const number = qtyWithdraw;
+    setIsTransactionStakePending(true);
+
+    if (isNaN(number)) {
+      alert("Invalid input");
+      setIsTransactionStakePending(false);
+
+      return;
+    }
+    const erc20Contract = new ethers.Contract(
+      process.env.TOKEN,
+      abiCoin,
+      signer
+    );
+    // const amountInWei = ethers.utils.parseUnits(number.toString(), "ether");
+
+    // const gasEstimation = await contract.estimateGas.withdrawToken(amountInWei);
+    // const gasLimit = getMargeErrorTx(gasEstimation);
+    // const rep = await contract.withdrawToken(amountInWei, {
+    //   gasLimit,
+    // });
+    // await rep.wait();
+    try {
+      const approvalAmount = parseUnits(number, 18);
+      console.log(approvalAmount);
+      const gasEstimation = await erc20Contract.estimateGas.approve(
+        process.env.CONTRACT,
+        approvalAmount
+      );
+      const gasLimit = getMargeErrorTx(gasEstimation);
+      console.log(gasLimit);
+
+      const approvalTx = await erc20Contract.approve(
+        process.env.CONTRACT,
+        approvalAmount,
+        { gasLimit }
+      );
+
+      await approvalTx.wait();
+
+      const gasEstimationStake = await contract.estimateGas.stakeSPC(
+        approvalAmount
+      );
+      const gasLimitStake = getMargeErrorTx(gasEstimationStake);
+      const rep = await contract.stakeSPC(approvalAmount, {
+        gasLimit: gasLimitStake,
+      });
+      await rep.wait();
+      setIsTransactionStakePending(false);
+    } catch (error) {
+      console.error(error);
+      setIsTransactionStakePending(false);
+    }
+  };
+
+  const claim = async () => {
+    const number = qtyWithdraw;
+    setIsTransactionStakePending(true);
+
+    if (isNaN(number)) {
+      alert("Invalid input");
+      setIsTransactionStakePending(false);
+
+      return;
+    }
+    const erc20Contract = new ethers.Contract(process.env.TOKEN, abi, signer);
+    // const amountInWei = ethers.utils.parseUnits(number.toString(), "ether");
+
+    // const gasEstimation = await contract.estimateGas.withdrawToken(amountInWei);
+    // const gasLimit = getMargeErrorTx(gasEstimation);
+    // const rep = await contract.withdrawToken(amountInWei, {
+    //   gasLimit,
+    // });
+    // await rep.wait();
+    try {
+      const gasEstimationClaim = await contract.estimateGas.claimRewardStaker();
+      const gasLimit = getMargeErrorTx(gasEstimationClaim);
+      const rep = await contract.claimRewardStaker({
+        gasLimit,
+      });
+      await rep.wait();
+      setIsTransactionStakePending(false);
+    } catch (error) {
+      console.error(error);
+      setIsTransactionStakePending(false);
+    }
+  };
+
+  const claimCreator = async () => {
+    const number = qtyWithdraw;
+    setIsTransactionStakePending(true);
+
+    if (isNaN(number)) {
+      alert("Invalid input");
+      setIsTransactionStakePending(false);
+
+      return;
+    }
+    const erc20Contract = new ethers.Contract(process.env.TOKEN, abi, signer);
+    // const amountInWei = ethers.utils.parseUnits(number.toString(), "ether");
+
+    // const gasEstimation = await contract.estimateGas.withdrawToken(amountInWei);
+    // const gasLimit = getMargeErrorTx(gasEstimation);
+    // const rep = await contract.withdrawToken(amountInWei, {
+    //   gasLimit,
+    // });
+    // await rep.wait();
+    try {
+      const gasEstimationClaim =
+        await contract.estimateGas.claimRewardCreator();
+      const gasLimit = getMargeErrorTx(gasEstimationClaim);
+      const rep = await contract.claimRewardCreator({
+        gasLimit,
+      });
+      await rep.wait();
+      setIsTransactionStakePending(false);
+    } catch (error) {
+      console.error(error);
+      setIsTransactionStakePending(false);
+    }
+  };
+
+  const withdrawZama = async () => {
+    try {
+      const gasEstimation = await contract.estimateGas.withdraw();
+      const gasLimit = getMargeErrorTx(gasEstimation);
+      const rep = await contract.withdraw({
+        gasLimit,
+      });
+      await rep.wait();
+    } catch (error) {
+      return error;
+    }
+  };
+
   const withdrawSpaceCoin = async () => {
     const number = qtyWithdraw;
 
@@ -677,18 +818,6 @@ const Profil = () => {
       gasLimit,
     });
     await rep.wait();
-  };
-  const withdrawZama = async () => {
-    try {
-      const gasEstimation = await contract.estimateGas.withdraw();
-      const gasLimit = getMargeErrorTx(gasEstimation);
-      const rep = await contract.withdraw({
-        gasLimit,
-      });
-      await rep.wait();
-    } catch (error) {
-      return error;
-    }
   };
 
   const createGpsOwner = async () => {
@@ -828,7 +957,7 @@ const Profil = () => {
         const objFees = [amountInWei];
         const erc20Contract = new ethers.Contract(
           process.env.TOKEN,
-          abi,
+          abiCoin,
           signer
         );
         const feesCreation = await axios.get(
@@ -864,7 +993,7 @@ const Profil = () => {
         });
 
         await rep.wait();
-        const id = await contract.totalSupply();
+        const id = await contractGame.totalSupply();
 
         setCreationNFT((prevCreationNFT) => [
           ...prevCreationNFT,
@@ -891,16 +1020,27 @@ const Profil = () => {
       await window.ethereum.request({
         method: "wallet_addEthereumChain",
         params: [
+          // {
+          //   chainId: "0x1f49",
+          //   chainName: "Zama Network",
+          //   nativeCurrency: {
+          //     name: "ZAMA",
+          //     symbol: "ZAMA",
+          //     decimals: 18,
+          //   },
+          //   rpcUrls: ["https://devnet.zama.ai"],
+          //   blockExplorerUrls: ["https://main.explorer.zama.ai"],
+          // },
           {
-            chainId: "0x1f49",
-            chainName: "Zama Network",
+            chainId: "0x2382",
+            chainName: "Inco Network",
             nativeCurrency: {
-              name: "ZAMA",
-              symbol: "ZAMA",
+              name: "INCO",
+              symbol: "INCO",
               decimals: 18,
             },
-            rpcUrls: ["https://devnet.zama.ai"],
-            blockExplorerUrls: ["https://main.explorer.zama.ai"],
+            rpcUrls: ["https://evm-rpc.inco.network/"],
+            blockExplorerUrls: ["https://explorer.inco.network/"],
           },
         ],
       });
@@ -917,7 +1057,8 @@ const Profil = () => {
         const networkId = await window.ethereum.request({
           method: "eth_chainId",
         });
-        if (networkId !== "0x1f49") {
+        if (networkId !== "0x2382") {
+          //if (networkId !== "0x1f49") {
           const userResponse = window.confirm(
             "Please switch to Zama Devnet network to use this application. Do you want to switch now?"
           );
@@ -992,6 +1133,10 @@ const Profil = () => {
           <Link href="/">
             <button className={`${styles.backHome}`}>Back Home</button>
           </Link>
+
+          <Link href="/airdrop/airdrop">
+            <button className={`${styles.backHome}`}>AirDrop</button>
+          </Link>
         </div>
         <div className={styles.firstContainer}>
           <h1>My Profil</h1>
@@ -1001,16 +1146,127 @@ const Profil = () => {
           <p>{balance} ZAMA</p>
           <p>{balanceSPC} SPC</p>
         </div>
+        {balanceSPC > 0 || balanceStake > 0 ? (
+          <>
+            <div className={styles.firstContainer}>
+              <h1>SpaceCoin</h1>
+              <div className={styles.centerExplication}>
+                <p>
+                  The more you stake (compared to other stakers), the more
+                  shares of the guess tax by other players in INCO you will
+                  receive.
+                </p>
+              </div>
+
+              <h3 style={{ color: "green" }}>
+                Your SpaceCoin stake:{" "}
+                <p style={{ display: "inline", margin: 0 }}>
+                  {balanceStake} SPC
+                </p>
+              </h3>
+
+              <h3 style={{ color: "#a88314" }}>
+                Your reward staking:{" "}
+                <p style={{ display: "inline", margin: 0 }}>
+                  {balanceRewardStake} INCO
+                </p>
+              </h3>
+
+              {balanceRewardStake > 0 ? (
+                <div>
+                  <React.Fragment>
+                    {isTransactionStakePending ? (
+                      <CircleLoader
+                        css={overrideCircle}
+                        size={30}
+                        color={"#107a20"}
+                        loading={true}
+                      />
+                    ) : (
+                      <>
+                        <a
+                          className={`${styles.accessButton} ${styles.buttonSpacing}`}
+                          onClick={claim}
+                        >
+                          Claim
+                        </a>
+                      </>
+                    )}
+                  </React.Fragment>
+                </div>
+              ) : (
+                ""
+              )}
+            </div>
+            <div className={styles.containerInfos}>
+              <div style={{ flex: 1 }}>
+                <div className={`${styles.stakeContainer}`}>
+                  <React.Fragment>
+                    {isTransactionStakePending ? (
+                      <CircleLoader
+                        css={overrideCircle}
+                        size={30}
+                        color={"#107a20"}
+                        loading={true}
+                      />
+                    ) : (
+                      // <a
+                      //   className={`${styles.red2Button} ${styles.buttonSpacing}`}
+                      //   onClick={resetNFTs}
+                      // >
+                      <>
+                        <h2>Set quantity to stake or unstake</h2>
+                        <form>
+                          <input
+                            type="number"
+                            min="1"
+                            value={qtyWithdraw}
+                            onChange={(e) => setQtyWithdraw(e.target.value)}
+                          />
+                        </form>
+
+                        <a
+                          className={`${styles.red2Button} ${styles.buttonSpacing}`}
+                          onClick={stakeSpc}
+                        >
+                          Stake SPC
+                        </a>
+
+                        <a
+                          className={`${styles.redButton} ${styles.buttonSpacing}`}
+                          onClick={unStakeSpc}
+                        >
+                          UnStake SPC
+                        </a>
+                      </>
+                    )}
+                  </React.Fragment>
+                </div>
+              </div>
+            </div>
+          </>
+        ) : (
+          ""
+        )}
         {ownedNFTs.length === 0 &&
         createdNFTs.length === 0 &&
-        resetNFT.length === 0 &&
-        stakedNFTs.length === 0 ? (
+        resetNFT.length === 0 ? (
           <div className={styles.needToPlay}>
             <h1>You don&#39;t have any nft</h1>
             <p>you need to play to win nft</p>
           </div>
         ) : (
           <div>
+            <div className={styles.firstContainer}>
+              <h1>GeoSpace</h1>
+              <div className={styles.centerExplication}>
+                <p>
+                  The more GeoSpace you create (compared to the total number of
+                  NFTs created), the more shares of the minted SpaceCoin you
+                  will receive when a guess request is made by other players.
+                </p>
+              </div>
+            </div>
             <div className={styles.titleMap}>
               {/* <h2>Location of your GeoSpace NFTs</h2> */}
 
@@ -1086,8 +1342,49 @@ const Profil = () => {
                 </GoogleMap>
               </div>
             )}
+            <div className={styles.firstContainer}>
+              <h3 style={{ color: "green" }}>
+                Your total GeoSpace created:{" "}
+                <p style={{ display: "inline", margin: 0 }}>
+                  {creationNFT.length} GSP
+                </p>
+              </h3>
+
+              <h3 style={{ color: "#a88314" }}>
+                Your reward creator:{" "}
+                <p style={{ display: "inline", margin: 0 }}>
+                  {balanceRewardCreator} SPC
+                </p>
+              </h3>
+              {balanceRewardCreator > 0 ? (
+                <div>
+                  <React.Fragment>
+                    {isTransactionStakePending ? (
+                      <CircleLoader
+                        css={overrideCircle}
+                        size={30}
+                        color={"#107a20"}
+                        loading={true}
+                      />
+                    ) : (
+                      <>
+                        <a
+                          className={`${styles.accessButton} ${styles.buttonSpacing}`}
+                          onClick={claimCreator}
+                        >
+                          Claim
+                        </a>
+                      </>
+                    )}
+                  </React.Fragment>
+                </div>
+              ) : (
+                ""
+              )}
+            </div>
+
             <div className={styles.access}>
-              {stakedNFTs.length >= 3 && (
+              {resetNFT.length >= 1 && (
                 <a href="#" onClick={scrollToCreateGeoSpace}>
                   You have access to create GeoSpace
                 </a>
@@ -1124,10 +1421,7 @@ const Profil = () => {
                                       : [...prevSelected, value]
                                   );
                                 }}
-                                disabled={
-                                  stakedNFTs.includes(tokenId) ||
-                                  resetNFT.includes(tokenId)
-                                }
+                                disabled={resetNFT.includes(tokenId)}
                               />
                               GeoSpace {tokenId}
                             </label>
@@ -1141,21 +1435,6 @@ const Profil = () => {
                           </li>
                         ))}
                       </ul>
-                      {isTransactionStakePending ? (
-                        <CircleLoader
-                          css={overrideCircle}
-                          size={30}
-                          color={"#107a20"}
-                          loading={true}
-                        />
-                      ) : (
-                        <a
-                          className={styles.red2Button}
-                          onClick={stakeSelectedNFTs}
-                        >
-                          Stake
-                        </a>
-                      )}
 
                       {isTransactionResetPending ? (
                         <CircleLoader
@@ -1179,78 +1458,7 @@ const Profil = () => {
                     </React.Fragment>
                   </div>
                 </div>
-                {stakedNFTs.length > 0 ? (
-                  <div style={{ flex: 1 }}>
-                    <div className={`${styles.yourStakedNft}`}>
-                      <h2>Staked GeoSpaces</h2>
-                      <p>
-                        Just stake 3 GeoSpaces to have the right to unlock the
-                        creation of NFTs.
-                      </p>
-                      <p>
-                        If you have at least 1 GeoSpace staked, then you receive
-                        1 SpaceCoin daily.
-                      </p>
 
-                      {stakedNFTs.length > 0 ? (
-                        <p>just select GeoSpaces to unstake</p>
-                      ) : (
-                        ""
-                      )}
-
-                      {stakedNFTs.length === 0 ? (
-                        ""
-                      ) : (
-                        <React.Fragment>
-                          <ul>
-                            {stakedNFTs.map((tokenId) => (
-                              <li key={tokenId}>
-                                <label>
-                                  <input
-                                    type="checkbox"
-                                    value={tokenId}
-                                    checked={selectedStakedNFTs.includes(
-                                      tokenId
-                                    )}
-                                    onChange={(e) => {
-                                      const value = parseInt(e.target.value);
-                                      setSelectedStakedNFTs((prevSelected) =>
-                                        prevSelected.includes(value)
-                                          ? prevSelected.filter(
-                                              (id) => id !== value
-                                            )
-                                          : [...prevSelected, value]
-                                      );
-                                    }}
-                                  />
-                                  GeoSpace {tokenId}
-                                </label>
-                              </li>
-                            ))}
-                          </ul>
-
-                          {isTransactionUnstakePending ? (
-                            <CircleLoader
-                              css={overrideCircle}
-                              size={30}
-                              color={"#a81419"}
-                              loading={true}
-                            />
-                          ) : (
-                            <a
-                              className={styles.redButton}
-                              onClick={unstakeNFTs}
-                            >
-                              Unstake
-                            </a>
-                          )}
-                        </React.Fragment>
-                      )}
-                    </div>
-                  </div>
-                ) : (
-                  ""
-                )}
                 {resetNFT.length > 0 ? (
                   <div style={{ flex: 1 }}>
                     <div className={`${styles.yourResetNft}`}>
@@ -1340,7 +1548,7 @@ const Profil = () => {
             </div>
           </div>
         )}
-        {stakedNFTs.length >= 3 && (
+        {resetNFT.length >= 1 && (
           <div className={styles.secondContainer} ref={createGeoSpaceRef}>
             <div>
               <h1>Create GeoSpace</h1>
@@ -1565,19 +1773,17 @@ const Profil = () => {
             </div>
           </>
         )}
-        {ownedNFTs.length === 0 &&
-          stakedNFTs.length === 0 &&
-          resetNFT.length === 0 && (
-            <>
-              <div className={styles.containerAccess}>
-                <Link href="/game/game">
-                  <button className={`${styles.backHome} center-left-button`}>
-                    PLAY
-                  </button>
-                </Link>
-              </div>
-            </>
-          )}
+        {ownedNFTs.length === 0 && resetNFT.length === 0 && (
+          <>
+            <div className={styles.containerAccess}>
+              <Link href="/game/game">
+                <button className={`${styles.backHome} center-left-button`}>
+                  PLAY
+                </button>
+              </Link>
+            </div>
+          </>
+        )}
       </div>
     </LoadScript>
   );

@@ -27,6 +27,7 @@ body h1,
 h2,
 h3,
 a,
+span,
 p {
   font-family: "Bungee", sans-serif; /* Utilisation de la police personnalisée */
 }

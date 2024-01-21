@@ -152,6 +152,9 @@
   border-top: 1px solid #000; /* Couleur de la ligne (noir) */
   width: 100%; /* Largeur de la ligne (100% de la largeur du conteneur) */
 }
+.asterix {
+  font-size: 14px;
+}
 .lineSection {
   border-top: 1px solid #000; /* Couleur de la ligne (noir) */
   width: 100%; /* Largeur de la ligne (100% de la largeur du conteneur) */

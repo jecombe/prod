@@ -11,7 +11,6 @@ const Ranking = () => {
   const [rewardUsers, setRewardUsers] = useState(0);
 
   const [fees, setFees] = useState(0);
-  const [numberNftStakeMinimum, setNumberNftStakeMinimum] = useState(0);
   const [isLoading, setIsLoading] = useState(true); // New state for loading
 
   const fetchData = async (url, setter, errorMessage) => {
@@ -45,16 +44,6 @@ const Ranking = () => {
             `${process.env.SERVER}${process.env.ROUTE_GET_REWARD_WINNER}`,
             setRewardUser,
             "reward winner"
-          ),
-          fetchData(
-            `${process.env.SERVER}${process.env.ROUTE_GET_REWARD_USERS}`,
-            setRewardUsers,
-            "reward staker"
-          ),
-          fetchData(
-            `${process.env.SERVER}${process.env.ROUTE_NFT_MINI_STAKE}`,
-            setNumberNftStakeMinimum,
-            "minimum stake"
           ),
           fetchData(
             `${process.env.SERVER}${process.env.ROUTE_NFT_GET_FEES}`,
@@ -103,7 +92,6 @@ const Ranking = () => {
               <tr>
                 <th>Holder</th>
                 <th>GeoSpace Owned</th>
-                <th>GeoSpace Staked</th>
                 <th>GeoSpace Back in game</th>
                 <th>GeoSpace creation</th>
               </tr>
@@ -123,13 +111,6 @@ const Ranking = () => {
                     <p>
                       {holders[address].nfts.length > 0
                         ? holders[address].nfts.join(", ")
-                        : []}
-                    </p>
-                  </td>
-                  <td data-label="GeoSpace Staked">
-                    <p>
-                      {holders[address].nftsStake.length > 0
-                        ? holders[address].nftsStake.join(", ")
                         : []}
                     </p>
                   </td>
@@ -158,17 +139,15 @@ const Ranking = () => {
           <thead>
             <tr>
               <th>Fees Guess</th>
-              <th>Fees Creation NFTs GeoSpace</th>
+              <th>Fees Mint GeoSpace</th>
               <th>Reward winner</th>
-              <th>Reward staker</th>
               <th>Total Number of NFTs</th>
-              <th>Minimum stake GeoSpace to access creation</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td data-label="Fees Guess">
-                <p>{fees} ZAMA</p>
+                <p>{fees} INCO</p>
               </td>
               <td data-label="Fees Creation NFTs GeoSpace">
                 <p>{feesCreation} SPC</p>
@@ -176,14 +155,8 @@ const Ranking = () => {
               <td data-label="Reward winner">
                 <p>{rewardUser} SPC</p>
               </td>
-              <td data-label="Reward staker">
-                <p>{rewardUsers} SPC</p>
-              </td>
               <td data-label="Total number of NFTs">
                 <p>{numberNft}</p>
-              </td>
-              <td data-label="Minimum stake GeoSpace to access creation">
-                <p>{numberNftStakeMinimum}</p>
               </td>
             </tr>
           </tbody>

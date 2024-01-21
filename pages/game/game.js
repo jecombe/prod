@@ -8,6 +8,8 @@ import {
 import style from "./map.module.css";
 import { ethers } from "ethers";
 import abi from "../../utils/abi/abi";
+import abiGame from "../../utils/abi/game";
+
 import { getFhevmInstance } from "../../utils/fhevmInstance";
 import initMetaMask from "../../utils/metamask";
 import Link from "next/link";
@@ -48,6 +50,8 @@ export default function GamePage() {
   const [failureMessage, setFailureMessage] = useState("");
   const [fhevm, setFhevm] = useState(null);
   const [contract, setContract] = useState(null);
+  const [contractGa, setContractGame] = useState(null);
+
   const [signer, setSigner] = useState(null);
   const [nft, setNft] = useState({});
   const [accountAddress, setAccountAddress] = useState("0x");
@@ -92,7 +96,7 @@ export default function GamePage() {
 
   const manageData = async () => {
     try {
-      if (signer && contract) {
+      if (signer && contract && contractGa) {
         updateAccountInfo();
         initializeContract();
         fetchData();
@@ -109,7 +113,7 @@ export default function GamePage() {
 
   const manageDataGps = async (isMounted) => {
     try {
-      if (signer && contract) {
+      if (signer && contract && contractGa) {
         await fetchGpsData(isMounted);
         // Perform data-related logic here
       }
@@ -135,11 +139,11 @@ export default function GamePage() {
     return () => {
       isMounted = false;
     };
-  }, [signer, contract]); // Add dependency on 'signer' and 'contract'
+  }, [signer, contract, contractGa]); // Add dependency on 'signer' and 'contract'
 
   useEffect(() => {
     let isMounted = true;
-    if (isMounted && signer && contract) {
+    if (isMounted && signer && contract && contractGa) {
       setIsLoadingDataGps(true);
 
       manageDataGps(isMounted);
@@ -149,7 +153,7 @@ export default function GamePage() {
     return () => {
       isMounted = false;
     };
-  }, [signer, contract]); // Add dependency on 'signer' and 'contract'
+  }, [signer, contract, contractGa]); // Add dependency on 'signer' and 'contract'
 
   // useEffect(() => {
   //   setIsLoadingData(true);
@@ -182,15 +186,14 @@ export default function GamePage() {
     const sign = await initMetaMask();
     const fhevmInstance = await getFhevmInstance();
     const contractGame = new ethers.Contract(process.env.CONTRACT, abi, sign);
-    return { sign, fhevmInstance, contractGame };
+    const contractG = new ethers.Contract(process.env.GAME, abiGame, sign);
+
+    return { sign, fhevmInstance, contractGame, contractG };
   };
-  const getAllOwnedNfts = (ownedNFTsU, stakedNFTsU, resetNFTU, createdNFTs) => {
+  const getAllOwnedNfts = (ownedNFTsU, resetNFTU, createdNFTs) => {
     const assambly = [];
     if (ownedNFTsU.length > 0) {
       assambly.push(ownedNFTsU);
-    }
-    if (stakedNFTsU.length > 0) {
-      assambly.push(stakedNFTsU);
     }
     if (resetNFTU.length > 0) {
       assambly.push(resetNFTU);
@@ -219,11 +222,13 @@ export default function GamePage() {
   // };
 
   const initialize = async () => {
-    const { sign, fhevmInstance, contractGame } = await getSignerContract();
+    const { sign, fhevmInstance, contractGame, contractG } =
+      await getSignerContract();
 
     setFhevm(fhevmInstance);
     setSigner(sign);
     setContract(contractGame);
+    setContractGame(contractG);
 
     setIsLoadingData(true);
   };
@@ -233,27 +238,25 @@ export default function GamePage() {
     try {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const userAddress = await signer.getAddress();
+
       // Créez un tableau de promesses
       const promises = [
-        contract.getNFTsStakedByOwner(userAddress),
-        contract.getOwnedNFTs(userAddress),
-        contract.getResetNFTsAndFeesByOwner(userAddress),
-        contract.getNftCreationAndFeesByUser(userAddress),
+        contractGa.getOwnedNFTs(userAddress),
+        contractGa.getResetNFTsAndFeesByOwner(userAddress),
+        contractGa.getNftCreationAndFeesByUser(userAddress),
         provider.getBalance(userAddress),
         contract.getBalanceCoinSpace(userAddress),
       ];
 
       const [
-        nftsStake,
         nftsOwned,
         nftsRAndFees,
         nftsCreationFees,
         balanceWei,
         balanceWeiCoinSpace,
       ] = await Promise.all(promises);
-      const balanceEther = Math.round(
-        ethers.utils.formatUnits(balanceWei, "ether")
-      );
+      const balanceEther = ethers.utils.formatUnits(balanceWei, "ether");
+
       const balanceCoinSpace = ethers.utils.formatUnits(
         balanceWeiCoinSpace,
         "ether"
@@ -261,7 +264,6 @@ export default function GamePage() {
 
       const ownedNFTs = nftsOwned.map((tokenId) => tokenId.toNumber());
 
-      const stakedNFTs = nftsStake.map((tokenId) => tokenId.toNumber());
       const resetNFTs = nftsRAndFees[0].map((tokenId) => tokenId.toNumber());
       // const feesNft = nftsRAndFees[1].map((tokenId) => tokenId.toString());
       const creationNFTs = nftsCreationFees[0].map((tokenId) =>
@@ -289,8 +291,7 @@ export default function GamePage() {
       // setFeesNftMap(feesNftMap);
 
       const filteredOwnedNFTs = ownedNFTs.filter(
-        (tokenId) =>
-          !resetNFTs.includes(tokenId) && !stakedNFTs.includes(tokenId)
+        (tokenId) => !resetNFTs.includes(tokenId)
       );
       // setOwnedNFTs(filteredOwnedNFTs);
       setAccountBalance(balanceEther);
@@ -300,7 +301,6 @@ export default function GamePage() {
       // setCreationNFT(nftsCreaFee);
       const assamblage = getAllOwnedNfts(
         filteredOwnedNFTs,
-        stakedNFTs,
         resetNFTs,
         creationNFTs
       );
@@ -336,16 +336,27 @@ export default function GamePage() {
       await window.ethereum.request({
         method: "wallet_addEthereumChain",
         params: [
+          // {
+          //   chainId: "0x1f49",
+          //   chainName: "Zama Network",
+          //   nativeCurrency: {
+          //     name: "ZAMA",
+          //     symbol: "ZAMA",
+          //     decimals: 18,
+          //   },
+          //   rpcUrls: ["https://devnet.zama.ai"],
+          //   blockExplorerUrls: ["https://main.explorer.zama.ai"],
+          // },
           {
-            chainId: "0x1f49",
-            chainName: "Zama Network",
+            chainId: "0x2382",
+            chainName: "Inco Network",
             nativeCurrency: {
-              name: "ZAMA",
-              symbol: "ZAMA",
+              name: "INCO",
+              symbol: "INCO",
               decimals: 18,
             },
-            rpcUrls: ["https://devnet.zama.ai"],
-            blockExplorerUrls: ["https://main.explorer.zama.ai"],
+            rpcUrls: ["https://evm-rpc.inco.network/"],
+            blockExplorerUrls: ["https://explorer.inco.network/"],
           },
         ],
       });
@@ -410,7 +421,9 @@ export default function GamePage() {
         const networkId = await window.ethereum.request({
           method: "eth_chainId",
         });
-        if (networkId !== "0x1f49") {
+        //  0x2382;
+        if (networkId !== "0x2382") {
+          //  if (networkId !== "0x1f49") {
           const userResponse = window.confirm(
             "Please switch to Zama Devnet network to use this application. Do you want to switch now?"
           );
@@ -465,7 +478,7 @@ export default function GamePage() {
       const lngConvert = Math.trunc(positionMiniMap.lng * 1e5);
       const lat = fhevm.encrypt32(attConvert);
       const lng = fhevm.encrypt32(lngConvert);
-      const value = 1 + nft.tax;
+      const value = 2 + nft.tax;
       const gasEstimation = await contract.estimateGas.checkGps(
         lat,
         lng,
@@ -584,7 +597,7 @@ export default function GamePage() {
 
         <div className={style.infoNft}>
           <p>GeoSpace: {nft.tokenId}</p>
-          <p>Fees: {nft.tax + 1} ZAMA</p>
+          <p>Fees: {nft.tax + 2} ZAMA</p>
           {assamblage.includes(nft.tokenId) && (
             <p style={{ color: "red" }}>You are the owner</p>
           )}
@@ -599,7 +612,8 @@ export default function GamePage() {
       {showWinMessage && (
         <div className={style.overlay}>
           <div className={style.winMessage}>
-            You Win Geospace {nft.tokenId}! Go to your profil...
+            You Win Geospace {nft.tokenId}! and 1 Space coin, go to your profil
+            !
           </div>
         </div>
       )}

@@ -34,23 +34,6 @@
   text-align: center;
   justify-content: flex-end;
 }
-
-.stakeContainer {
-  /* flex-grow: 1; /* Faites en sorte que ce conteneur occupe tout l'espace disponible */
-  /* text-align: center; */
-
-  width: 30%; /* Ajustez la largeur selon vos besoins */
-  margin: auto; /* Centre la div horizontalement */
-  padding: 10px; /* Ajoute un espace intérieur */
-  border: 1px solid #ccc;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  justify-content: flex-end;
-}
-
 .access {
   display: flex;
   align-items: center;
@@ -59,17 +42,6 @@
 }
 .access a {
   color: rgb(188, 121, 21);
-}
-.centerExplication {
-  max-width: 900px; /* Set your desired maximum width */
-  margin: 0 auto; /* Center the container horizontally */
-  padding: 20px;
-  border-radius: 8px;
-  box-sizing: border-box;
-}
-
-.centerExplication p {
-  font-size: 23px;
 }
 
 .secondContainer h1 {
@@ -163,7 +135,6 @@
 .yourNFTs,
 .yourStakedNft,
 .yourResetNft,
-.yourStakes,
 .yourCreationNft {
   flex: 1;
   padding: 20px;
@@ -177,6 +148,10 @@
 .container a {
   color: #fbfdfd;
   font-size: medium;
+}
+
+.firstContainer h2 {
+  color: #fbfdfd;
 }
 
 .container h3,
@@ -291,11 +266,11 @@
     margin-left: 70px; /* Pour centrer horizontalement */
   }
   /* .yourNFTs,
-  .yourStakedNft,
-  .yourResetNft,
-  .yourCreationNft {
-    margin-bottom: 20px;
-  } */
+    .yourStakedNft,
+    .yourResetNft,
+    .yourCreationNft {
+      margin-bottom: 20px;
+    } */
 }
 
 /* Add or modify the existing styles for containerInfos, yourNFTs, yourStakedNft, yourResetNft, and yourCreationNft */

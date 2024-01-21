@@ -8,6 +8,16 @@
   height: 100vh; /* Ajustez la hauteur en fonction de vos besoins */
 }
 
+.titleAir {
+  font-size: 30px;
+  color: #c8861c;
+
+  /* color: rgb(158, 105, 6); */
+  text-align: center;
+  margin: 0;
+  -webkit-text-stroke: 1px #000000; /* Ajoute une bordure noire de 2 pixels autour du texte */
+}
+
 .title {
   font-size: 90px;
   color: #c8861c;
@@ -16,6 +26,28 @@
   text-align: center;
   margin: 0;
   -webkit-text-stroke: 1px #000000; /* Ajoute une bordure noire de 2 pixels autour du texte */
+}
+
+.titleAir {
+  font-size: 30px;
+  color: #8b2828;
+
+  /* color: rgb(158, 105, 6); */
+  text-align: center;
+  margin: 0;
+  -webkit-text-stroke: 1px #000000; /* Ajoute une bordure noire de 2 pixels autour du texte */
+}
+
+.subtitleAir {
+  font-size: 25px;
+  text-align: center;
+  -webkit-text-stroke: 2px rgb(0, 0, 0); /* Ajoute une bordure noire de 2 pixels autour du texte */
+
+  color: #8b2828;
+
+  /* -webkit-text-stroke: 2px green; Ajoute une bordure noire de 2 pixels autour du texte */
+  position: relative;
+  z-index: 1; /* Assurez-vous que le texte est au-dessus de l'élément avec le fond coloré */
 }
 
 .subtitle {

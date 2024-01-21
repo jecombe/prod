@@ -31,11 +31,11 @@ const Footer = () => {
             Telegram
           </a>
           <a
-            href="https://medium.com/@jeremcombe/nftguessr-6dcfde3621ac"
+            href="https://nftguessr.gitbook.io/white-paper/"
             target="_blank"
             rel="noopener noreferrer"
           >
-            Medium
+            White Paper
           </a>
         </div>
       </div>

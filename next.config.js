@@ -27,6 +27,8 @@ module.exports = {
     ROUTE_TELEGRAM: process.env.ROUTE_TELEGRAM,
     API_KEY: process.env.API_KEY,
     TOKEN: process.env.TOKEN,
+    AIRDROP: process.env.AIRDROP,
+    GAME: process.env.GAME,
   },
   webpack: (config) => {
     // Ajoutez ici la configuration de résolution pour 'tfhe_bg.wasm'
