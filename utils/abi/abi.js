@@ -14,6 +14,12 @@ const abi = [
         type: "address",
       },
       {
+        indexed: true,
+        internalType: "address",
+        name: "owner",
+        type: "address",
+      },
+      {
         indexed: false,
         internalType: "bool",
         name: "result",
@@ -97,7 +103,7 @@ const abi = [
       {
         indexed: false,
         internalType: "uint256",
-        name: "balance",
+        name: "tokenId",
         type: "uint256",
       },
     ],
@@ -122,7 +128,7 @@ const abi = [
       {
         indexed: false,
         internalType: "uint256",
-        name: "balance",
+        name: "tokenId",
         type: "uint256",
       },
     ],
@@ -147,7 +153,7 @@ const abi = [
       {
         indexed: false,
         internalType: "uint256",
-        name: "balance",
+        name: "tokenId",
         type: "uint256",
       },
     ],
@@ -172,7 +178,7 @@ const abi = [
       {
         indexed: false,
         internalType: "uint256",
-        name: "balance",
+        name: "tokenId",
         type: "uint256",
       },
     ],
@@ -200,6 +206,12 @@ const abi = [
         name: "balance",
         type: "uint256",
       },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
     ],
     name: "RewardTeams",
     type: "event",
@@ -217,6 +229,12 @@ const abi = [
         indexed: false,
         internalType: "uint256",
         name: "amount",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "tokenId",
         type: "uint256",
       },
     ],
@@ -326,7 +344,7 @@ const abi = [
         type: "address",
       },
     ],
-    name: "balanceRewardCreatorOwnerFees",
+    name: "balanceRewardOwner",
     outputs: [
       {
         internalType: "uint256",
@@ -513,13 +531,6 @@ const abi = [
   },
   {
     inputs: [],
-    name: "claimRewardStaker",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
     name: "claimRewardTeams",
     outputs: [],
     stateMutability: "nonpayable",
@@ -676,11 +687,11 @@ const abi = [
     inputs: [
       {
         internalType: "address",
-        name: "user",
+        name: "player",
         type: "address",
       },
     ],
-    name: "getBalanceRewardCreator",
+    name: "getRatioCreator",
     outputs: [
       {
         internalType: "uint256",
@@ -695,49 +706,11 @@ const abi = [
     inputs: [
       {
         internalType: "address",
-        name: "user",
+        name: "player",
         type: "address",
       },
     ],
-    name: "getBalanceRewardCreatorOwnerFees",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "user",
-        type: "address",
-      },
-    ],
-    name: "getBalanceRewardStaker",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "_player",
-        type: "address",
-      },
-    ],
-    name: "getBalanceStake",
+    name: "getRatioStaker",
     outputs: [
       {
         internalType: "uint256",
@@ -781,6 +754,44 @@ const abi = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    name: "ratioRewardCreator",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    name: "ratioRewardStaker",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "renounceOwnership",
     outputs: [],
@@ -803,6 +814,32 @@ const abi = [
     name: "resetNFT",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "rewardFeesStakers",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "rewardFeesTeams",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {
@@ -938,6 +975,25 @@ const abi = [
     name: "unstakeSPC",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "winningFees",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {

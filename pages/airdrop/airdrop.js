@@ -62,17 +62,9 @@ const AirDrop = () => {
   // const [isAccessGovernance, setAccessGovernance] = useState(false);
   // const [isAccessCreate, setAccessCreate] = useState(false);
 
-  const [isTransactionStakePending, setIsTransactionStakePending] =
+  const [isTransactionClaimPending, setIsTransactionClaimStakePending] =
     useState(false);
-  const [isTransactionUnstakePending, setIsTransactionUnstakePending] =
-    useState(false);
-
-  const [isTransactionResetPending, setIsTransactionResetPending] =
-    useState(false);
-  const [isTransactionClaimPending, setIsTransactionClaimPending] =
-    useState(false);
-
-  const [isTransactionCreatePending, setIsTransactionCreatePending] =
+  const [isTransactionEstimatePending, setIsTransactionEstimateStakePending] =
     useState(false);
 
   const [isMetaMaskInitialized, setIsMetaMaskInitialized] = useState(false);
@@ -228,28 +220,28 @@ const AirDrop = () => {
       await window.ethereum.request({
         method: "wallet_addEthereumChain",
         params: [
-          // {
-          //   chainId: "0x1f49",
-          //   chainName: "Zama Network",
-          //   nativeCurrency: {
-          //     name: "ZAMA",
-          //     symbol: "ZAMA",
-          //     decimals: 18,
-          //   },
-          //   rpcUrls: ["https://devnet.zama.ai"],
-          //   blockExplorerUrls: ["https://main.explorer.zama.ai"],
-          // },
           {
-            chainId: "0x2382",
-            chainName: "Inco Network",
+            chainId: "0x1f49",
+            chainName: "Zama Network",
             nativeCurrency: {
-              name: "INCO",
-              symbol: "INCO",
+              name: "ZAMA",
+              symbol: "ZAMA",
               decimals: 18,
             },
-            rpcUrls: ["https://evm-rpc.inco.network/"],
-            blockExplorerUrls: ["https://explorer.inco.network/"],
+            rpcUrls: ["https://devnet.zama.ai"],
+            blockExplorerUrls: ["https://main.explorer.zama.ai"],
           },
+          // {
+          //   chainId: "0x2382",
+          //   chainName: "Inco Network",
+          //   nativeCurrency: {
+          //     name: "INCO",
+          //     symbol: "INCO",
+          //     decimals: 18,
+          //   },
+          //   rpcUrls: ["https://evm-rpc.inco.network/"],
+          //   blockExplorerUrls: ["https://explorer.inco.network/"],
+          // },
         ],
       });
 
@@ -265,8 +257,8 @@ const AirDrop = () => {
         const networkId = await window.ethereum.request({
           method: "eth_chainId",
         });
-        if (networkId !== "0x2382") {
-          //if (networkId !== "0x1f49") {
+        //  if (networkId !== "0x2382") {
+        if (networkId !== "0x1f49") {
           const userResponse = window.confirm(
             "Please switch to Zama Devnet network to use this application. Do you want to switch now?"
           );
@@ -283,6 +275,7 @@ const AirDrop = () => {
 
   const estimate = async () => {
     try {
+      setIsTransactionEstimateStakePending(true);
       const userAddress = await signer.getAddress();
       console.log(contract, userAddress);
       const n = await contract.estimateRewardPlayer({
@@ -291,15 +284,20 @@ const AirDrop = () => {
       });
       await n.wait();
       const b = await contractAirdrop.getBalanceAirdrop(userAddress);
+      setIsTransactionEstimateStakePending(false);
+
       // console.log(b.toString());
       setBalanceReward(b.toString());
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      setIsTransactionEstimateStakePending(false);
     }
   };
 
   const claim = async () => {
     try {
+      setIsTransactionClaimStakePending(true);
+
       const userAddress = await signer.getAddress();
       const gasEstimation = await contract.estimateGas.claimAirDrop({
         from: userAddress,
@@ -311,9 +309,12 @@ const AirDrop = () => {
         gasLimit,
       });
       await n.wait();
+      setIsTransactionClaimStakePending(false);
+
       setBalanceReward(0);
     } catch (error) {
       console.log(error);
+      setIsTransactionClaimStakePending(false);
     }
   };
   // Dans votre useEffect de cleanup (composantWillUnmount)
@@ -400,22 +401,50 @@ const AirDrop = () => {
             <p style={{ display: "inline", margin: 0 }}>{balanceReward} SPC</p>
           </h3>
         </div>
-        <div>
-          <h2>Estimate your reward aidrop</h2>
-          <a className={styles.accessButton} onClick={estimate}>
-            Estimate
-          </a>
-        </div>
-        {balanceReward > 0 ? (
-          <div>
-            <h2>Claim your aidrop</h2>
-            <a className={styles.accessButton} onClick={claim}>
-              Claim
-            </a>
+        <div style={{ flex: 1 }}>
+          <div className={`${styles.yourNFTs}`}>
+            <React.Fragment>
+              {balanceReward > 0 ? (
+                <div>
+                  <h2>Claim your aidrop</h2>
+
+                  {isTransactionClaimPending ? (
+                    <CircleLoader
+                      css={overrideCircle}
+                      size={30}
+                      color={"#107a20"}
+                      loading={true}
+                    />
+                  ) : (
+                    // <a
+                    //   className={`${styles.red2Button} ${styles.buttonSpacing}`}
+                    //   onClick={resetNFTs}
+                    // >
+                    <a className={styles.accessButton} onClick={claim}>
+                      Claim
+                    </a>
+                  )}
+                </div>
+              ) : (
+                ""
+              )}
+              <h2>Estimate your reward aidrop</h2>
+
+              {isTransactionEstimatePending ? (
+                <CircleLoader
+                  css={overrideCircle}
+                  size={30}
+                  color={"#107a20"}
+                  loading={true}
+                />
+              ) : (
+                <a className={styles.accessButton} onClick={estimate}>
+                  Estimate
+                </a>
+              )}
+            </React.Fragment>
           </div>
-        ) : (
-          ""
-        )}
+        </div>
       </div>
     </div>
   );

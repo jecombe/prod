@@ -129,12 +129,14 @@
   font-family: "Montserrat", sans-serif; /* Police de caractères */
 }
 
-.blockAll h1,
-.blockPlay h1 {
-  color: blanchedalmond;
+.blockAll h1 {
+  color: rgb(188, 121, 21);
+  font-size: 50px;
+  margin: 0;
 }
+
 .blockAll h2 {
-  color: blanchedalmond;
+  color: rgb(188, 121, 21);
 }
 
 .blockThree {
@@ -262,20 +264,17 @@
     width: 100%; /* Étendre le paragraphe sur toute la largeur disponible */
     text-align: center; /* Centrer le texte horizontalement */
   }
-  .blockAll h1 {
+
+  .blockThree h1 {
+    color: rgb(188, 121, 21);
     font-size: 50px;
-    margin-bottom: 10px; /* Ajouter une marge en bas pour séparer du paragraphe suivant */
+    margin: 0; /* Supprimez la marge par défaut du titre */
   }
 
   .blockAll p {
     font-size: 20px;
     width: 100%;
     margin-bottom: 20px; /* Ajouter une marge en bas pour séparer du paragraphe suivant */
-  }
-
-  .blockPlay h1 {
-    font-size: 60px;
-    margin-bottom: 10px; /* Ajouter une marge en bas pour séparer du paragraphe suivant */
   }
 
   .blockPlay h2 {

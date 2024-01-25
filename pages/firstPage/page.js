@@ -21,6 +21,9 @@ const FirstPage = () => {
         Be a pioneer of NFTGuessr and earn SpaceCoins through your involvement
         in the games !
       </p>
+      <Link href="/airdrop/airdrop">
+        <button className={styles.airdropButton}>Airdrop</button>
+      </Link>
     </div>
   );
 };

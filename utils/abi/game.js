@@ -690,6 +690,25 @@ const abiGame = [
     inputs: [
       {
         internalType: "address",
+        name: "player",
+        type: "address",
+      },
+    ],
+    name: "getWinIds",
+    outputs: [
+      {
+        internalType: "uint256[]",
+        name: "",
+        type: "uint256[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
         name: "owner",
         type: "address",
       },
@@ -973,25 +992,6 @@ const abiGame = [
     inputs: [
       {
         internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    name: "saveLifePointTotal",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
         name: "operator",
         type: "address",
       },
@@ -1115,7 +1115,7 @@ const abiGame = [
         type: "uint256",
       },
     ],
-    name: "tokenIdPoints",
+    name: "tokenIdOwned",
     outputs: [
       {
         internalType: "uint256",

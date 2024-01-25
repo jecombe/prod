@@ -19,6 +19,7 @@ import ReactPlayer from "react-player"; // Importez ReactPlayer
 import Image from "next/image";
 import { css } from "@emotion/react";
 import { PropagateLoader } from "react-spinners";
+import ErrorMetamask from "../errorPage/metamask";
 const lib = ["places"];
 
 export default function GamePage() {
@@ -92,6 +93,11 @@ export default function GamePage() {
       }
       isMountedRef.current = false;
     };
+  }, []);
+
+  useEffect(() => {
+    checkNetwork();
+    // initializeMetaMask();
   }, []);
 
   const manageData = async () => {
@@ -244,6 +250,7 @@ export default function GamePage() {
         contractGa.getOwnedNFTs(userAddress),
         contractGa.getResetNFTsAndFeesByOwner(userAddress),
         contractGa.getNftCreationAndFeesByUser(userAddress),
+        contractGa.getWinIds(userAddress),
         provider.getBalance(userAddress),
         contract.getBalanceCoinSpace(userAddress),
       ];
@@ -252,6 +259,7 @@ export default function GamePage() {
         nftsOwned,
         nftsRAndFees,
         nftsCreationFees,
+        nftsWin,
         balanceWei,
         balanceWeiCoinSpace,
       ] = await Promise.all(promises);
@@ -269,6 +277,7 @@ export default function GamePage() {
       const creationNFTs = nftsCreationFees[0].map((tokenId) =>
         tokenId.toNumber()
       );
+      const winsNfts = nftsWin.map((tokenId) => tokenId.toNumber());
       // const creationNFTsFees = nftsCreationFees[1].map((tokenId) =>
       //   tokenId.toString()
       // );
@@ -293,17 +302,17 @@ export default function GamePage() {
       const filteredOwnedNFTs = ownedNFTs.filter(
         (tokenId) => !resetNFTs.includes(tokenId)
       );
+
+      const allFiltrage = winsNfts.filter(
+        (tokenId) => !filteredOwnedNFTs.includes(tokenId)
+      );
       // setOwnedNFTs(filteredOwnedNFTs);
       setAccountBalance(balanceEther);
       setBalanceSPC(balanceCoinSpace);
       // setStakedNFTs(stakedNFTs);
       // setResetNFT(resetNFTs);
       // setCreationNFT(nftsCreaFee);
-      const assamblage = getAllOwnedNfts(
-        filteredOwnedNFTs,
-        resetNFTs,
-        creationNFTs
-      );
+      const assamblage = getAllOwnedNfts(allFiltrage, resetNFTs, creationNFTs);
       setAssamblage(assamblage);
 
       return assamblage;
@@ -336,28 +345,28 @@ export default function GamePage() {
       await window.ethereum.request({
         method: "wallet_addEthereumChain",
         params: [
-          // {
-          //   chainId: "0x1f49",
-          //   chainName: "Zama Network",
-          //   nativeCurrency: {
-          //     name: "ZAMA",
-          //     symbol: "ZAMA",
-          //     decimals: 18,
-          //   },
-          //   rpcUrls: ["https://devnet.zama.ai"],
-          //   blockExplorerUrls: ["https://main.explorer.zama.ai"],
-          // },
           {
-            chainId: "0x2382",
-            chainName: "Inco Network",
+            chainId: "0x1f49",
+            chainName: "Zama Network",
             nativeCurrency: {
-              name: "INCO",
-              symbol: "INCO",
+              name: "ZAMA",
+              symbol: "ZAMA",
               decimals: 18,
             },
-            rpcUrls: ["https://evm-rpc.inco.network/"],
-            blockExplorerUrls: ["https://explorer.inco.network/"],
+            rpcUrls: ["https://devnet.zama.ai"],
+            blockExplorerUrls: ["https://main.explorer.zama.ai"],
           },
+          // {
+          //   chainId: "0x2382",
+          //   chainName: "Inco Network",
+          //   nativeCurrency: {
+          //     name: "INCO",
+          //     symbol: "INCO",
+          //     decimals: 18,
+          //   },
+          //   rpcUrls: ["https://evm-rpc.inco.network/"],
+          //   blockExplorerUrls: ["https://explorer.inco.network/"],
+          // },
         ],
       });
 
@@ -372,39 +381,42 @@ export default function GamePage() {
     try {
       const addrSigner = await signer.getAddress();
       console.log("INIT CONTRACT", addrSigner, contract);
-      contract.on("GpsCheckResult", async (userAddress, result, tokenId) => {
-        if (userAddress === addrSigner) {
-          if (result) {
-            const readable = Number(tokenId.toString());
-            console.log("YOU WIN NFT", readable);
-            setShowWinMessage(true);
-            setIsTransactionSuccessful(true);
-            setSuccessMessage(`You Win NFT ${readable}`);
-            setIsTransactionFailed(false);
-            setIsLoading(false);
-
-            setTimeout(async () => {
-              setShowWinMessage(false);
-              setIsTransactionSuccessful(false);
+      contract.on(
+        "GpsCheckResult",
+        async (userAddress, owner, result, tokenId) => {
+          if (userAddress === addrSigner) {
+            if (result) {
+              const readable = Number(tokenId.toString());
+              console.log("YOU WIN NFT", readable);
+              setShowWinMessage(true);
+              setIsTransactionSuccessful(true);
+              setSuccessMessage(`You Win NFT ${readable}`);
               setIsTransactionFailed(false);
-              await fetchData();
-              await fetchGpsData();
-            }, 5000);
-          } else {
-            setIsTransactionFailed(true);
-            setFailureMessage("Sorry, you lost.");
-            setIsTransactionSuccessful(false);
-            setIsLoading(false);
-            setMarkers([]);
+              setIsLoading(false);
 
-            setTimeout(() => {
+              setTimeout(async () => {
+                setShowWinMessage(false);
+                setIsTransactionSuccessful(false);
+                setIsTransactionFailed(false);
+                await fetchData();
+                await fetchGpsData();
+              }, 5000);
+            } else {
+              setIsTransactionFailed(true);
+              setFailureMessage("Sorry, you lost.");
               setIsTransactionSuccessful(false);
-              setIsTransactionFailed(false);
+              setIsLoading(false);
               setMarkers([]);
-            }, 5000);
+
+              setTimeout(() => {
+                setIsTransactionSuccessful(false);
+                setIsTransactionFailed(false);
+                setMarkers([]);
+              }, 5000);
+            }
           }
         }
-      });
+      );
     } catch (error) {
       console.error("Error initializing contract:", error);
       setIsLoading(false);
@@ -422,8 +434,8 @@ export default function GamePage() {
           method: "eth_chainId",
         });
         //  0x2382;
-        if (networkId !== "0x2382") {
-          //  if (networkId !== "0x1f49") {
+        // if (networkId !== "0x2382") {
+        if (networkId !== "0x1f49") {
           const userResponse = window.confirm(
             "Please switch to Zama Devnet network to use this application. Do you want to switch now?"
           );
@@ -560,12 +572,18 @@ export default function GamePage() {
       throw `fetchGps ${error}`;
     }
   }
-  if (!signer) {
-    return <Loading />;
-  }
+
   if (isLoadingData && isLoadingGps) {
     return <Loading />;
   }
+
+  if (!signer && !isLoading) {
+    return (
+      <ErrorMetamask message="Please connect to MetaMask and go to zama devnet" />
+    );
+  }
+  if (isLoading) return <Loading />;
+
   return (
     <LoadScript
       googleMapsApiKey={process.env.API_MAP}
@@ -599,7 +617,7 @@ export default function GamePage() {
           <p>GeoSpace: {nft.tokenId}</p>
           <p>Fees: {nft.tax + 2} ZAMA</p>
           {assamblage.includes(nft.tokenId) && (
-            <p style={{ color: "red" }}>You are the owner</p>
+            <p style={{ color: "red" }}>You cannot have it !</p>
           )}
         </div>
         <button

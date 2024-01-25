@@ -2,10 +2,13 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import styles from "./ranking.module.css";
 import Loading from "../loading/loading";
+import ErrorMetamask from "../errorPage/metamask";
 
 const Ranking = () => {
   const [holders, setHolders] = useState([]);
   const [numberNft, setNumberNft] = useState([]);
+  const [dataStat, setDataStats] = useState([]);
+
   const [feesCreation, setFeesCreation] = useState(0);
   const [rewardUser, setRewardUser] = useState(0);
   const [rewardUsers, setRewardUsers] = useState(0);
@@ -31,24 +34,9 @@ const Ranking = () => {
       try {
         await Promise.all([
           fetchData(
-            `${process.env.SERVER}${process.env.ROUTE_GET_NFT}`,
-            setNumberNft,
+            `${process.env.SERVER}api/get-statGame`,
+            setDataStats,
             "total NFTs"
-          ),
-          fetchData(
-            `${process.env.SERVER}${process.env.ROUTE_GET_FEES_CREATION}`,
-            setFeesCreation,
-            "fees creation"
-          ),
-          fetchData(
-            `${process.env.SERVER}${process.env.ROUTE_GET_REWARD_WINNER}`,
-            setRewardUser,
-            "reward winner"
-          ),
-          fetchData(
-            `${process.env.SERVER}${process.env.ROUTE_NFT_GET_FEES}`,
-            setFees,
-            "fees"
           ),
           fetchData(
             `${process.env.SERVER}${process.env.ROUTE_GET_HOLDER_ID}`,
@@ -66,16 +54,22 @@ const Ranking = () => {
     fetchAllData();
   }, []);
 
+  if (!signer && !isLoading) {
+    return (
+      <ErrorMetamask message="Please connect to MetaMask and go to zama devnet" />
+    );
+  }
   if (isLoading) return <Loading />;
 
   const createList = (nftsArray) => {
     return nftsArray.map((id, index) => (
-      <li key={index}>{`id: ${id.id}, fees: ${id.fee}`}</li>
+      <li key={index}>{`${id.id} | ${2 + id.feesWin} Zama`}</li>
     ));
   };
 
   return (
     <div>
+      {console.log(dataStat)}
       <div className={styles.headerContainer}>
         <Link href="/">
           <button className={`${styles.backHome} center-left-button`}>
@@ -91,34 +85,32 @@ const Ranking = () => {
             <thead>
               <tr>
                 <th>Holder</th>
-                <th>GeoSpace Owned</th>
-                <th>GeoSpace Back in game</th>
+                <th>GeoSpace in game</th>
                 <th>GeoSpace creation</th>
               </tr>
             </thead>
             <tbody>
-              {Object.keys(holders).map((address, index) => (
+              {holders.map((address, index) => (
                 <tr key={index}>
-                  <td data-label="Hoooolder">
+                  <td data-label="Holder">
                     <p>
-                      {address.toLowerCase() ===
-                      process.env.CONTRACT.toLowerCase()
+                      {Object.keys(address)[0].toLowerCase() ===
+                      process.env.OWNER.toLowerCase()
                         ? "NFTGuessr smart contract"
-                        : `${address.substring(0, 10)}...`}
+                        : `${Object.keys(address)[0].substring(0, 10)}...`}
                     </p>
                   </td>
-                  <td data-label="GeoSpace Owned">
+                  <td data-label="GeoSpace in game">
                     <p>
-                      {holders[address].nfts.length > 0
-                        ? holders[address].nfts.join(", ")
-                        : []}
+                      {createList(address[Object.keys(address)[0]].tokenReset)}
                     </p>
-                  </td>
-                  <td data-label="GeoSpace Back in game">
-                    <p>{createList(holders[address]?.nftsReset || [])}</p>
                   </td>
                   <td data-label="GeoSpace Creations">
-                    <p>{createList(holders[address]?.nftsCreation || [])}</p>
+                    <p>
+                      {address[Object.keys(address)[0]].tokenIdCreated.join(
+                        ","
+                      )}
+                    </p>
                   </td>
                 </tr>
               ))}
@@ -141,22 +133,30 @@ const Ranking = () => {
               <th>Fees Guess</th>
               <th>Fees Mint GeoSpace</th>
               <th>Reward winner</th>
+              <th>Reward creators</th>
+              <th>Reward stakers</th>
               <th>Total Number of NFTs</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td data-label="Fees Guess">
-                <p>{fees} INCO</p>
+                <p>{dataStat.feesGuess} ZAMA</p>
               </td>
               <td data-label="Fees Creation NFTs GeoSpace">
-                <p>{feesCreation} SPC</p>
+                <p>{dataStat.feesMint} SPC</p>
               </td>
               <td data-label="Reward winner">
-                <p>{rewardUser} SPC</p>
+                <p>{dataStat.rewardWinner} SPC</p>
+              </td>
+              <td data-label="Reward stakers">
+                <p>{dataStat.rewardStakers} ZAMA</p>
+              </td>
+              <td data-label="Reward creators">
+                <p>{dataStat.rewardCreators} SPC</p>
               </td>
               <td data-label="Total number of NFTs">
-                <p>{numberNft}</p>
+                <p>{dataStat.totalNft}</p>
               </td>
             </tr>
           </tbody>

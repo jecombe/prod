@@ -118,62 +118,66 @@ export default function Contents() {
       >
         <div className={styles.blockAll}>
           <div className={styles.blockTwo}>
-            <h1>Gaming Web3 with FHE</h1>
-            <p>
-              For now, the game is available and in development on the{" "}
-              <a href="https://www.inco.network/">Inco network </a>
-              devnet <br />
-            </p>
+            <h1>Guessing game</h1>
             <h2>Discover the world</h2>
             <p>
-              It&#39;s a Web3 geoguessr; the goal is to find NFTs GeoSpace
-              scattered around the globe. <br />
+              It&#39;s a Web3 geoguessr <br />
+              The goal is to find NFTs GeoSpace scattered around the globe.{" "}
+              <br />
               It&#39;s up to you to discover the location of the NFTs. The smart
               contract utilizes Fully Homomorphic Encryption (FHE) to ensure
               data confidentiality while performing distance calculations.
             </p>
+            <p>
+              For now, the game is available and in development on the{" "}
+              <a href="https://docs.zama.ai/fhevm/what-is-zamas-fhevm/readme">
+                Zama{" "}
+              </a>
+              devnet <br />
+            </p>
           </div>
           <div className={styles.lineBlock}></div>
 
-          <div className={styles.blockTest}>
-            <h1>Earn Geospace and SpaceCoin</h1>
+          {/* <div className={styles.blockTest}>
+             <h1>Guess GeoSpace</h1>
             <p>
-              Find the location (around 5km radius) and win a nft GeoSpace, and
-              1 SpaceCoin tokens available for GeoSpace creation. The smart
-              contract mints 1 SpaceCoin for the winner and 1 SpaceCoin during a
-              guess request for the creators.
+              To make a guess request, you will be required to have a minimum of
+              2 Zama. They will be distributed among all the staker of SpaceCoin
+              and the NftGuessr team. <br />A winning tax may be added by the
+              GeoSpace creator in play. If the player makes an incorrect guess,
+              then the winning tax will be refunded. <br />
+              Lors de la demande du guess, les createur vont se partager 1
+              SpaceCoin.
             </p>
           </div>
+          <div className={styles.lineBlock}></div> */}
+          <div className={styles.blockThree}>
+            <h1>Earn GeoSpace and SpaceCoin</h1>
+            <p>
+              If the player successfully finds the GeoSpace, they will receive 1
+              SpaceCoin and the GeoSpace.
+            </p>
+          </div>
+          <div className={styles.blockTest}>
+            <h1>Become a GeoSpace creator</h1>
+            <p>
+              Become a creator for the game as soon as you put a GeoSpace back
+              into play. <br />
+              You will earn Zama from valid guesses by other players.
+              Additionally, you will receive SpaceCoin among all other creators
+              during a guess request. <br />
+              The more you stake compared to other players, the greater your
+              rewards will be.
+            </p>
+          </div>
+
           <div className={styles.lineBlock}></div>
 
           <div className={styles.blockThree}>
-            <h1>Put your GeoSpace back into play</h1>
-            <p>
-              Put your GeoSpace back into play with your own INCO tax for one
-              round.
-            </p>
-          </div>
-
-          <div className={styles.lineBlock}></div>
-
-          <div className={styles.blockTest}>
-            <h1>Mint GeoSpace</h1>
-            <p>
-              If you have previously put an GeoSpace back into the game, then
-              you can create as many GeoSpace as you want for the game, as long
-              as other players do not find your GeoSpace. <br />
-              This process includes your guessing tax (INCO) for the first
-              round. <br />
-              To create a Geospace, you will need to pay 1 SPC token. <br />
-              The fees are burn to reduce totalSupply.
-            </p>
-          </div>
-
-          <div className={styles.blockThree}>
-            <h1>Stake SpaceCoin and earn INCO guess fees</h1>
+            <h1>Stake SpaceCoin and earn guess fees</h1>
             <p>
               Stake SpaceCoin tokens to earn a share of the guessing fees in
-              INCO. The more you stake compared to other players, the greater
+              Zama. The more you stake compared to other players, the greater
               your rewards will be.
             </p>
           </div>

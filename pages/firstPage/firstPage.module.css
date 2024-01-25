@@ -94,6 +94,28 @@
   box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2);
 }
 
+.airdropButton {
+  background-color: #141e30;
+  color: #ffffff;
+  border: 2px solid #00bfff;
+  border-radius: 10px;
+  padding: 15px 30px;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: background-color 0.3s, transform 0.2s;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  display: block;
+  margin-bottom: 100px;
+  margin-top: 20px; /* Ajoutez une marge au-dessus du bouton */
+}
+.airdropButton:hover {
+  background-color: #a88314;
+  transform: scale(1.05);
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2);
+}
+
 .line {
   width: 500px;
   height: 2px;

@@ -99,6 +99,7 @@ const Profil = () => {
   const [decryptedNFTS, setDecrypted] = useState([]);
   const [errorsFetch, setErrorFetch] = useState("");
   const [pubKey, setPublicKey] = useState(null);
+  const [lifeMint, setLifeMint] = useState(null);
 
   // const [isAccessGovernance, setAccessGovernance] = useState(false);
   // const [isAccessCreate, setAccessCreate] = useState(false);
@@ -107,6 +108,9 @@ const Profil = () => {
     useState(false);
   const [isTransactionUnstakePending, setIsTransactionUnstakePending] =
     useState(false);
+  const [isLoadingClaimOwner, setLoadingClaimOwner] = useState(false);
+  const [isLoadingClaimCreator, setLoadingClaimCreator] = useState(false);
+  const [isLoadingClaimStaker, setLoadingClaimStaker] = useState(false);
 
   const [isTransactionResetPending, setIsTransactionResetPending] =
     useState(false);
@@ -120,6 +124,7 @@ const Profil = () => {
   const [markers, setMarkers] = useState([]);
   const [isMapsScriptLoaded, setIsMapsScriptLoaded] = useState(false);
   const [isMapsLoadingData, setLoadingDataMap] = useState(false);
+  const [isGood, setIsGood] = useState(false);
 
   const [showMap, setShowMap] = useState(false);
   const [balanceSPC, setBalanceSPC] = useState(0);
@@ -187,6 +192,8 @@ const Profil = () => {
       );
 
       const fhevmInstance = await getFhevmInstance();
+      console.log("PUTE");
+
       setFhevm(fhevmInstance);
       setSigner(signer);
       setContract(contract);
@@ -380,9 +387,12 @@ const Profil = () => {
         setMarkerArray(decryptedLocations);
         console.log(markers);
         setLoadingDataMap(false);
+        setIsGood(true);
       } catch (error) {
         console.error("error get decrypt", error);
         setLoadingDataMap(false);
+        setIsGood(false);
+
         return error;
       }
     }
@@ -402,6 +412,32 @@ const Profil = () => {
       setErrorFetch("Error decrypt maps");
     }
   };
+
+  const getBalances = async () => {
+    try {
+      const userAddress = await signer.getAddress();
+
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const balanceWei = await provider.getBalance(userAddress);
+      const balanceWeiCoinSpace = await contract.getBalanceCoinSpace(
+        userAddress
+      );
+
+      const balanceStake = await contract.stakedBalance(userAddress);
+
+      const balanceEther = ethers.utils.formatUnits(balanceWei, "ether");
+      const balanceStakeEth = ethers.utils.formatUnits(balanceStake, "ether");
+      const balanceCoinSpace = ethers.utils.formatUnits(
+        balanceWeiCoinSpace,
+        "ether"
+      );
+      setBalance(balanceEther);
+      setBalanceSPC(balanceCoinSpace);
+      setBalanceStake(balanceStakeEth);
+    } catch (error) {
+      return error;
+    }
+  };
   // Fonction fetchData optimisée
   const fetchData = async () => {
     try {
@@ -409,8 +445,6 @@ const Profil = () => {
       if (signer) {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const userAddress = await signer.getAddress();
-        const r = await contractGame.lifePointTotal(userAddress);
-        console.log("==================", r.toString());
         // Créez un tableau de promesses
         const promises = [
           contractGame.getOwnedNFTs(userAddress),
@@ -420,13 +454,15 @@ const Profil = () => {
           contract.getBalanceCoinSpace(userAddress),
           contract.balanceRewardStaker(userAddress),
           contract.balanceRewardCreator(userAddress),
-          contract.balanceRewardCreatorOwnerFees(userAddress),
+          contract.balanceRewardOwner(userAddress),
           contract.stakedBalance(userAddress),
-          contractGame.userFees(
-            "0x95977386303e586B3C9765B51c8A77b7A18efb84",
-            3
-          ),
-          contractGame.ownerNft(3),
+          contractGame.lifePointTotal(userAddress),
+          //   contractGame.creatorNft(userAddress),
+          // contractGame.userFees(
+          //   "0x95977386303e586B3C9765B51c8A77b7A18efb84",
+          //   3
+          // ),
+          //contractGame.ownerNft(3),
 
           //contractGame.get
         ];
@@ -441,40 +477,28 @@ const Profil = () => {
           balanceRewardCreator,
           balanceRewardCreatorOwner,
           balanceStake,
-          userFees,
-          ownerNft,
+          lifeMint,
+          // userFees,
+          // ownerNft,
         ] = await Promise.all(promises);
         const rewardStake = ethers.utils.formatUnits(
           balanceRewardStake,
           "ether"
         );
-        const usrFees = ethers.utils.formatUnits(userFees, "ether");
-        console.log(usrFees, ownerNft);
+        // const usrFees = ethers.utils.formatUnits(userFees, "ether");
+        // console.log(usrFees, ownerNft);
         const rewardOwner = ethers.utils.formatUnits(
           balanceRewardCreatorOwner,
           "ether"
         );
-
-        console.log(
-          `stake: ${balanceRewardStake}, creator: ${balanceRewardCreator.toString()}, owner : ${rewardOwner}`
-        );
-        const balanceStakeEth = Math.round(
-          ethers.utils.formatUnits(balanceStake, "ether")
-        );
-        setBalanceStake(balanceStakeEth);
-        const balanceEther = Math.round(
-          ethers.utils.formatUnits(balanceWei, "ether")
-        );
-        setBalanceRewardStake(rewardStake);
-        setBalanceRewardCreator(balanceRewardCreator.toString());
-        setBalanceRewardOwner(rewardOwner);
+        const balanceEther = ethers.utils.formatUnits(balanceWei, "ether");
+        const balanceStakeEth = ethers.utils.formatUnits(balanceStake, "ether");
         const balanceCoinSpace = ethers.utils.formatUnits(
           balanceWeiCoinSpace,
           "ether"
         );
 
         const ownedNFTs = nftsOwned.map((tokenId) => tokenId.toNumber());
-        console.log(ownedNFTs);
         const resetNFTs = nftsRAndFees[0].map((tokenId) => tokenId.toNumber());
         const feesNft = nftsRAndFees[1].map((tokenId) => tokenId.toString());
         const creationNFTs = nftsCreationFees[0].map((tokenId) =>
@@ -490,7 +514,6 @@ const Profil = () => {
             ethers.utils.formatUnits(creationNFTsFees[index], "ether")
           ),
         }));
-        setCreatedNFTs(creationNFTs);
 
         const feesNftMap = {};
         feesNft.forEach((fee, index) => {
@@ -498,8 +521,6 @@ const Profil = () => {
 
           feesNftMap[resetNFTs[index]] = valueEth;
         });
-
-        setFeesNftMap(feesNftMap);
 
         const filteredOwnedNFTs = ownedNFTs.filter(
           (tokenId) => !resetNFTs.includes(tokenId)
@@ -518,6 +539,13 @@ const Profil = () => {
           setBalanceNftGsr(valueREth);
           setBalanceNftGsrSpc(valueSpc);
         }
+        setCreatedNFTs(creationNFTs);
+        setLifeMint(lifeMint.toString());
+        setFeesNftMap(feesNftMap);
+        setBalanceStake(balanceStakeEth);
+        setBalanceRewardStake(rewardStake);
+        setBalanceRewardCreator(balanceRewardCreator.toString());
+        setBalanceRewardOwner(rewardOwner);
         setOwnedNFTs(filteredOwnedNFTs);
         setAccount(userAddress);
         setBalance(balanceEther);
@@ -629,11 +657,11 @@ const Profil = () => {
 
   const unStakeSpc = async () => {
     const number = qtyWithdraw;
-    setIsTransactionUnstakePending(true);
+    setIsTransactionStakePending(true);
 
     if (isNaN(number)) {
       alert("Invalid input");
-      setIsTransactionUnstakePending(false);
+      setIsTransactionStakePending(false);
 
       return;
     }
@@ -658,10 +686,11 @@ const Profil = () => {
         gasLimit: gasLimitStake,
       });
       await rep.wait();
-      setIsTransactionUnstakePending(false);
+      await getBalances();
+      setIsTransactionStakePending(false);
     } catch (error) {
       console.error(error);
-      setIsTransactionUnstakePending(false);
+      setIsTransactionStakePending(false);
     }
   };
 
@@ -714,6 +743,7 @@ const Profil = () => {
         gasLimit: gasLimitStake,
       });
       await rep.wait();
+      await getBalances();
       setIsTransactionStakePending(false);
     } catch (error) {
       console.error(error);
@@ -754,13 +784,80 @@ const Profil = () => {
     }
   };
 
-  const claimCreator = async () => {
+  const claimStaker = async () => {
     const number = qtyWithdraw;
-    setIsTransactionStakePending(true);
+    setLoadingClaimStaker(true);
 
     if (isNaN(number)) {
       alert("Invalid input");
-      setIsTransactionStakePending(false);
+      setLoadingClaimStaker(false);
+
+      return;
+    }
+    const erc20Contract = new ethers.Contract(process.env.TOKEN, abi, signer);
+    // const amountInWei = ethers.utils.parseUnits(number.toString(), "ether");
+
+    // const gasEstimation = await contract.estimateGas.withdrawToken(amountInWei);
+    // const gasLimit = getMargeErrorTx(gasEstimation);
+    // const rep = await contract.withdrawToken(amountInWei, {
+    //   gasLimit,
+    // });
+    // await rep.wait();
+    try {
+      const gasEstimationClaim = await contract.estimateGas.claimRewardStaker();
+      const gasLimit = getMargeErrorTx(gasEstimationClaim);
+      const rep = await contract.claimRewardStaker({
+        gasLimit,
+      });
+      await rep.wait();
+      setLoadingClaimStaker(false);
+    } catch (error) {
+      console.error(error);
+      setLoadingClaimStaker(false);
+    }
+  };
+
+  const claimOwner = async () => {
+    const number = qtyWithdraw;
+    setLoadingClaimOwner(true);
+
+    if (isNaN(number)) {
+      alert("Invalid input");
+      setLoadingClaimOwner(false);
+
+      return;
+    }
+    const erc20Contract = new ethers.Contract(process.env.TOKEN, abi, signer);
+    // const amountInWei = ethers.utils.parseUnits(number.toString(), "ether");
+
+    // const gasEstimation = await contract.estimateGas.withdrawToken(amountInWei);
+    // const gasLimit = getMargeErrorTx(gasEstimation);
+    // const rep = await contract.withdrawToken(amountInWei, {
+    //   gasLimit,
+    // });
+    // await rep.wait();
+    try {
+      const gasEstimationClaim =
+        await contract.estimateGas.claimRewardCreatorOwnerFees();
+      const gasLimit = getMargeErrorTx(gasEstimationClaim);
+      const rep = await contract.claimRewardCreatorOwnerFees({
+        gasLimit,
+      });
+      await rep.wait();
+      setLoadingClaimOwner(false);
+    } catch (error) {
+      console.error(error);
+      setLoadingClaimOwner(false);
+    }
+  };
+
+  const claimCreator = async () => {
+    const number = qtyWithdraw;
+    setLoadingClaimCreator(true);
+
+    if (isNaN(number)) {
+      alert("Invalid input");
+      setLoadingClaimCreator(false);
 
       return;
     }
@@ -781,43 +878,11 @@ const Profil = () => {
         gasLimit,
       });
       await rep.wait();
-      setIsTransactionStakePending(false);
+      setLoadingClaimCreator(false);
     } catch (error) {
       console.error(error);
-      setIsTransactionStakePending(false);
+      setLoadingClaimCreator(false);
     }
-  };
-
-  const withdrawZama = async () => {
-    try {
-      const gasEstimation = await contract.estimateGas.withdraw();
-      const gasLimit = getMargeErrorTx(gasEstimation);
-      const rep = await contract.withdraw({
-        gasLimit,
-      });
-      await rep.wait();
-    } catch (error) {
-      return error;
-    }
-  };
-
-  const withdrawSpaceCoin = async () => {
-    const number = qtyWithdraw;
-
-    if (isNaN(number)) {
-      alert("Invalid input");
-      setIsTransactionCreatePending(false); // Set transaction pending state
-
-      return;
-    }
-    const amountInWei = ethers.utils.parseUnits(number.toString(), "ether");
-
-    const gasEstimation = await contract.estimateGas.withdrawToken(amountInWei);
-    const gasLimit = getMargeErrorTx(gasEstimation);
-    const rep = await contract.withdrawToken(amountInWei, {
-      gasLimit,
-    });
-    await rep.wait();
   };
 
   const createGpsOwner = async () => {
@@ -1020,28 +1085,28 @@ const Profil = () => {
       await window.ethereum.request({
         method: "wallet_addEthereumChain",
         params: [
-          // {
-          //   chainId: "0x1f49",
-          //   chainName: "Zama Network",
-          //   nativeCurrency: {
-          //     name: "ZAMA",
-          //     symbol: "ZAMA",
-          //     decimals: 18,
-          //   },
-          //   rpcUrls: ["https://devnet.zama.ai"],
-          //   blockExplorerUrls: ["https://main.explorer.zama.ai"],
-          // },
           {
-            chainId: "0x2382",
-            chainName: "Inco Network",
+            chainId: "0x1f49",
+            chainName: "Zama Network",
             nativeCurrency: {
-              name: "INCO",
-              symbol: "INCO",
+              name: "ZAMA",
+              symbol: "ZAMA",
               decimals: 18,
             },
-            rpcUrls: ["https://evm-rpc.inco.network/"],
-            blockExplorerUrls: ["https://explorer.inco.network/"],
+            rpcUrls: ["https://devnet.zama.ai"],
+            blockExplorerUrls: ["https://main.explorer.zama.ai"],
           },
+          // {
+          //   chainId: "0x2382",
+          //   chainName: "Inco Network",
+          //   nativeCurrency: {
+          //     name: "INCO",
+          //     symbol: "INCO",
+          //     decimals: 18,
+          //   },
+          //   rpcUrls: ["https://evm-rpc.inco.network/"],
+          //   blockExplorerUrls: ["https://explorer.inco.network/"],
+          // },
         ],
       });
 
@@ -1057,8 +1122,8 @@ const Profil = () => {
         const networkId = await window.ethereum.request({
           method: "eth_chainId",
         });
-        if (networkId !== "0x2382") {
-          //if (networkId !== "0x1f49") {
+        // if (networkId !== "0x2382") {
+        if (networkId !== "0x1f49") {
           const userResponse = window.confirm(
             "Please switch to Zama Devnet network to use this application. Do you want to switch now?"
           );
@@ -1144,276 +1209,381 @@ const Profil = () => {
         <div className={styles.balanceAndAddress}>
           <p>{account}</p>
           <p>{balance} ZAMA</p>
-          <p>{balanceSPC} SPC</p>
         </div>
-        {balanceSPC > 0 || balanceStake > 0 ? (
-          <>
-            <div className={styles.firstContainer}>
-              <h1>SpaceCoin</h1>
-              <div className={styles.centerExplication}>
-                <p>
-                  The more you stake (compared to other stakers), the more
-                  shares of the guess tax by other players in INCO you will
-                  receive.
-                </p>
-              </div>
+        <div>
+          <div className={styles.firstContainer}>
+            <h1>Your Rewards</h1>
+            <h3 style={{ color: "#a88314" }}>
+              Your reward owner:{" "}
+              <p style={{ display: "inline", margin: 0 }}>
+                {balanceRewardOwner} ZAMA
+              </p>
+            </h3>
 
-              <h3 style={{ color: "green" }}>
-                Your SpaceCoin stake:{" "}
-                <p style={{ display: "inline", margin: 0 }}>
-                  {balanceStake} SPC
-                </p>
-              </h3>
-
-              <h3 style={{ color: "#a88314" }}>
-                Your reward staking:{" "}
-                <p style={{ display: "inline", margin: 0 }}>
-                  {balanceRewardStake} INCO
-                </p>
-              </h3>
-
-              {balanceRewardStake > 0 ? (
-                <div>
-                  <React.Fragment>
-                    {isTransactionStakePending ? (
-                      <CircleLoader
-                        css={overrideCircle}
-                        size={30}
-                        color={"#107a20"}
-                        loading={true}
-                      />
-                    ) : (
-                      <>
-                        <a
-                          className={`${styles.accessButton} ${styles.buttonSpacing}`}
-                          onClick={claim}
-                        >
-                          Claim
-                        </a>
-                      </>
-                    )}
-                  </React.Fragment>
-                </div>
-              ) : (
-                ""
-              )}
-            </div>
-            <div className={styles.containerInfos}>
-              <div style={{ flex: 1 }}>
-                <div className={`${styles.stakeContainer}`}>
-                  <React.Fragment>
-                    {isTransactionStakePending ? (
-                      <CircleLoader
-                        css={overrideCircle}
-                        size={30}
-                        color={"#107a20"}
-                        loading={true}
-                      />
-                    ) : (
-                      // <a
-                      //   className={`${styles.red2Button} ${styles.buttonSpacing}`}
-                      //   onClick={resetNFTs}
-                      // >
-                      <>
-                        <h2>Set quantity to stake or unstake</h2>
-                        <form>
-                          <input
-                            type="number"
-                            min="1"
-                            value={qtyWithdraw}
-                            onChange={(e) => setQtyWithdraw(e.target.value)}
-                          />
-                        </form>
-
-                        <a
-                          className={`${styles.red2Button} ${styles.buttonSpacing}`}
-                          onClick={stakeSpc}
-                        >
-                          Stake SPC
-                        </a>
-
-                        <a
-                          className={`${styles.redButton} ${styles.buttonSpacing}`}
-                          onClick={unStakeSpc}
-                        >
-                          UnStake SPC
-                        </a>
-                      </>
-                    )}
-                  </React.Fragment>
-                </div>
-              </div>
-            </div>
-          </>
-        ) : (
-          ""
-        )}
-        {ownedNFTs.length === 0 &&
-        createdNFTs.length === 0 &&
-        resetNFT.length === 0 ? (
-          <div className={styles.needToPlay}>
-            <h1>You don&#39;t have any nft</h1>
-            <p>you need to play to win nft</p>
-          </div>
-        ) : (
-          <div>
-            <div className={styles.firstContainer}>
-              <h1>GeoSpace</h1>
-              <div className={styles.centerExplication}>
-                <p>
-                  The more GeoSpace you create (compared to the total number of
-                  NFTs created), the more shares of the minted SpaceCoin you
-                  will receive when a guess request is made by other players.
-                </p>
-              </div>
-            </div>
-            <div className={styles.titleMap}>
-              {/* <h2>Location of your GeoSpace NFTs</h2> */}
-
-              {isMapsLoadingData ? (
-                // Affichez le bouton en tant que <p> lorsqu'il est en cours de chargement
-                <PropagateLoader
-                  css={override}
-                  size={10}
-                  color={"#a88314"}
-                  loading={true}
-                />
-              ) : (
-                // Affichez le bouton en tant que <a> avec le texte approprié
-                <a
-                  className={styles.accessButton}
-                  onClick={() => {
-                    if (!isMapsLoadingData) {
-                      handleShowMap(!showMap);
-                    }
-                  }}
-                >
-                  {showMap ? (
-                    // Affichez le bouton pour masquer la carte
-                    <span>Hide Map</span>
+            {balanceRewardOwner > 0 ? (
+              <div>
+                <React.Fragment>
+                  {isLoadingClaimOwner ? (
+                    <CircleLoader
+                      css={overrideCircle}
+                      size={30}
+                      color={"#107a20"}
+                      loading={true}
+                    />
                   ) : (
-                    // Affichez le bouton pour afficher la carte
-                    <span>Decrypt Map</span>
+                    <>
+                      <a
+                        className={`${styles.accessButton} ${styles.buttonSpacing}`}
+                        onClick={claimOwner}
+                      >
+                        Claim
+                      </a>
+                    </>
                   )}
-                </a>
-              )}
-            </div>
+                </React.Fragment>
+              </div>
+            ) : (
+              ""
+            )}
 
-            {isMapsLoadingData && isMapsScriptLoaded && showMap && (
-              <div
-                style={{
-                  height: "300px",
-                  top: "10px", // Ajustez la hauteur en fonction de vos besoins
+            <h3 style={{ color: "#a88314" }}>
+              Your reward creator:{" "}
+              <p style={{ display: "inline", margin: 0 }}>
+                {balanceRewardCreator} SPC
+              </p>
+            </h3>
+
+            {balanceRewardCreator > 0 ? (
+              <div>
+                <React.Fragment>
+                  {isLoadingClaimCreator ? (
+                    <CircleLoader
+                      css={overrideCircle}
+                      size={30}
+                      color={"#107a20"}
+                      loading={true}
+                    />
+                  ) : (
+                    <>
+                      <a
+                        className={`${styles.accessButton} ${styles.buttonSpacing}`}
+                        onClick={claimCreator}
+                      >
+                        Claim
+                      </a>
+                    </>
+                  )}
+                </React.Fragment>
+              </div>
+            ) : (
+              ""
+            )}
+
+            <h3 style={{ color: "#a88314" }}>
+              Your reward staking:{" "}
+              <p style={{ display: "inline", margin: 0 }}>
+                {balanceRewardStake} ZAMA
+              </p>
+            </h3>
+
+            {balanceRewardStake > 0 ? (
+              <div>
+                <React.Fragment>
+                  {isLoadingClaimStaker ? (
+                    <CircleLoader
+                      css={overrideCircle}
+                      size={30}
+                      color={"#107a20"}
+                      loading={true}
+                    />
+                  ) : (
+                    <>
+                      <a
+                        className={`${styles.accessButton} ${styles.buttonSpacing}`}
+                        onClick={claimStaker}
+                      >
+                        Claim
+                      </a>
+                    </>
+                  )}
+                </React.Fragment>
+              </div>
+            ) : (
+              ""
+            )}
+          </div>
+        </div>
+        <div className={styles.firstContainer}>
+          <h1>SpaceCoin</h1>
+          <h3 style={{ color: "green" }}>
+            Your SpaceCoin balance:{" "}
+            <p style={{ display: "inline", margin: 0 }}>{balanceSPC} SPC</p>
+          </h3>
+          <h3 style={{ color: "green" }}>
+            Your SpaceCoin stake:{" "}
+            <p style={{ display: "inline", margin: 0 }}>{balanceStake} SPC</p>
+          </h3>
+          <div className={styles.centerExplication}>
+            <h2> Stake your SpaceCoin to earn a portion guess fees Zama!</h2>
+            <p>
+              The more you stake (compared to other stakers), the more shares of
+              the guess tax by other players in ZAMA you will receive.
+            </p>
+          </div>
+
+          <div style={{ flex: 1 }}>
+            <div className={`${styles.titleMap}`}>
+              <React.Fragment>
+                {isTransactionStakePending ? (
+                  <CircleLoader
+                    css={overrideCircle}
+                    size={30}
+                    color={"#107a20"}
+                    loading={true}
+                  />
+                ) : (
+                  <>
+                    <h3>Set quantity to stake or unstake</h3>
+                    <form>
+                      <input
+                        type="number"
+                        min="1"
+                        value={qtyWithdraw}
+                        onChange={(e) => setQtyWithdraw(e.target.value)}
+                      />
+                    </form>
+
+                    {balanceStake > 0 ? (
+                      <a
+                        className={`${styles.redButton} ${styles.buttonSpacing}`}
+                        onClick={unStakeSpc}
+                      >
+                        UnStake SPC
+                      </a>
+                    ) : (
+                      <a
+                        className={`${styles.red2Button} ${styles.buttonSpacing}`}
+                        onClick={stakeSpc}
+                      >
+                        Stake SPC
+                      </a>
+                    )}
+                  </>
+                )}
+              </React.Fragment>
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.firstContainer}>
+          <h1>GeoSpace</h1>
+          <h3 style={{ color: "green" }}>
+            Your GeoSpace creation:{" "}
+            <p style={{ display: "inline", margin: 0 }}>
+              {creationNFT.length} GSP
+            </p>
+          </h3>
+          <h3 style={{ color: "green" }}>
+            Your mint life:{" "}
+            <p style={{ display: "inline", margin: 0 }}>{lifeMint}</p>
+          </h3>
+          <div className={styles.centerExplication}>
+            <h2>
+              Put your GeoSpace with your winning fees and earn SpaceCoin !
+            </h2>
+            <p>
+              The more GeoSpace you create (compared to the total number of NFTs
+              created), the more shares of the minted SpaceCoin you will receive
+              when a guess request is made by other players.
+            </p>
+          </div>
+        </div>
+        <>
+          <div className={styles.titleMap}>
+            {isMapsLoadingData ? (
+              // Affichez le bouton en tant que <p> lorsqu'il est en cours de chargement
+              <PropagateLoader
+                css={override}
+                size={10}
+                color={"#a88314"}
+                loading={true}
+              />
+            ) : (
+              // Affichez le bouton en tant que <a> avec le texte approprié
+              <a
+                className={styles.accessButton}
+                onClick={() => {
+                  if (!isMapsLoadingData) {
+                    handleShowMap(!showMap);
+                  }
+                }}
+              >
+                {showMap ? (
+                  // Affichez le bouton pour masquer la carte
+                  <span>Hide Map</span>
+                ) : (
+                  // Affichez le bouton pour afficher la carte
+                  <span>Decrypt Map</span>
+                )}
+              </a>
+            )}
+          </div>
+
+          {errorsFetch && <p> {errorsFetch} </p>}
+          {isGood && (
+            <div className={styles.map}>
+              <GoogleMap
+                mapContainerStyle={{
+                  width: "70%",
+                  height: "400px",
+                  top: "20px", // Ajustez la hauteur en fonction de vos besoins
                   margin: "auto", // Center the map horizontally
                   bottom: "10px",
                 }}
+                center={position} // Centrez la carte aux coordonnées désirées
+                zoom={1}
+                onLoad={(map) => handleMapLoad(map)}
+                options={{
+                  disableDefaultUI: true,
+                  zoomControl: true,
+                  scrollwheel: true, // Active la roulette de la souris pour le zoom
+                }}
               >
-                <p>Loading...</p>
-              </div>
-            )}
-            {errorsFetch && <p> {errorsFetch} </p>}
-            {isMapsScriptLoaded && showMap && !isMapsLoadingData && (
-              <div className={styles.map}>
-                <GoogleMap
-                  mapContainerStyle={{
-                    width: "70%",
-                    height: "400px",
-                    top: "20px", // Ajustez la hauteur en fonction de vos besoins
-                    margin: "auto", // Center the map horizontally
-                    bottom: "10px",
-                  }}
-                  center={position} // Centrez la carte aux coordonnées désirées
-                  zoom={1}
-                  onLoad={(map) => handleMapLoad(map)}
-                  options={{
-                    disableDefaultUI: true,
-                    zoomControl: true,
-                    scrollwheel: true, // Active la roulette de la souris pour le zoom
-                  }}
-                >
-                  {markers.map((marker) => (
-                    <Marker
-                      key={marker.id}
-                      position={marker.position}
-                      title={marker.title}
-                      icon={getOpt()}
+                {markers.map((marker) => (
+                  <Marker
+                    key={marker.id}
+                    position={marker.position}
+                    title={marker.title}
+                    icon={getOpt()}
+                  />
+                ))}
+              </GoogleMap>
+            </div>
+          )}
+        </>
+
+        <div className={styles.firstContainer}>
+          {balanceRewardCreator > 0 ? (
+            <div>
+              <React.Fragment>
+                {isTransactionStakePending ? (
+                  <CircleLoader
+                    css={overrideCircle}
+                    size={30}
+                    color={"#107a20"}
+                    loading={true}
+                  />
+                ) : (
+                  <>
+                    <a
+                      className={`${styles.accessButton} ${styles.buttonSpacing}`}
+                      onClick={claimCreator}
+                    >
+                      Claim
+                    </a>
+                  </>
+                )}
+              </React.Fragment>
+            </div>
+          ) : (
+            ""
+          )}
+        </div>
+        <div className={styles.access}>
+          {/* {resetNFT.length >= 1 && (
+            <a href="#" onClick={scrollToCreateGeoSpace}>
+              You have access to create GeoSpace
+            </a>
+          )} */}
+        </div>
+        <div className={styles.containerInfos}>
+          <div className={`${styles.displayContainer}`}>
+            <div style={{ flex: 1 }}>
+              <div className={`${styles.yourNFTs}`}>
+                <h2>Your available GeoSpace</h2>
+                <p>
+                  Just select nft to stake or to put your NFT back into play
+                  with your winning fees. (default is set on 0)
+                </p>
+
+                <React.Fragment>
+                  <ul>
+                    {ownedNFTs.map((tokenId) => (
+                      <li key={tokenId}>
+                        <label>
+                          <input
+                            type="checkbox"
+                            value={tokenId}
+                            checked={selectedNFTs.includes(tokenId)}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value);
+                              setSelectedNFTs((prevSelected) =>
+                                prevSelected.includes(value)
+                                  ? prevSelected.filter((id) => id !== value)
+                                  : [...prevSelected, value]
+                              );
+                            }}
+                            disabled={resetNFT.includes(tokenId)}
+                          />
+                          GeoSpace {tokenId}
+                        </label>
+                        <input
+                          id={`feeInput-${tokenId}`} // ID unique pour chaque champ de saisie
+                          type="number"
+                          placeholder="Enter a fees"
+                          min="0"
+                          // Add any additional attributes or event handlers as needed
+                        />
+                      </li>
+                    ))}
+                  </ul>
+
+                  {isTransactionResetPending ? (
+                    <CircleLoader
+                      css={overrideCircle}
+                      size={30}
+                      color={"#107a20"}
+                      loading={true}
                     />
-                  ))}
-                </GoogleMap>
+                  ) : (
+                    // <a
+                    //   className={`${styles.red2Button} ${styles.buttonSpacing}`}
+                    //   onClick={resetNFTs}
+                    // >
+                    <a
+                      className={`${styles.red2Button} ${styles.buttonSpacing}`}
+                      onClick={resetNFTs}
+                    >
+                      Back in Game
+                    </a>
+                  )}
+                </React.Fragment>
               </div>
-            )}
-            <div className={styles.firstContainer}>
-              <h3 style={{ color: "green" }}>
-                Your total GeoSpace created:{" "}
-                <p style={{ display: "inline", margin: 0 }}>
-                  {creationNFT.length} GSP
-                </p>
-              </h3>
-
-              <h3 style={{ color: "#a88314" }}>
-                Your reward creator:{" "}
-                <p style={{ display: "inline", margin: 0 }}>
-                  {balanceRewardCreator} SPC
-                </p>
-              </h3>
-              {balanceRewardCreator > 0 ? (
-                <div>
-                  <React.Fragment>
-                    {isTransactionStakePending ? (
-                      <CircleLoader
-                        css={overrideCircle}
-                        size={30}
-                        color={"#107a20"}
-                        loading={true}
-                      />
-                    ) : (
-                      <>
-                        <a
-                          className={`${styles.accessButton} ${styles.buttonSpacing}`}
-                          onClick={claimCreator}
-                        >
-                          Claim
-                        </a>
-                      </>
-                    )}
-                  </React.Fragment>
-                </div>
-              ) : (
-                ""
-              )}
             </div>
 
-            <div className={styles.access}>
-              {resetNFT.length >= 1 && (
-                <a href="#" onClick={scrollToCreateGeoSpace}>
-                  You have access to create GeoSpace
-                </a>
-              )}
-            </div>
-            <div className={styles.containerInfos}>
-              <div className={`${styles.displayContainer}`}>
-                {/* <div style={{ display: "flex", flexDirection: "column" }}> */}
-
-                <div style={{ flex: 1 }}>
-                  <div className={`${styles.yourNFTs}`}>
-                    <h2>Your available GeoSpace</h2>
+            {resetNFT.length > 0 ? (
+              <div style={{ flex: 1 }}>
+                <div className={`${styles.yourResetNft}`}>
+                  <h2>GeoSpaces Back in game </h2>
+                  {/* <p>just select nft to clean reset</p> */}
+                  {resetNFT.length === 0 ? (
                     <p>
-                      Just select nft to stake or to put your NFT back into play
-                      with your fees. (default is set on 0)
+                      Please select GeoSpace on your collection to put back in
+                      games
                     </p>
-
+                  ) : (
                     <React.Fragment>
                       <ul>
-                        {ownedNFTs.map((tokenId) => (
+                        {resetNFT.map((tokenId) => (
                           <li key={tokenId}>
                             <label>
                               <input
                                 type="checkbox"
                                 value={tokenId}
-                                checked={selectedNFTs.includes(tokenId)}
+                                checked={selectedResetNFTs.includes(tokenId)}
                                 onChange={(e) => {
                                   const value = parseInt(e.target.value);
-                                  setSelectedNFTs((prevSelected) =>
+                                  setSelectedResetNFTs((prevSelected) =>
                                     prevSelected.includes(value)
                                       ? prevSelected.filter(
                                           (id) => id !== value
@@ -1421,141 +1591,69 @@ const Profil = () => {
                                       : [...prevSelected, value]
                                   );
                                 }}
-                                disabled={resetNFT.includes(tokenId)}
                               />
-                              GeoSpace {tokenId}
+                              GeoSpace: {tokenId} (Fee: {feesNftMap[tokenId]}{" "}
+                              ZAMA)
                             </label>
-                            <input
-                              id={`feeInput-${tokenId}`} // ID unique pour chaque champ de saisie
-                              type="number"
-                              placeholder="Enter a fees"
-                              min="0"
-                              // Add any additional attributes or event handlers as needed
-                            />
                           </li>
                         ))}
                       </ul>
-
-                      {isTransactionResetPending ? (
+                      {isTransactionClaimPending ? (
                         <CircleLoader
                           css={overrideCircle}
                           size={30}
-                          color={"#107a20"}
+                          color={"#a81419"}
                           loading={true}
                         />
                       ) : (
-                        // <a
-                        //   className={`${styles.red2Button} ${styles.buttonSpacing}`}
-                        //   onClick={resetNFTs}
-                        // >
-                        <a
-                          className={`${styles.red2Button} ${styles.buttonSpacing}`}
-                          onClick={resetNFTs}
-                        >
-                          Back in Game
+                        <a className={styles.redButton} onClick={claimNft}>
+                          Cancel
                         </a>
                       )}
                     </React.Fragment>
-                  </div>
+                  )}
                 </div>
-
-                {resetNFT.length > 0 ? (
-                  <div style={{ flex: 1 }}>
-                    <div className={`${styles.yourResetNft}`}>
-                      <h2>GeoSpaces Back in game </h2>
-                      {/* <p>just select nft to clean reset</p> */}
-                      {resetNFT.length === 0 ? (
-                        <p>
-                          Please select GeoSpace on your collection to put back
-                          in games
-                        </p>
-                      ) : (
-                        <React.Fragment>
-                          <ul>
-                            {resetNFT.map((tokenId) => (
-                              <li key={tokenId}>
-                                <label>
-                                  <input
-                                    type="checkbox"
-                                    value={tokenId}
-                                    checked={selectedResetNFTs.includes(
-                                      tokenId
-                                    )}
-                                    onChange={(e) => {
-                                      const value = parseInt(e.target.value);
-                                      setSelectedResetNFTs((prevSelected) =>
-                                        prevSelected.includes(value)
-                                          ? prevSelected.filter(
-                                              (id) => id !== value
-                                            )
-                                          : [...prevSelected, value]
-                                      );
-                                    }}
-                                  />
-                                  GeoSpace: {tokenId} (Fee:{" "}
-                                  {feesNftMap[tokenId]} ZAMA)
-                                </label>
-                              </li>
-                            ))}
-                          </ul>
-                          {isTransactionClaimPending ? (
-                            <CircleLoader
-                              css={overrideCircle}
-                              size={30}
-                              color={"#a81419"}
-                              loading={true}
-                            />
-                          ) : (
-                            <a className={styles.redButton} onClick={claimNft}>
-                              Cancel
-                            </a>
-                          )}
-                        </React.Fragment>
-                      )}
-                    </div>
-                  </div>
-                ) : (
-                  ""
-                )}
-
-                {creationNFT.length === 0 ? (
-                  ""
-                ) : (
-                  <div style={{ flex: 1 }}>
-                    <div className={`${styles.yourCreationNft}`}>
-                      <h2>NFTs Creation</h2>
-                      <p>Just see nft your nft creation</p>
-                      <p>
-                        You receive the creation fees (SpaceCoin) of GeoSpace
-                        shared with other creators.{" "}
-                      </p>
-
-                      <React.Fragment>
-                        <ul>
-                          {creationNFT.map((tokenId) => (
-                            <li key={tokenId.id}>
-                              <label>
-                                GeoSpace: {tokenId.id} (Fee: {tokenId.fee} ZAMA)
-                              </label>
-                            </li>
-                          ))}
-                        </ul>
-                      </React.Fragment>
-                    </div>
-                  </div>
-                )}
               </div>
-            </div>
+            ) : (
+              ""
+            )}
+
+            {creationNFT.length === 0 ? (
+              ""
+            ) : (
+              <div style={{ flex: 1 }}>
+                <div className={`${styles.yourCreationNft}`}>
+                  <h2>NFTs Creation</h2>
+                  <p>Just see nft your nft creation</p>
+                  <p>
+                    You receive the creation fees (SpaceCoin) of GeoSpace shared
+                    with other creators.{" "}
+                  </p>
+
+                  <React.Fragment>
+                    <ul>
+                      {creationNFT.map((tokenId) => (
+                        <li key={tokenId.id}>
+                          <label>
+                            GeoSpace: {tokenId.id} (Fee: {tokenId.fee} ZAMA)
+                          </label>
+                        </li>
+                      ))}
+                    </ul>
+                  </React.Fragment>
+                </div>
+              </div>
+            )}
           </div>
-        )}
+        </div>
         {resetNFT.length >= 1 && (
           <div className={styles.secondContainer} ref={createGeoSpaceRef}>
             <div>
               <h1>Create GeoSpace</h1>
 
               <h2>
-                Include your tax in ZAMA for one round and receives a portion of
-                the creation fees in SpaceCoin along with all other creators.
+                Include your winning tax in ZAMA. Receives a portion of the
+                creation fees in SpaceCoin along with all other creators.
               </h2>
               <h3>⚠️ Be careful ⚠️</h3>
               <p>
@@ -1629,150 +1727,7 @@ const Profil = () => {
             )}
           </div>
         )}
-        {account === process.env.OWNER && (
-          <>
-            <div className={styles.firstContainer}>
-              <h1>Admin panel</h1>
-            </div>
-            <div className={styles.balanceAndAddress}>
-              <p>{balanceNftGsr} ZAMA</p>
-              <p>{balanceNftGsrSpc} SPC</p>
-            </div>
-            <div className={styles.containerInfos}>
-              <div className={`${styles.displayContainer}`}>
-                <div style={{ flex: 1 }}>
-                  <div className={`${styles.yourNFTs}`}>
-                    <React.Fragment>
-                      {isTransactionStakePending ? (
-                        <CircleLoader
-                          css={overrideCircle}
-                          size={30}
-                          color={"#107a20"}
-                          loading={true}
-                        />
-                      ) : (
-                        <a className={styles.red2Button} onClick={withdrawZama}>
-                          Withdraw ZAMA
-                        </a>
-                      )}
 
-                      {isTransactionResetPending ? (
-                        <CircleLoader
-                          css={overrideCircle}
-                          size={30}
-                          color={"#107a20"}
-                          loading={true}
-                        />
-                      ) : (
-                        // <a
-                        //   className={`${styles.red2Button} ${styles.buttonSpacing}`}
-                        //   onClick={resetNFTs}
-                        // >
-                        <>
-                          <form>
-                            <input
-                              type="number"
-                              value={qtyWithdraw}
-                              onChange={(e) => setQtyWithdraw(e.target.value)}
-                            />
-                          </form>
-
-                          <a
-                            className={`${styles.red2Button} ${styles.buttonSpacing}`}
-                            onClick={withdrawSpaceCoin}
-                          >
-                            Withdraw SPC
-                          </a>
-                        </>
-                      )}
-                    </React.Fragment>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className={styles.secondContainer}>
-              <div>
-                <h1>Create GeoSpace</h1>
-
-                <h2>
-                  Include your tax in ZAMA for one round and receives a portion
-                  of the creation fees in SpaceCoin along with all other
-                  creators.
-                </h2>
-                <h3>⚠️ Be careful ⚠️</h3>
-                <p>
-                  For now, Zama does not handle negative integers. So you need
-                  to use positive latitude and longitude values.
-                </p>
-                <p>
-                  You must have a valid GPS coordinate, meaning it should have
-                  an available Google Street View.
-                </p>
-                <p>
-                  Go to Google Maps, enter Street View mode, navigate to the
-                  desired location.
-                </p>
-                <p>
-                  Go to the search bar, and find the two values after the @
-                  symbol. The first value is the latitude, and the second is the
-                  longitude. Copy and paste these values into the form here.
-                </p>
-                <p>It will cost you 1 SpaceCoin.</p>
-                <h3>⚠️ Be careful ⚠️ </h3>
-                <p>Your transaction will occur in two steps:</p>
-                <ul>
-                  1) Approve the use of 1 token from your wallet to the
-                  NftGuessr contract.
-                </ul>
-                <ul>2) Minting transaction for NFT GeoSpace.</ul>
-                <p> Please be patient during the creation time, thank you.</p>
-              </div>
-
-              <form>
-                <label>
-                  Fees:
-                  <input
-                    type="number"
-                    value={numberInput}
-                    onChange={(e) =>
-                      setNumberInput(Math.max(0, parseInt(e.target.value)))
-                    }
-                    min="0"
-                  />
-                </label>
-                <label>
-                  Latitude:
-                  <input
-                    type="number"
-                    value={latitudeInput}
-                    onChange={(e) => setLatitudeInput(e.target.value)}
-                  />
-                </label>
-                <label>
-                  Longitude:
-                  <input
-                    type="number"
-                    value={longitudeInput}
-                    onChange={(e) => setLongitudeInput(e.target.value)}
-                  />
-                </label>
-              </form>
-              {isTransactionCreatePending ? (
-                <CircleLoader
-                  css={overrideCircle}
-                  size={30}
-                  color={"#a88314"}
-                  loading={true}
-                />
-              ) : (
-                <a className={styles.accessButton} onClick={createGpsOwner}>
-                  Create Gps
-                </a>
-              )}
-            </div>
-          </>
-        )}
         {ownedNFTs.length === 0 && resetNFT.length === 0 && (
           <>
             <div className={styles.containerAccess}>
@@ -1783,6 +1738,17 @@ const Profil = () => {
               </Link>
             </div>
           </>
+        )}
+
+        {ownedNFTs.length === 0 &&
+        createdNFTs.length === 0 &&
+        resetNFT.length === 0 ? (
+          <div className={styles.needToPlay}>
+            <h1>You don&#39;t have any nft</h1>
+            <p>you need to play to win nft</p>
+          </div>
+        ) : (
+          ""
         )}
       </div>
     </LoadScript>
