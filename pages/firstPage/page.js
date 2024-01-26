@@ -16,7 +16,7 @@ const FirstPage = () => {
       <Link href="/game/game">
         <button className={styles.playButton}>Play</button>
       </Link>
-      <h2 className={styles.titleAir}>SpaceCoin AirDrop</h2>
+      <h2 className={`${styles.titleAir}`}>SpaceCoin AirDrop</h2>
       <p className={styles.subtitleAir}>
         Be a pioneer of NFTGuessr and earn SpaceCoins through your involvement
         in the games !

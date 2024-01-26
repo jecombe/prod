@@ -582,7 +582,7 @@ export default function GamePage() {
       <ErrorMetamask message="Please connect to MetaMask and go to zama devnet" />
     );
   }
-  if (isLoading) return <Loading />;
+  // if (isLoading) return <Loading />;
 
   return (
     <LoadScript
