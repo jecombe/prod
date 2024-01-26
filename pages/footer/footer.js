@@ -7,23 +7,23 @@ const Footer = () => {
     <footer className={styles.footer}>
       <div className={styles.footerContainer}>
         <div className={styles.footerLinks}>
-          <a
+          {/* <a
             href="https://twitter.com/NftGuessr"
             target="_blank"
             rel="noopener noreferrer"
           >
             Twitter
-          </a>
-          <a
+          </a> */}
+          {/* <a
             href="https://discord.gg/DJb73wHR"
             target="_blank"
             rel="noopener noreferrer"
           >
             Discord
-          </a>
+          </a> */}
         </div>
         <div className={styles.footerLinks}>
-          <a
+          {/* <a
             href="https://t.me/NFTGuessr"
             target="_blank"
             rel="noopener noreferrer"
@@ -36,17 +36,17 @@ const Footer = () => {
             rel="noopener noreferrer"
           >
             White Paper
-          </a>
+          </a> */}
         </div>
       </div>
       <div className={styles.footerText}>
-        <a
+        {/* <a
           href="https://github.com/jecombe"
           target="_blank"
           rel="noopener noreferrer"
         >
           Made by Jérémy Combe
-        </a>
+        </a> */}
       </div>
     </footer>
   );

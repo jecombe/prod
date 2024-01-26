@@ -54,12 +54,7 @@ const Ranking = () => {
     fetchAllData();
   }, []);
 
-  if (!signer && !isLoading) {
-    return (
-      <ErrorMetamask message="Please connect to MetaMask and go to zama devnet" />
-    );
-  }
-  if (isLoading) return <Loading />;
+  // if (isLoading) return <Loading />;
 
   const createList = (nftsArray) => {
     return nftsArray.map((id, index) => (

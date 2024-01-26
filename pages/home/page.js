@@ -12,10 +12,10 @@ export default function HomeView() {
         <Header />
         <FirstPage />
       </div>
-      <main className={`${styles.content}`}>
+      {/* <main className={`${styles.content}`}>
         <Contents />
       </main>
-      <Footer />
+      <Footer /> */}
     </div>
   );
 }

@@ -29,16 +29,16 @@ const Header = () => {
         <a onClick={scrollToHowToPlay} className={styles.howToPlayButton}>
           How to Play
         </a>
-        <Link href="/ranking/rank">
+        <Link href="/">
           <a className={styles.profilStat}>Game Stats</a>
         </Link>
         <Link href="/profil/profil">
           <a className={styles.profilStat}>My profil</a>
         </Link>
       </div>
-      <Link href="/game/game">
+      {/* <Link href="/game/game">
         <button className={styles.playButton}>Play</button>
-      </Link>
+      </Link> */}
     </header>
   );
 };
