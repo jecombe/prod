@@ -1,25 +1,37 @@
 import React, { useState, useRef } from "react";
-import { MapContainer, TileLayer, Marker } from "react-leaflet";
+import Map from "./Map";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
 
 import { icon } from "leaflet";
-
+const DEFAULT_CENTER = [38.907132, -77.036546];
 const ICON = icon({
   iconUrl: "/nfts.png",
   iconSize: [32, 32],
 });
 
-const NftMaps = () => {
-  const [center, setCenter] = useState({ lat: -4.043477, lng: 39.668205 });
-  const ZOOM_LEVEL = 3;
-  const mapRef = useRef();
+const Map2 = () => {
   return (
     <>
-      <h1>MAPS CONTAINER</h1>
-      <MapContainer center={center} zoom={ZOOM_LEVEL} ref={mapRef}>
-        {/* <Marker position={[51.505, -0.09]} icon={ICON}></Marker> */}
-      </MapContainer>
+      <h1>Next.js Leaflet Starter</h1>
+
+      <Map width="10" height="5" center={DEFAULT_CENTER} zoom={12}>
+        {({ TileLayer, Marker, Popup }) => (
+          <>
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+            />
+            <Marker position={DEFAULT_CENTER} icon={ICON}>
+              <Popup>
+                A pretty CSS3 popup. <br /> Easily customizable.
+              </Popup>
+            </Marker>
+          </>
+        )}
+      </Map>
     </>
   );
 };
 
-export default NftMaps;
+export default Map2;

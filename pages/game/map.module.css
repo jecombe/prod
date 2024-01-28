@@ -68,8 +68,8 @@
 }
 /* map.module.css */
 .miniMapContainer {
-  width: 200px; /* Largeur initiale */
-  height: 100px; /* Hauteur initiale */
+  width: 400px; /* Largeur initiale */
+  height: 300px; /* Hauteur initiale */
   position: absolute;
   bottom: 100px;
   right: 30px;
@@ -77,9 +77,9 @@
   transition: width 0.2s, height 0.2s; /* Ajoute une transition en douceur */
 }
 
-.miniMapContainer:hover {
-  width: 300px; /* Largeur lors du survol */
-  height: 300px; /* Hauteur lors du survol */
+/* .miniMapContainer:hover {
+  width: 300px;
+  height: 300px;
   transform: scale(1.1);
   cursor: crosshair;
 }
@@ -99,9 +99,8 @@
 
 .miniMapContainer:hover::before {
   transform: scaleX(1.1);
-}
-
-.loadingIndicator {
+} */
+* .loadingIndicator {
   position: absolute;
   top: 50%;
   left: 50%;

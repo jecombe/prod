@@ -336,7 +336,7 @@ const AirDrop = () => {
   return (
     <div className={styles.container}>
       <div className={styles.headerContainer}>
-        <Link href="/">
+        <Link href="/" legacyBehavior>
           <button className={`${styles.backHome}`}>Back Home</button>
         </Link>
       </div>

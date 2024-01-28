@@ -1,7 +1,7 @@
 require("dotenv").config;
 
 module.exports = {
-  reactStrictMode: true,
+  reactStrictMode: false,
   env: {
     OWNER: process.env.OWNER,
     API_MAP: process.env.API_MAP,

@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   GoogleMap,
   LoadScript,
   Marker,
+  useJsApiLoader,
   StreetViewPanorama,
 } from "@react-google-maps/api";
 import style from "./map.module.css";
@@ -20,7 +21,17 @@ import Image from "next/image";
 import { css } from "@emotion/react";
 import { PropagateLoader } from "react-spinners";
 import ErrorMetamask from "../errorPage/metamask";
+import MapStreet from "./MapStreet";
+import dynamic from "next/dynamic";
 const lib = ["places"];
+
+const OpenStreetMap = dynamic(() => import("./Map2"), {
+  ssr: false,
+});
+
+const OpenStreetMapWrapper = ({ handleMapClick }) => {
+  return <OpenStreetMap handleMapClick={handleMapClick} />;
+};
 
 export default function GamePage() {
   const override = css`
@@ -59,6 +70,7 @@ export default function GamePage() {
   const [accountBalance, setAccountBalance] = useState(0);
   const [balanceSpc, setBalanceSPC] = useState(0);
   // const [feesNftMap, setFeesNftMap] = useState({});
+  const [map, setMap] = useState(null);
 
   // const [isMetaMaskInitialized, setIsMetaMaskInitialized] = useState(false);
   const [showWinMessage, setShowWinMessage] = useState(false);
@@ -73,6 +85,15 @@ export default function GamePage() {
     await manageData();
   };
 
+  const handleMapClick = ({ lat, lng }) => {
+    // Utilisez les coordonnées dans le parent (GamePage)
+    console.log(
+      `Received coordinates in GamePage: Latitude: ${lat}, Longitude: ${lng}`
+    );
+    const pos = { lat, lng };
+
+    setPositionMiniMap(pos);
+  };
   useEffect(() => {
     const init = async () => {
       if (isMountedRef.current) {
@@ -132,6 +153,23 @@ export default function GamePage() {
       //setIsLoadingData(false); // Set loading to false when data processing is complete
     }
   };
+
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: process.env.API_MAP,
+  });
+
+  const onLoad = useCallback(function callback(map) {
+    // This is just an example of getting and using the map instance!!! don't just blindly copy!
+    const bounds = new window.google.maps.LatLngBounds(center);
+    map.fitBounds(bounds);
+
+    setMap(map);
+  }, []);
+
+  const onUnmount = useCallback(function callback(map) {
+    setMap(null);
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -583,24 +621,42 @@ export default function GamePage() {
     );
   }
   // if (isLoading) return <Loading />;
-
+  //  return isLoaded ? (
+  //     <GoogleMap
+  //       mapContainerStyle={containerStyle}
+  //       center={center}
+  //       zoom={10}
+  //       onLoad={onLoad}
+  //       onUnmount={onUnmount}
+  //     >
+  //       <StreetViewPanorama
+  //         id="street-view"
+  //         containerStyle={containerStyle}
+  //         position={center}
+  //         visible={true}
+  //       />
+  //     </GoogleMap>
+  //   ) : (
+  //     <></>
+  //   );
   return (
-    <LoadScript
-      googleMapsApiKey={process.env.API_MAP}
-      libraries={lib}
-      onLoad={() => console.log("Google Maps loaded successfully.")}
-    >
-      <ReactPlayer
+    // <LoadScript
+    //   googleMapsApiKey={process.env.API_MAP}
+    //   libraries={lib}
+    //   onLoad={() => console.log("Google Maps loaded successfully.")}
+    // >
+    <div>
+      {/* <ReactPlayer
         url="/summer.mp3"
         playing={isPlay}
         loop={true}
         volume={0.1}
         width="0px"
         height="0px"
-      />
+      /> */}
 
       <div className={style.headerContainer}>
-        <Link href="/">
+        <Link href="/" legacyBehavior>
           <button className={`${style.newCoordinate} center-left-button`}>
             Back Home
           </button>
@@ -636,35 +692,11 @@ export default function GamePage() {
         </div>
       )}
       <div style={style.map}>
-        <GoogleMap
-          mapContainerStyle={containerStyle}
-          center={position}
-          zoom={1}
-        >
-          <StreetViewPanorama
-            id="street-view"
-            containerStyle={containerStyle}
-            options={gestOption()}
-            position={position}
-            visible={true}
-          />
-        </GoogleMap>
+        <MapStreet position={position} />
 
         <div className={style.miniMapContainer}>
-          <GoogleMap
-            mapContainerStyle={{
-              width: "100%",
-              height: "100%",
-            }}
-            center={positionMiniMap}
-            zoom={1}
-            options={opt()}
-            onClick={handleMiniMapClick}
-          >
-            {markers.map((marker, index) => (
-              <Marker key={index} position={marker} />
-            ))}
-          </GoogleMap>
+          <OpenStreetMapWrapper handleMapClick={handleMapClick} />
+
           {isLoading && (
             <div className={style.loadingIndicator}>
               <PropagateLoader
@@ -694,6 +726,6 @@ export default function GamePage() {
           )}
         </div>
       </div>
-    </LoadScript>
+    </div>
   );
 }

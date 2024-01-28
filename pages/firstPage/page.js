@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import styles from "./firstPage.module.css";
-// import Link from "next/link";
+import Link from "next/link";
 
 const FirstPage = () => {
   return (
@@ -13,7 +13,7 @@ const FirstPage = () => {
       {/* <div className={styles.preli}>
         <p>First Fully Homomorphic Encryption game based on EVM </p>
       </div> */}
-      {/* <Link href="/game/game">
+      <Link href="/game/game">
         <button className={styles.playButton}>Play</button>
       </Link>
       <h2 className={`${styles.titleAir}`}>SpaceCoin AirDrop</h2>
@@ -23,7 +23,7 @@ const FirstPage = () => {
       </p>
       <Link href="/airdrop/airdrop">
         <button className={styles.airdropButton}>Airdrop</button>
-      </Link> */}
+      </Link>
     </div>
   );
 };

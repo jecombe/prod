@@ -8,8 +8,8 @@ const ErrorMetamask = ({ message }) => {
       <header className={styles.menu}>
         <div className={styles.menuItems}>
           <div className={styles.howToPlayDiv}>
-            <Link href="/">
-              <a className={styles.howToPlayButton}>Back Home</a>
+            <Link href="/" className={styles.howToPlayButton}>
+              Back Home
             </Link>
           </div>
         </div>
