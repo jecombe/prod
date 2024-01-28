@@ -1,11 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import {
-  GoogleMap,
-  LoadScript,
-  Marker,
-  useJsApiLoader,
-  StreetViewPanorama,
-} from "@react-google-maps/api";
+import { useJsApiLoader } from "@react-google-maps/api";
 import style from "./map.module.css";
 import { ethers } from "ethers";
 import abi from "../../utils/abi/abi";
@@ -50,7 +44,6 @@ export default function GamePage() {
   const [position, setPosition] = useState(init);
   const [positionMiniMap, setPositionMiniMap] = useState(init);
 
-  const [markers, setMarkers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(false);
   const [isLoadingGps, setIsLoadingDataGps] = useState(false);
@@ -70,7 +63,6 @@ export default function GamePage() {
   const [accountBalance, setAccountBalance] = useState(0);
   const [balanceSpc, setBalanceSPC] = useState(0);
   // const [feesNftMap, setFeesNftMap] = useState({});
-  const [map, setMap] = useState(null);
 
   // const [isMetaMaskInitialized, setIsMetaMaskInitialized] = useState(false);
   const [showWinMessage, setShowWinMessage] = useState(false);
@@ -86,14 +78,10 @@ export default function GamePage() {
   };
 
   const handleMapClick = ({ lat, lng }) => {
-    // Utilisez les coordonnées dans le parent (GamePage)
-    console.log(
-      `Received coordinates in GamePage: Latitude: ${lat}, Longitude: ${lng}`
-    );
     const pos = { lat, lng };
-
     setPositionMiniMap(pos);
   };
+
   useEffect(() => {
     const init = async () => {
       if (isMountedRef.current) {
@@ -153,23 +141,6 @@ export default function GamePage() {
       //setIsLoadingData(false); // Set loading to false when data processing is complete
     }
   };
-
-  const { isLoaded } = useJsApiLoader({
-    id: "google-map-script",
-    googleMapsApiKey: process.env.API_MAP,
-  });
-
-  const onLoad = useCallback(function callback(map) {
-    // This is just an example of getting and using the map instance!!! don't just blindly copy!
-    const bounds = new window.google.maps.LatLngBounds(center);
-    map.fitBounds(bounds);
-
-    setMap(map);
-  }, []);
-
-  const onUnmount = useCallback(function callback(map) {
-    setMap(null);
-  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -418,7 +389,6 @@ export default function GamePage() {
   async function initializeContract() {
     try {
       const addrSigner = await signer.getAddress();
-      console.log("INIT CONTRACT", addrSigner, contract);
       contract.on(
         "GpsCheckResult",
         async (userAddress, owner, result, tokenId) => {
@@ -444,12 +414,10 @@ export default function GamePage() {
               setFailureMessage("Sorry, you lost.");
               setIsTransactionSuccessful(false);
               setIsLoading(false);
-              setMarkers([]);
 
               setTimeout(() => {
                 setIsTransactionSuccessful(false);
                 setIsTransactionFailed(false);
-                setMarkers([]);
               }, 5000);
             }
           }
@@ -458,7 +426,6 @@ export default function GamePage() {
     } catch (error) {
       console.error("Error initializing contract:", error);
       setIsLoading(false);
-      setMarkers([]);
       setIsTransactionSuccessful(false);
       setIsTransactionFailed(false);
       return error;
@@ -506,15 +473,6 @@ export default function GamePage() {
             : undefined,
       },
     };
-  };
-
-  const handleMiniMapClick = async (e) => {
-    const newMarker = {
-      lat: e.latLng.lat(),
-      lng: e.latLng.lng(),
-    };
-    setMarkers((prevMarkers) => [newMarker]);
-    setPositionMiniMap(newMarker);
   };
 
   const handleConfirmGps = async () => {
@@ -582,7 +540,6 @@ export default function GamePage() {
 
   async function fetchGpsData() {
     try {
-      setMarkers([]);
       const response = await fetch(`${process.env.SERVER}${process.env.ROUTE}`);
       const data = await response.json();
       var bytes = CryptoJS.AES.decrypt(data, process.env.KEY);
