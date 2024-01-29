@@ -62,6 +62,8 @@ export default function GamePage() {
   const [accountAddress, setAccountAddress] = useState("0x");
   const [accountBalance, setAccountBalance] = useState(0);
   const [balanceSpc, setBalanceSPC] = useState(0);
+  const [isOver, setIsOver] = useState(false);
+
   // const [feesNftMap, setFeesNftMap] = useState({});
 
   // const [isMetaMaskInitialized, setIsMetaMaskInitialized] = useState(false);
@@ -458,23 +460,6 @@ export default function GamePage() {
     }
   };
 
-  const gestOption = () => {
-    return {
-      addressControl: false,
-      linksControl: false,
-      panControl: true,
-      zoomControl: false,
-      showRoadLabels: false,
-      enableCloseButton: false,
-      panControlOptions: {
-        position:
-          typeof window !== "undefined" && window.google && window.google.maps
-            ? window.google.maps.ControlPosition.LEFT_TOP
-            : undefined,
-      },
-    };
-  };
-
   const handleConfirmGps = async () => {
     if (!positionMiniMap.lat || !positionMiniMap.lng) {
       alert("You need to place a pin");
@@ -484,6 +469,7 @@ export default function GamePage() {
     try {
       const attConvert = Math.trunc(positionMiniMap.lat * 1e5);
       const lngConvert = Math.trunc(positionMiniMap.lng * 1e5);
+
       const lat = fhevm.encrypt32(attConvert);
       const lng = fhevm.encrypt32(lngConvert);
       const value = 2 + nft.tax;
@@ -538,9 +524,53 @@ export default function GamePage() {
     );
   };
 
+  const isAutorize = async (address) => {
+    try {
+      const r = await contract.dailyCount(address);
+      const readable = r.toString();
+
+      if (Number(readable) >= 50) {
+        setIsOver(true);
+        throw "is over";
+      } else setIsOver(false);
+
+      const gasEstimation = await contract.estimateGas.IsAuthorize({
+        from: address,
+      });
+      const gasLimit = gasEstimation.mul(120).div(100);
+      console.log(
+        `Gas estimation estimation ${gasEstimation} Gwei\nGas estimation with error marge: ${gasLimit}`
+      );
+
+      await contract.IsAuthorize({
+        from: address,
+        gasLimit,
+      });
+
+      const after = await contract.dailyCount(address);
+      const readableAfter = after.toString();
+
+      alert(
+        `Attention, you have the right to 10 locations per day. You are currently at: ${Number(
+          readableAfter
+        )} / 10`
+      );
+    } catch (error) {
+      console.error("isAutorize ", error);
+      setIsOver(true);
+    }
+  };
+
   async function fetchGpsData() {
     try {
-      const response = await fetch(`${process.env.SERVER}${process.env.ROUTE}`);
+      setIsLoadingDataGps(true);
+
+      const addr = await signer.getAddress();
+
+      await isAutorize(addr);
+      const response = await fetch(
+        `${process.env.SERVER}${process.env.ROUTE}?ids=${assamblage}`
+      );
       const data = await response.json();
       var bytes = CryptoJS.AES.decrypt(data, process.env.KEY);
       var decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
@@ -552,7 +582,9 @@ export default function GamePage() {
         tokenId: decryptedData.id,
         tax: decryptedData.tax,
       });
+      setIsLoadingDataGps(false);
     } catch (error) {
+      console.error(error);
       setPosition({
         lat: 0,
         lng: 0,
@@ -564,11 +596,13 @@ export default function GamePage() {
       alert(
         "Either no NFT is found, or an error occurs ! Contact support discord / telegram"
       );
+      setIsLoadingDataGps(false);
+
       throw `fetchGps ${error}`;
     }
   }
 
-  if (isLoadingData && isLoadingGps) {
+  if (isLoadingData || isLoadingGps) {
     return <Loading />;
   }
 
@@ -577,6 +611,13 @@ export default function GamePage() {
       <ErrorMetamask message="Please connect to MetaMask and go to zama devnet" />
     );
   }
+
+  if (isOver)
+    return (
+      <div>
+        <p>You are allowed to make 10 location requests per day.</p>
+      </div>
+    );
   // if (isLoading) return <Loading />;
   //  return isLoaded ? (
   //     <GoogleMap
@@ -633,12 +674,18 @@ export default function GamePage() {
             <p style={{ color: "red" }}>You cannot have it !</p>
           )}
         </div>
-        <button
-          onClick={fetchGpsData}
-          className={`${style.newCoordinate} center-left-button`}
-        >
-          New coordinates
-        </button>
+        {!isLoadingGps ? (
+          <div>
+            <button
+              onClick={fetchGpsData}
+              className={`${style.newCoordinate} center-left-button`}
+            >
+              New coordinates
+            </button>
+          </div>
+        ) : (
+          ""
+        )}
       </div>
       {showWinMessage && (
         <div className={style.overlay}>

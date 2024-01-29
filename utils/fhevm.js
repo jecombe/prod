@@ -43,7 +43,7 @@ export const getTokenSignature = async (contractAddress, userAddress) => {
       method: "eth_signTypedData_v4",
       params,
     });
-    getInstance().setTokenSignature(contractAddress, signature);
+    getInstance().setSignature(contractAddress, signature);
     return { signature, publicKey };
   }
 };

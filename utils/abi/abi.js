@@ -10,6 +10,25 @@ const abi = [
       {
         indexed: true,
         internalType: "address",
+        name: "caller",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "numberCall",
+        type: "uint256",
+      },
+    ],
+    name: "FunctionCalled",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
         name: "user",
         type: "address",
       },
@@ -256,27 +275,14 @@ const abi = [
         name: "amount",
         type: "uint256",
       },
-    ],
-    name: "Staked",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "user",
-        type: "address",
-      },
       {
         indexed: false,
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
+        internalType: "bool",
+        name: "isStake",
+        type: "bool",
       },
     ],
-    name: "Withdrawn",
+    name: "StakeManagement",
     type: "event",
   },
   {
@@ -303,6 +309,13 @@ const abi = [
     ],
     name: "createNFT",
     type: "event",
+  },
+  {
+    inputs: [],
+    name: "IsAuthorize",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
   },
   {
     inputs: [],
@@ -612,6 +625,38 @@ const abi = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    name: "dailyCount",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "dailyLimit",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "estimateRewardPlayer",
     outputs: [],
@@ -722,14 +767,8 @@ const abi = [
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    name: "lastStakeUpdateTime",
+    inputs: [],
+    name: "lastDay",
     outputs: [
       {
         internalType: "uint256",

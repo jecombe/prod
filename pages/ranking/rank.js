@@ -64,7 +64,6 @@ const Ranking = () => {
 
   return (
     <div>
-      {console.log(dataStat)}
       <div className={styles.headerContainer}>
         <Link href="/" legacyBehavior>
           <button className={`${styles.backHome} center-left-button`}>

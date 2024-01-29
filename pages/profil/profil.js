@@ -18,6 +18,7 @@ import { useRef } from "react";
 // import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import "leaflet/dist/leaflet.css";
 import dynamic from "next/dynamic";
+import { getTokenSignature } from "../../utils/fhevm";
 
 // Fonction utilitaire pour créer un carré autour d'un point avec des décimales
 function createSquareAroundPointWithDecimals(
@@ -275,9 +276,9 @@ const Profil = () => {
       setMarkers(markersData);
     }
   };
-  useEffect(() => {
-    setMarkerArray(decryptedNFTS);
-  }, [decryptedNFTS]);
+  // useEffect(() => {
+  //   setMarkerArray(decryptedNFTS);
+  // }, [decryptedNFTS]);
 
   const getAllOwnedNfts = () => {
     const assambly = [];
@@ -322,7 +323,6 @@ const Profil = () => {
     signature
   ) => {
     const promises = [];
-    console.log(pubKey);
     for (const tokenId of ownedNfts) {
       promises.push(
         contractGame.getNFTLocationForOwner(tokenId, publicKey, signature, {
@@ -373,24 +373,9 @@ const Profil = () => {
             process.env.GAME
           );
         }
-        console.log(decryptedLocations);
 
-        // console.log(r);
-        //console.log(decryptedLocations);
-        // const gasFees = [];
-        // decryptedLocations.forEach((value, index) => {
-        //   const gasLimit = getMargeErrorTx(value);
-        //   gasFees.push(gasLimit);
-        // });
-
-        // const decryptedGps = await callDecrypt(assamblage, account, gasFees);
-        // console.log(
-        //   "?????????????????????????????????????????????????????????????3",
-        //   decryptedGps
-        // );
         setDecrypted(decryptedLocations);
         setMarkerArray(decryptedLocations);
-        console.log(markers);
         setLoadingDataMap(false);
         setIsGood(true);
       } catch (error) {
@@ -450,6 +435,7 @@ const Profil = () => {
       if (signer) {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const userAddress = await signer.getAddress();
+
         // Créez un tableau de promesses
         const promises = [
           contractGame.getOwnedNFTs(userAddress),
@@ -490,8 +476,6 @@ const Profil = () => {
           balanceRewardStake,
           "ether"
         );
-        // const usrFees = ethers.utils.formatUnits(userFees, "ether");
-        // console.log(usrFees, ownerNft);
         const rewardOwner = ethers.utils.formatUnits(
           balanceRewardCreatorOwner,
           "ether"
@@ -681,7 +665,6 @@ const Profil = () => {
     // await rep.wait();
     try {
       const approvalAmount = parseUnits(number, 18);
-      console.log(approvalAmount);
 
       const gasEstimationStake = await contract.estimateGas.unstakeSPC(
         approvalAmount
@@ -724,13 +707,11 @@ const Profil = () => {
     // await rep.wait();
     try {
       const approvalAmount = parseUnits(number, 18);
-      console.log(approvalAmount);
       const gasEstimation = await erc20Contract.estimateGas.approve(
         process.env.CONTRACT,
         approvalAmount
       );
       const gasLimit = getMargeErrorTx(gasEstimation);
-      console.log(gasLimit);
 
       const approvalTx = await erc20Contract.approve(
         process.env.CONTRACT,
@@ -1034,7 +1015,6 @@ const Profil = () => {
           `${process.env.SERVER}${process.env.ROUTE_GET_FEES_CREATION}`
         );
         const approvalAmount = parseUnits(feesCreation.data, 18);
-        console.log(approvalAmount);
 
         const gasEstimation = await erc20Contract.estimateGas.approve(
           process.env.CONTRACT,
@@ -1428,10 +1408,14 @@ const Profil = () => {
         </div>
 
         {errorsFetch && <p> {errorsFetch} </p>}
-        <div className={styles.map}>
-          {/* <h1>MAPS</h1> */}
-          <OpenStreetMap />
-        </div>
+        {showMap ? (
+          <div className={styles.map}>
+            {/* <h1>MAPS</h1> */}
+            <OpenStreetMap markers={markers} />
+          </div>
+        ) : (
+          ""
+        )}
       </>
 
       <div className={styles.firstContainer}>
