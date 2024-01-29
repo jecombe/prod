@@ -1,6 +1,9 @@
+"use client";
+
 import React, { useState, useRef } from "react";
 import dynamic from "next/dynamic";
 // import L from "leaflet";
+
 import "leaflet/dist/leaflet.css";
 import { useMapEvents } from "react-leaflet";
 
