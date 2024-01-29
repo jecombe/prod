@@ -670,7 +670,6 @@ function MapStreet(props) {
 
   return isLoaded && props.position ? (
     <>
-      {console.log("=====================", props.position)}
       <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={10}>
         <StreetViewPanorama
           id="street-view"
