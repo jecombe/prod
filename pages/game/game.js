@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useJsApiLoader } from "@react-google-maps/api";
 import style from "./map.module.css";
