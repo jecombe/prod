@@ -67,7 +67,7 @@ const TouchMap = ({ handleMapClick }) => {
     <div className="container">
       <div className="row">
         <div className="col">
-          <div className="container">
+          {/* <div className="container">
             <MapContainer
               center={center}
               zoom={ZOOM_LEVEL}
@@ -79,9 +79,9 @@ const TouchMap = ({ handleMapClick }) => {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
-              {/* <LocationMarker handleMapClick={handleMapClick} /> */}
+              <LocationMarker handleMapClick={handleMapClick} />
             </MapContainer>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
