@@ -18,7 +18,6 @@ function LocationMarker({ handleMapClick }) {
 
   const map = useMapEvents({
     click(e) {
-      console.log(e.latlng);
       setPosition(e.latlng);
       // map.flyTo(e.latlng, map.getZoom());
       //map.locate();
@@ -133,7 +132,6 @@ const TouchMap = ({ handleMapClick }) => {
   const handleClick = (e) => {
     // Obtenir les coordonnées du clic
     const { lat, lng } = e.latlng;
-    console.log(`Latitude: ${lat}, Longitude: ${lng}`);
     if (handleMapClick) {
       handleMapClick({ lat, lng });
     }
