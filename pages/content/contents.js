@@ -14,21 +14,32 @@ export default function Contents() {
         });
 
         if (networkId === "0x2382") {
-          window.alert("You're already connect on inco network devnet");
+          window.alert("You're already connect on Zama network devnet");
         } else {
           await window.ethereum.request({
             method: "wallet_addEthereumChain",
             params: [
+              // {
+              //   chainId: "0x2382",
+              //   chainName: "Inco Network",
+              //   nativeCurrency: {
+              //     name: "INCO",
+              //     symbol: "INCO",
+              //     decimals: 18,
+              //   },
+              //   rpcUrls: ["https://evm-rpc.inco.network/"],
+              //   blockExplorerUrls: ["https://explorer.inco.network/"],
+              // },
               {
-                chainId: "0x2382",
-                chainName: "Inco Network",
+                chainId: "0x1f49",
+                chainName: "Zama Network",
                 nativeCurrency: {
-                  name: "INCO",
-                  symbol: "INCO",
+                  name: "ZAMA",
+                  symbol: "ZAMA",
                   decimals: 18,
                 },
-                rpcUrls: ["https://evm-rpc.inco.network/"],
-                blockExplorerUrls: ["https://explorer.inco.network/"],
+                rpcUrls: ["https://devnet.zama.ai"],
+                blockExplorerUrls: ["https://main.explorer.zama.ai"],
               },
             ],
           });
@@ -77,7 +88,7 @@ export default function Contents() {
       ),
     },
     {
-      title: "Get faucet Inco",
+      title: "Get faucet Zama",
       content: (
         <div>
           <div className={styles.centerImage}>
@@ -90,7 +101,7 @@ export default function Contents() {
             />
           </div>
           <p>
-            Get <a href="https://faucetdev.inco.network/">here</a>
+            Get <a href="https://faucet.zama.ai/">here</a>
           </p>
         </div>
       ),
