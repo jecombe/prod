@@ -153,7 +153,7 @@ const TouchMap = ({ handleMapClick }) => {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
-              <LocationMarker handleMapClick={handleMapClick} />
+              {/* <LocationMarker handleMapClick={handleMapClick} /> */}
             </MapContainer>
           </div>
         </div>
