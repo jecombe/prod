@@ -21,7 +21,7 @@ import MapStreet from "./MapStreet";
 import dynamic from "next/dynamic";
 const lib = ["places"];
 
-const OpenStreetMap = dynamic(() => import("./Ha"), {
+const OpenStreetMap = dynamic(() => import("../../components/Map2"), {
   ssr: false,
 });
 
