@@ -701,7 +701,7 @@ export default function GamePage() {
         <MapStreet position={position} />
 
         <div className={style.miniMapContainer}>
-          {/* <OpenStreetMapWrapper handleMapClick={handleMapClick} /> */}
+          <OpenStreetMapWrapper handleMapClick={handleMapClick} />
 
           {isLoading && (
             <div className={style.loadingIndicator}>
