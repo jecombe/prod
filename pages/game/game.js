@@ -17,7 +17,7 @@ import Image from "next/image";
 import { css } from "@emotion/react";
 import { PropagateLoader } from "react-spinners";
 import ErrorMetamask from "../errorPage/metamask";
-import MapStreet from "./MapStreet";
+import MapStreet from "../../components/MapStreet";
 import dynamic from "next/dynamic";
 const lib = ["places"];
 
