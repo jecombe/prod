@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import Map from "../../components/Map";
+import Map from "./Map";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 

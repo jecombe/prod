@@ -60,7 +60,7 @@ const getMargeErrorTx = (gasEstimation) => {
   }
   return gasLimit;
 };
-const OpenStreetMap = dynamic(() => import("./NftMaps"), {
+const OpenStreetMap = dynamic(() => import("../../components/NftMaps"), {
   ssr: false,
 });
 
