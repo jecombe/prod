@@ -616,8 +616,15 @@ export default function GamePage() {
 
   if (isOver)
     return (
-      <div>
-        <p>You are allowed to make 10 location requests per day.</p>
+      <div className={style.headerContainer}>
+        <Link href="/" legacyBehavior>
+          <button className={`${style.newCoordinate} center-left-button`}>
+            Back Home
+          </button>
+        </Link>
+        <div>
+          <p>You are allowed to make 10 location requests per day.</p>
+        </div>
       </div>
     );
   // if (isLoading) return <Loading />;
@@ -640,20 +647,15 @@ export default function GamePage() {
   //     <></>
   //   );
   return (
-    // <LoadScript
-    //   googleMapsApiKey={process.env.API_MAP}
-    //   libraries={lib}
-    //   onLoad={() => console.log("Google Maps loaded successfully.")}
-    // >
     <div>
-      {/* <ReactPlayer
+      <ReactPlayer
         url="/summer.mp3"
         playing={isPlay}
         loop={true}
         volume={0.1}
         width="0px"
         height="0px"
-      /> */}
+      />
 
       <div className={style.headerContainer}>
         <Link href="/" legacyBehavior>
