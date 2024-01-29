@@ -15,7 +15,7 @@ const Footer = () => {
             Twitter
           </a>
           <a
-            href="https://discord.gg/DJb73wHR"
+            href="https://discord.gg/umSuzNBk"
             target="_blank"
             rel="noopener noreferrer"
           >
