@@ -19,13 +19,13 @@ import MapStreet from "./MapStreet";
 import dynamic from "next/dynamic";
 const lib = ["places"];
 
-const OpenStreetMap = dynamic(() => import("./Map2"), {
-  ssr: false,
-});
+// const OpenStreetMap = dynamic(() => import("./Map2"), {
+//   ssr: false,
+// });
 
-const OpenStreetMapWrapper = ({ handleMapClick }) => {
-  return <OpenStreetMap handleMapClick={handleMapClick} />;
-};
+// const OpenStreetMapWrapper = ({ handleMapClick }) => {
+//   return <OpenStreetMap handleMapClick={handleMapClick} />;
+// };
 
 export default function GamePage() {
   const override = css`
