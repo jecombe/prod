@@ -177,7 +177,7 @@ export default function Contents() {
               You will earn Zama from valid guesses by other players.
               Additionally, you will receive SpaceCoin among all other creators
               during a guess request. <br />
-              The more you stake compared to other players, the greater your
+              The more you mint compared to other players, the greater your
               rewards will be.
             </p>
           </div>
