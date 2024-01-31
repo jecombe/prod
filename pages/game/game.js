@@ -64,7 +64,7 @@ export default function GamePage() {
   const [accountAddress, setAccountAddress] = useState("0x");
   const [accountBalance, setAccountBalance] = useState(0);
   const [balanceSpc, setBalanceSPC] = useState(0);
-  const [isOver, setIsOver] = useState(false);
+  const [isOver, setIsOver] = useState(true);
 
   // const [feesNftMap, setFeesNftMap] = useState({});
 
@@ -528,13 +528,13 @@ export default function GamePage() {
 
   const isAutorize = async (address) => {
     try {
-      const r = await contract.dailyCount(address);
-      const readable = r.toString();
+      // const r = await contract.dailyCount(address);
+      // const readable = r.toString();
 
-      if (Number(readable) >= 50) {
-        setIsOver(true);
-        throw "is over";
-      } else setIsOver(false);
+      // if (Number(readable) >= 10) {
+      //   setIsOver(true);
+      //   throw "is over";
+      // } else setIsOver(false);
 
       const gasEstimation = await contract.estimateGas.IsAuthorize({
         from: address,
@@ -549,7 +549,7 @@ export default function GamePage() {
         gasLimit,
       });
 
-      const after = await contract.dailyCount(address);
+      const after = await contract.callCount(address);
       const readableAfter = after.toString();
 
       alert(
@@ -557,6 +557,7 @@ export default function GamePage() {
           readableAfter
         )} / 10`
       );
+      setIsOver(false);
     } catch (error) {
       console.error("isAutorize ", error);
       setIsOver(true);

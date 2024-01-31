@@ -64,6 +64,23 @@ const OpenStreetMap = dynamic(() => import("../../components/NftMaps"), {
   ssr: false,
 });
 
+const parseUrl = (url) => {
+  const match = url.match(/@([-0-9.]+),([-0-9.]+)/);
+
+  if (match && match.length === 3) {
+    // match[1] contient la latitude, match[2] contient la longitude
+    const latitude = parseFloat(match[1]);
+    const longitude = parseFloat(match[2]);
+
+    if (!isNaN(latitude) && !isNaN(longitude)) {
+      return { latitude, longitude };
+    }
+  }
+
+  // Si les coordonnées ne peuvent pas être extraites, retourner null ou une valeur par défaut
+  return null;
+};
+
 // Composant Profil
 const Profil = () => {
   const override = css`
@@ -96,6 +113,7 @@ const Profil = () => {
   const [numberInput, setNumberInput] = useState(0);
   const [latitudeInput, setLatitudeInput] = useState("");
   const [longitudeInput, setLongitudeInput] = useState("");
+
   const [qtyWithdraw, setQtyWithdraw] = useState("");
   const [center, setCenter] = useState({ lat: -4.043477, lng: 39.668205 });
   const ZOOM_LEVEL = 3;
@@ -129,7 +147,6 @@ const Profil = () => {
 
   const [isMetaMaskInitialized, setIsMetaMaskInitialized] = useState(false);
   const [markers, setMarkers] = useState([]);
-  const [isMapsScriptLoaded, setIsMapsScriptLoaded] = useState(false);
   const [isMapsLoadingData, setLoadingDataMap] = useState(false);
   const [isGood, setIsGood] = useState(false);
 
@@ -143,9 +160,6 @@ const Profil = () => {
   const [balanceRewardCreator, setBalanceRewardCreator] = useState(null);
   const [balanceRewardStake, setBalanceRewardStake] = useState(null);
   const [balanceRewardOwner, setBalanceRewardOwner] = useState(null);
-
-  const [position, setPosition] = useState({ lat: 0, lng: 0 });
-  const lib = ["places"];
 
   // Effets
   useEffect(() => {
@@ -960,8 +974,8 @@ const Profil = () => {
       setIsTransactionCreatePending(true); // Set transaction pending state
 
       const number = numberInput;
-      const latitude = parseFloat(latitudeInput.replace(",", "."));
-      const longitude = parseFloat(longitudeInput.replace(",", "."));
+      console.log(longitudeInput);
+      const { latitude, longitude } = parseUrl(longitudeInput);
 
       if (isNaN(number) || isNaN(latitude) || isNaN(longitude)) {
         alert("Invalid input");
@@ -1650,7 +1664,7 @@ const Profil = () => {
                 min="0"
               />
             </label>
-            <label>
+            {/* <label>
               Latitude:
               <input
                 type="number"
@@ -1662,6 +1676,14 @@ const Profil = () => {
               Longitude:
               <input
                 type="number"
+                value={longitudeInput}
+                onChange={(e) => setLongitudeInput(e.target.value)}
+              />
+            </label> */}
+            <label>
+              Url StreetView:
+              <input
+                type="string"
                 value={longitudeInput}
                 onChange={(e) => setLongitudeInput(e.target.value)}
               />
