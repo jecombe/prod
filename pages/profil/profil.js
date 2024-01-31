@@ -974,7 +974,6 @@ const Profil = () => {
       setIsTransactionCreatePending(true); // Set transaction pending state
 
       const number = numberInput;
-      console.log(longitudeInput);
       const { latitude, longitude } = parseUrl(longitudeInput);
 
       if (isNaN(number) || isNaN(latitude) || isNaN(longitude)) {
