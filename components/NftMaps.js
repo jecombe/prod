@@ -11,7 +11,6 @@ const ICON = icon({
 });
 
 const Map2 = (props) => {
-  console.log(props);
   return (
     <>
       <Map width="10" height="5" center={DEFAULT_CENTER} zoom={1}>

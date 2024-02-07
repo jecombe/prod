@@ -14,12 +14,10 @@ const ICON = L.icon({
   iconSize: [32, 32],
 });
 function LocationMarker({ handleMapClick }) {
-  console.log("marker", handleMapClick);
   const [position, setPosition] = useState(null);
 
   const map = useMapEvents({
     click(e) {
-      console.log(e.latlng);
       setPosition(e.latlng);
       // map.flyTo(e.latlng, map.getZoom());
       //map.locate();
@@ -36,7 +34,6 @@ function LocationMarker({ handleMapClick }) {
   );
 }
 const TouchMap = ({ handleMapClick }) => {
-  console.log(handleMapClick);
   const [center, setCenter] = useState({ lat: -4.043477, lng: 39.668205 });
   const ZOOM_LEVEL = 3;
   const mapRef = useRef();
@@ -44,7 +41,6 @@ const TouchMap = ({ handleMapClick }) => {
   const handleClick = (e) => {
     // Obtenir les coordonnées du clic
     const { lat, lng } = e.latlng;
-    console.log(`Latitude: ${lat}, Longitude: ${lng}`);
     if (onMapClick) {
       onMapClick({ lat, lng });
     }
