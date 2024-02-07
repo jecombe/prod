@@ -535,6 +535,7 @@ export default function GamePage() {
       //   setIsOver(true);
       //   throw "is over";
       // } else setIsOver(false);
+      alert(`Attention, you have the right to 10 locations per day.`);
 
       const gasEstimation = await contract.estimateGas.IsAuthorize({
         from: address,
@@ -552,11 +553,7 @@ export default function GamePage() {
       const after = await contract.callCount(address);
       const readableAfter = after.toString();
 
-      alert(
-        `Attention, you have the right to 10 locations per day. You are currently at: ${Number(
-          readableAfter
-        )} / 10`
-      );
+      alert(`You are currently at: ${Number(readableAfter)} / 10`);
       setIsOver(false);
     } catch (error) {
       console.error("isAutorize ", error);

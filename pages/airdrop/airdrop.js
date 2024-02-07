@@ -153,9 +153,7 @@ const AirDrop = () => {
       setIsLoading(true);
 
       if (signer) {
-        console.log("OKOOKOK");
         const userAddress = await signer.getAddress();
-        console.log(contract, userAddress);
         // const n = await contract.estimateRewardPlayer({
         //   from: userAddress,
         //   gasLimit: 1000000,
@@ -182,7 +180,6 @@ const AirDrop = () => {
           winNft,
           nftCrea,
         ] = await Promise.all(promises);
-        console.log(balanceAirDrop.toString());
 
         const balanceAir = ethers.utils.formatUnits(balanceAirDrop, "ether");
         const balanceT = ethers.utils.formatUnits(balanceTeams, "ether");
@@ -277,7 +274,6 @@ const AirDrop = () => {
     try {
       setIsTransactionEstimateStakePending(true);
       const userAddress = await signer.getAddress();
-      console.log(contract, userAddress);
       const n = await contract.estimateRewardPlayer({
         from: userAddress,
         gasLimit: 1000000,
@@ -313,7 +309,7 @@ const AirDrop = () => {
 
       setBalanceReward(0);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       setIsTransactionClaimStakePending(false);
     }
   };
