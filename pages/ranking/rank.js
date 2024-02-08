@@ -32,15 +32,14 @@ const Ranking = () => {
   useEffect(() => {
     const fetchAllData = async () => {
       try {
-        console.log("test");
         await Promise.all([
           fetchData(
-            `http://nftguessr.com:8000/api/get-statGame`,
+            `${process.env.SERVER}api/get-statGame`,
             setDataStats,
             "total NFTs"
           ),
           fetchData(
-            `http://nftguessr.com:8000/api/get-holder-and-token`,
+            `${process.env.SERVER}${process.env.ROUTE_GET_HOLDER_ID}`,
             setHolders,
             "holders and tokenIds"
           ),
@@ -52,7 +51,6 @@ const Ranking = () => {
         setIsLoading(false); // Set loading to false in case of an error
       }
     };
-    console.log("OKOKOKOKOKOK");
     fetchAllData();
   }, []);
 
