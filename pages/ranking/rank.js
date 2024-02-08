@@ -32,14 +32,15 @@ const Ranking = () => {
   useEffect(() => {
     const fetchAllData = async () => {
       try {
+        console.log("test");
         await Promise.all([
           fetchData(
-            `http://nftguessr.com:8000/api/get-statGame`,
+            `//nftguessr.com:8000/api/get-statGame`,
             setDataStats,
             "total NFTs"
           ),
           fetchData(
-            `http://nftguessr.com:8000/api/get-holder-and-token`,
+            `//nftguessr.com:8000/api/get-holder-and-token`,
             setHolders,
             "holders and tokenIds"
           ),
