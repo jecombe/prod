@@ -35,12 +35,12 @@ const Ranking = () => {
         console.log("test");
         await Promise.all([
           fetchData(
-            `//nftguessr.com:8000/api/get-statGame`,
+            `http://nftguessr.com:8000/api/get-statGame`,
             setDataStats,
             "total NFTs"
           ),
           fetchData(
-            `//nftguessr.com:8000/api/get-holder-and-token`,
+            `http://nftguessr.com:8000/api/get-holder-and-token`,
             setHolders,
             "holders and tokenIds"
           ),
