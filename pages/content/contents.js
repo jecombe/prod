@@ -46,7 +46,7 @@ export default function Contents() {
         }
       } else window.alert("You don't have metamask, please install metamask");
     } catch (error) {
-      console.error("Error connecting to Inco Devnet:", error);
+      console.error("Error connecting to Zama Devnet:", error);
     }
   };
   const contentSteps = [
@@ -82,7 +82,7 @@ export default function Contents() {
           </p>
           <p>Or connect direclty if you have metamask.</p>
           <button className={styles.button} onClick={connectToZamaDevnet}>
-            Connect to Inco Devnet
+            Connect to Zama Devnet
           </button>
         </div>
       ),

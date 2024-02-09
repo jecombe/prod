@@ -506,13 +506,13 @@ export default function GamePage() {
     }
   };
 
-  const opt = () => {
-    return {
-      disableDefaultUI: true,
-      zoomControl: true,
-      scrollwheel: true, // Active la roulette de la souris pour le zoom
-    };
-  };
+  // const opt = () => {
+  //   return {
+  //     disableDefaultUI: true,
+  //     zoomControl: true,
+  //     scrollwheel: true, // Active la roulette de la souris pour le zoom
+  //   };
+  // };
 
   const MuteButton = ({ onClick }) => {
     return (
@@ -553,7 +553,7 @@ export default function GamePage() {
       const after = await contract.callCount(address);
       const readableAfter = after.toString();
 
-      alert(`You are currently at: ${Number(readableAfter)} / 10`);
+      alert(`You are currently at: ${Number(readableAfter) + 1} / 10`);
       setIsOver(false);
     } catch (error) {
       console.error("isAutorize ", error);

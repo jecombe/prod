@@ -3,7 +3,6 @@ import { initFhevm, createInstance, FhevmInstance } from "fhevmjs";
 
 export const init = async () => {
   await initFhevm();
-  console.log("OK INIT");
 };
 
 let instance;

@@ -4,7 +4,6 @@ async function initMetaMask() {
   // Vérifiez si MetaMask est disponible dans la fenêtre
   if (window.ethereum) {
     try {
-      console.log("OOOOOOOOOOOK");
       // Demandez à l'utilisateur l'autorisation d'accéder à son compte Ethereum
       await window.ethereum.request({ method: "eth_requestAccounts" });
 
@@ -13,7 +12,6 @@ async function initMetaMask() {
 
       // Obtenez un objet Signer pour signer les transactions
       const signer = provider.getSigner();
-      console.log("OOOOOOOOOOOK");
 
       return signer;
     } catch (error) {
