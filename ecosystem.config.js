@@ -17,7 +17,7 @@ module.exports = {
       host: "91.134.90.80",
       ref: "main",
       repo: "git@github.com:jecombe/prod.git",
-      path: "/home/ubuntu/front",
+      path: "/home/ubuntu",
       "pre-deploy-local": "", // Commande pré-déploiement locale
       "post-deploy":
         "front ~/.nvm/nvm.sh && npm install && npm run build && pm2 startOrRestart ecosystem.config.js --env production", // Commandes post-déploiement
