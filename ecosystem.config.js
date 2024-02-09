@@ -6,7 +6,7 @@ module.exports = {
       interpreter: "none",
       name: "nextjs-app",
       exec_mode: "cluster",
-      // cwd: "/home/ubuntu/front", // Assurez-vous que ce chemin est correct
+      cwd: "/home/ubuntu/front/current", // Assurez-vous que ce chemin est correct
       instances: 2,
       watch: false,
     },
