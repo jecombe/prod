@@ -51,6 +51,7 @@ const Ranking = () => {
         setIsLoading(false); // Set loading to false in case of an error
       }
     };
+    console.log("teeeeeeeeeesttttttttttinnnnnnng");
     fetchAllData();
   }, []);
 

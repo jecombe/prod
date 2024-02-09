@@ -20,7 +20,7 @@ module.exports = {
       path: "/home/ubuntu",
       "pre-deploy-local": "", // Commande pré-déploiement locale
       "post-deploy":
-        "source ~/.nvm/nvm.sh && npm install && npm run build && pm2 startOrRestart ecosystem.config.js --env production", // Commandes post-déploiement
+        "front ~/.nvm/nvm.sh && npm install && npm run build && pm2 startOrRestart ecosystem.config.js --env production", // Commandes post-déploiement
       "pre-setup": "", // Commande pré-config du serveur
       ssh_options: "PasswordAuthentication=yes", // Option pour autoriser l'authentification par mot de passe
       key: "~/.ssh/id_rsa", // Chemin vers votre clé RSA privée
