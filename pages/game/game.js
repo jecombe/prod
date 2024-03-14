@@ -565,9 +565,9 @@ export default function GamePage() {
     try {
       setIsLoadingDataGps(true);
 
-      const addr = await signer.getAddress();
+      //    const addr = await signer.getAddress();
 
-      await isAutorize(addr);
+      // await isAutorize(addr);
       const response = await fetch(
         `${process.env.SERVER}${process.env.ROUTE}?ids=${assamblage}`
       );
