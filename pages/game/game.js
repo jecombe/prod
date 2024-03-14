@@ -612,19 +612,19 @@ export default function GamePage() {
     );
   }
 
-  if (isOver)
-    return (
-      <div className={style.headerContainer}>
-        <Link href="/" legacyBehavior>
-          <button className={`${style.newCoordinate} center-left-button`}>
-            Back Home
-          </button>
-        </Link>
-        <div>
-          <p>You are allowed to make 10 location requests per day.</p>
-        </div>
-      </div>
-    );
+  // if (isOver)
+  //   return (
+  //     <div className={style.headerContainer}>
+  //       <Link href="/" legacyBehavior>
+  //         <button className={`${style.newCoordinate} center-left-button`}>
+  //           Back Home
+  //         </button>
+  //       </Link>
+  //       <div>
+  //         <p>You are allowed to make 10 location requests per day.</p>
+  //       </div>
+  //     </div>
+  //   );
   // if (isLoading) return <Loading />;
   //  return isLoaded ? (
   //     <GoogleMap
