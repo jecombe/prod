@@ -50,7 +50,7 @@ export default function GamePage() {
   const [isLoadingData, setIsLoadingData] = useState(false);
   const [isLoadingGps, setIsLoadingDataGps] = useState(false);
   const isMountedRef = useRef(true);
-
+  const [errorNft, setErrorNft] = useState(false);
   const [isTransactionSuccessful, setIsTransactionSuccessful] = useState(false);
   const [isTransactionFailed, setIsTransactionFailed] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
@@ -584,7 +584,8 @@ export default function GamePage() {
       });
       setIsLoadingDataGps(false);
     } catch (error) {
-      console.error(error);
+      console.error("::::::::::::::::::::::::::", error);
+      setErrorNft(true);
       setPosition({
         lat: 0,
         lng: 0,
@@ -594,7 +595,7 @@ export default function GamePage() {
         tax: 0,
       });
       alert(
-        "Either no NFT is found, or an error occurs ! Contact support discord / telegram"
+        "Either no NFT is found, or an error occurs maybe you have reach the rate limit (10 per day) ! Contact support discord / telegram"
       );
       setIsLoadingDataGps(false);
 
@@ -644,6 +645,15 @@ export default function GamePage() {
   //   ) : (
   //     <></>
   //   );
+
+  if (errorNft) {
+    return (
+      <ErrorMetamask
+        message="Maybe you have reach the rate limit (10 per day) or the liquidity of
+            nft is insufficient"
+      />
+    );
+  }
   return (
     <div>
       <ReactPlayer
