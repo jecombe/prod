@@ -204,10 +204,8 @@ export default function GamePage() {
   const getSignerContract = async () => {
     try {
       const sign = await initMetaMask();
-      console.log("LLLLLLLLLLLLLl");
 
       const fhevmInstance = await getFhevmInstance();
-      console.log("ggggggggggggggg");
       const contractGame = new ethers.Contract(process.env.CONTRACT, abi, sign);
       const contractG = new ethers.Contract(process.env.GAME, abiGame, sign);
 
@@ -249,7 +247,6 @@ export default function GamePage() {
 
   const initialize = async () => {
     try {
-      console.log("OKOKOKOK");
       const { sign, fhevmInstance, contractGame, contractG } =
         await getSignerContract();
 
@@ -454,7 +451,6 @@ export default function GamePage() {
         const networkId = await window.ethereum.request({
           method: "eth_chainId",
         });
-        console.log("°°°°°°°°°°", networkId);
         //  0x2382;
         if (networkId !== "0x2382") {
           const userResponse = window.confirm(
@@ -620,9 +616,8 @@ export default function GamePage() {
   }
 
   if (!signer && !isLoading) {
-    console.log(signer, isLoading);
     return (
-      <ErrorMetamask message="Please connect to MetaMask and go to zama devnet" />
+      <ErrorMetamask message="Please connect to MetaMask and go to inco network gentry testnet" />
     );
   }
 
@@ -746,12 +741,14 @@ export default function GamePage() {
               <div className={style.failureMessage}>{failureMessage}</div>
             </div>
           )}
-          {!assamblage.includes(nft.tokenId) && !isLoading && (
+          {!assamblage.includes(nft.tokenId) && !isLoading ? (
             <div className={style.containerButton}>
               <a className={style.button} onClick={handleConfirmGps}>
                 Guess
               </a>
             </div>
+          ) : (
+            <div>Loading...</div>
           )}
         </div>
       </div>

@@ -1636,9 +1636,8 @@ const Profil = () => {
               location.
             </p>
             <p>
-              Go to the search bar, and find the two values after the @ symbol.
-              The first value is the latitude, and the second is the longitude.
-              Copy and paste these values into the form here.
+              Go to Google Maps, choose a location with an available Street
+              View, copy the URL link, and paste it into the creation form.
             </p>
             <p>It will cost you 1 SpaceCoin.</p>
             <h3>⚠️ Be careful ⚠️ </h3>
