@@ -9,10 +9,8 @@ let instance;
 
 export const createFhevmInstance = async () => {
   const provider = new ethers.providers.Web3Provider(window.ethereum);
-
   const network = await provider.getNetwork();
   const chainId = +network.chainId.toString();
-
   const ret = await provider.call({
     // fhe lib address, may need to be changed depending on network
     to: "0x000000000000000000000000000000000000005d",
@@ -26,7 +24,6 @@ export const createFhevmInstance = async () => {
   //const decoded = ethers.AbiCoder.defaultAbiCoder().decode(["bytes"], ret);
 
   const publicKey = decode[0];
-
   instance = await createInstance({ chainId, publicKey });
 };
 

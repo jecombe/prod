@@ -217,34 +217,34 @@ const AirDrop = () => {
       await window.ethereum.request({
         method: "wallet_addEthereumChain",
         params: [
-          {
-            chainId: "0x1f49",
-            chainName: "Zama Network",
-            nativeCurrency: {
-              name: "ZAMA",
-              symbol: "ZAMA",
-              decimals: 18,
-            },
-            rpcUrls: ["https://devnet.zama.ai"],
-            blockExplorerUrls: ["https://main.explorer.zama.ai"],
-          },
           // {
-          //   chainId: "0x2382",
-          //   chainName: "Inco Network",
+          //   chainId: "0x1f49",
+          //   chainName: "Zama Network",
           //   nativeCurrency: {
-          //     name: "INCO",
-          //     symbol: "INCO",
+          //     name: "ZAMA",
+          //     symbol: "ZAMA",
           //     decimals: 18,
           //   },
-          //   rpcUrls: ["https://evm-rpc.inco.network/"],
-          //   blockExplorerUrls: ["https://explorer.inco.network/"],
+          //   rpcUrls: ["https://devnet.zama.ai"],
+          //   blockExplorerUrls: ["https://main.explorer.zama.ai"],
           // },
+          {
+            chainId: "0x2382",
+            chainName: "Inco Network",
+            nativeCurrency: {
+              name: "INCO",
+              symbol: "INCO",
+              decimals: 18,
+            },
+            rpcUrls: ["https://testnet.inco.org"],
+            blockExplorerUrls: ["https://explorer.testnet.inco.org"],
+          },
         ],
       });
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
     } catch (error) {
-      console.error("Error connecting to Fhenix Devnet:", error);
+      console.error("Error connecting to Inco testnet:", error);
     }
   };
 
@@ -257,7 +257,7 @@ const AirDrop = () => {
         //  if (networkId !== "0x2382") {
         if (networkId !== "0x1f49") {
           const userResponse = window.confirm(
-            "Please switch to Zama Devnet network to use this application. Do you want to switch now?"
+            "Please switch to Inco network testnet to use this application. Do you want to switch now?"
           );
 
           if (userResponse) {
@@ -322,7 +322,7 @@ const AirDrop = () => {
 
   if (!signer && !isLoading) {
     return (
-      <ErrorMetamask message="Please connect to MetaMask and go to zama devnet" />
+      <ErrorMetamask message="Please connect to MetaMask and go to Inco network testnet" />
     );
   }
   // if (isLoading) return <Loading />;

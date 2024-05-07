@@ -21,7 +21,7 @@
     "eth-connect": "^6.2.1",
     "ethers": "^5.7.2",
     "express": "^4.18.2",
-    "fhevmjs": "^0.3.1",
+    "fhevmjs": "^0.4.0",
     "leaflet": "^1.9.4",
     "next": "^14.1.0",
     "react": "^18.2.0",

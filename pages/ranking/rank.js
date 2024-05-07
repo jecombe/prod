@@ -58,7 +58,7 @@ const Ranking = () => {
 
   const createList = (nftsArray) => {
     return nftsArray.map((id, index) => (
-      <li key={index}>{`${id.id} | ${2 + id.feesWin} Zama`}</li>
+      <li key={index}>{`${id.id} | ${0.2 + id.feesWin} Inco`}</li>
     ));
   };
 
@@ -135,7 +135,7 @@ const Ranking = () => {
           <tbody>
             <tr>
               <td data-label="Fees Guess">
-                <p>{dataStat.feesGuess} ZAMA</p>
+                <p>{dataStat.feesGuess} INCO</p>
               </td>
               <td data-label="Fees Creation NFTs GeoSpace">
                 <p>{dataStat.feesMint} SPC</p>
@@ -144,7 +144,7 @@ const Ranking = () => {
                 <p>{dataStat.rewardWinner} SPC</p>
               </td>
               <td data-label="Reward stakers">
-                <p>{dataStat.rewardStakers} ZAMA</p>
+                <p>{dataStat.rewardStakers} INCO</p>
               </td>
               <td data-label="Reward creators">
                 <p>{dataStat.rewardCreators} SPC</p>

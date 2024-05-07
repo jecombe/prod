@@ -202,12 +202,19 @@ export default function GamePage() {
   // }, [signer, contract]); // Add dependency on 'signer'
 
   const getSignerContract = async () => {
-    const sign = await initMetaMask();
-    const fhevmInstance = await getFhevmInstance();
-    const contractGame = new ethers.Contract(process.env.CONTRACT, abi, sign);
-    const contractG = new ethers.Contract(process.env.GAME, abiGame, sign);
+    try {
+      const sign = await initMetaMask();
+      console.log("LLLLLLLLLLLLLl");
 
-    return { sign, fhevmInstance, contractGame, contractG };
+      const fhevmInstance = await getFhevmInstance();
+      console.log("ggggggggggggggg");
+      const contractGame = new ethers.Contract(process.env.CONTRACT, abi, sign);
+      const contractG = new ethers.Contract(process.env.GAME, abiGame, sign);
+
+      return { sign, fhevmInstance, contractGame, contractG };
+    } catch (error) {
+      console.log(error);
+    }
   };
   const getAllOwnedNfts = (ownedNFTsU, resetNFTU, createdNFTs) => {
     const assambly = [];
@@ -241,15 +248,20 @@ export default function GamePage() {
   // };
 
   const initialize = async () => {
-    const { sign, fhevmInstance, contractGame, contractG } =
-      await getSignerContract();
+    try {
+      console.log("OKOKOKOK");
+      const { sign, fhevmInstance, contractGame, contractG } =
+        await getSignerContract();
 
-    setFhevm(fhevmInstance);
-    setSigner(sign);
-    setContract(contractGame);
-    setContractGame(contractG);
+      setFhevm(fhevmInstance);
+      setSigner(sign);
+      setContract(contractGame);
+      setContractGame(contractG);
 
-    setIsLoadingData(true);
+      setIsLoadingData(true);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   // Fonction fetchData optimisée
@@ -358,7 +370,7 @@ export default function GamePage() {
       await window.ethereum.request({
         method: "wallet_addEthereumChain",
         params: [
-          {
+          /* {
             chainId: "0x1f49",
             chainName: "Zama Network",
             nativeCurrency: {
@@ -368,18 +380,18 @@ export default function GamePage() {
             },
             rpcUrls: ["https://devnet.zama.ai"],
             blockExplorerUrls: ["https://main.explorer.zama.ai"],
+          },*/
+          {
+            chainId: "0x2382",
+            chainName: "Inco Network",
+            nativeCurrency: {
+              name: "INCO",
+              symbol: "INCO",
+              decimals: 18,
+            },
+            rpcUrls: ["https://testnet.inco.org"],
+            blockExplorerUrls: ["https://explorer.testnet.inco.org"],
           },
-          // {
-          //   chainId: "0x2382",
-          //   chainName: "Inco Network",
-          //   nativeCurrency: {
-          //     name: "INCO",
-          //     symbol: "INCO",
-          //     decimals: 18,
-          //   },
-          //   rpcUrls: ["https://evm-rpc.inco.network/"],
-          //   blockExplorerUrls: ["https://explorer.inco.network/"],
-          // },
         ],
       });
 
@@ -442,11 +454,11 @@ export default function GamePage() {
         const networkId = await window.ethereum.request({
           method: "eth_chainId",
         });
+        console.log("°°°°°°°°°°", networkId);
         //  0x2382;
-        // if (networkId !== "0x2382") {
-        if (networkId !== "0x1f49") {
+        if (networkId !== "0x2382") {
           const userResponse = window.confirm(
-            "Please switch to Zama Devnet network to use this application. Do you want to switch now?"
+            "Please switch to Inco network testnet to use this application. Do you want to switch now?"
           );
 
           if (userResponse) {
@@ -474,7 +486,7 @@ export default function GamePage() {
 
       const lat = fhevm.encrypt32(attConvert);
       const lng = fhevm.encrypt32(lngConvert);
-      const value = 2 + nft.tax;
+      const value = 0.2 + nft.tax;
       const gasEstimation = await contract.estimateGas.checkGps(
         lat,
         lng,
@@ -608,6 +620,7 @@ export default function GamePage() {
   }
 
   if (!signer && !isLoading) {
+    console.log(signer, isLoading);
     return (
       <ErrorMetamask message="Please connect to MetaMask and go to zama devnet" />
     );
@@ -675,13 +688,13 @@ export default function GamePage() {
 
         <div className={style.accountInfo}>
           <p>{accountAddress}</p>
-          <p>{accountBalance} ZAMA</p>
+          <p>{accountBalance} INCO</p>
           <p>{balanceSpc} SpaceCoin</p>
         </div>
 
         <div className={style.infoNft}>
           <p>GeoSpace: {nft.tokenId}</p>
-          <p>Fees: {nft.tax + 2} ZAMA</p>
+          <p>Fees: {nft.tax + 0.2} INCO</p>
           {assamblage.includes(nft.tokenId) && (
             <p style={{ color: "red" }}>You cannot have it !</p>
           )}

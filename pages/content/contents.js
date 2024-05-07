@@ -6,7 +6,7 @@ import React, { useState } from "react";
 export default function Contents() {
   const [currentStep, setCurrentStep] = useState(0);
 
-  const connectToZamaDevnet = async () => {
+  const connectToIncoDevnet = async () => {
     try {
       if (window.ethereum) {
         const networkId = await window.ethereum.request({
@@ -14,39 +14,39 @@ export default function Contents() {
         });
 
         if (networkId === "0x2382") {
-          window.alert("You're already connect on Zama network devnet");
+          window.alert("You're already connect on Inco network testnet");
         } else {
           await window.ethereum.request({
             method: "wallet_addEthereumChain",
             params: [
-              // {
-              //   chainId: "0x2382",
-              //   chainName: "Inco Network",
-              //   nativeCurrency: {
-              //     name: "INCO",
-              //     symbol: "INCO",
-              //     decimals: 18,
-              //   },
-              //   rpcUrls: ["https://evm-rpc.inco.network/"],
-              //   blockExplorerUrls: ["https://explorer.inco.network/"],
-              // },
               {
-                chainId: "0x1f49",
-                chainName: "Zama Network",
+                chainId: "0x2382",
+                chainName: "Inco Network",
                 nativeCurrency: {
-                  name: "ZAMA",
-                  symbol: "ZAMA",
+                  name: "INCO",
+                  symbol: "INCO",
                   decimals: 18,
                 },
-                rpcUrls: ["https://devnet.zama.ai"],
-                blockExplorerUrls: ["https://main.explorer.zama.ai"],
+                rpcUrls: ["https://testnet.inco.org"],
+                blockExplorerUrls: ["https://explorer.testnet.inco.org"],
               },
+              // {
+              //   chainId: "0x1f49",
+              //   chainName: "Inco Network",
+              //   nativeCurrency: {
+              //     name: "ZAMA",
+              //     symbol: "ZAMA",
+              //     decimals: 18,
+              //   },
+              //   rpcUrls: ["https://devnet.zama.ai"],
+              //   blockExplorerUrls: ["https://main.explorer.zama.ai"],
+              // },
             ],
           });
         }
       } else window.alert("You don't have metamask, please install metamask");
     } catch (error) {
-      console.error("Error connecting to Zama Devnet:", error);
+      console.error("Error connecting to Inco testnet:", error);
     }
   };
   const contentSteps = [
@@ -69,7 +69,7 @@ export default function Contents() {
       ),
     },
     {
-      title: "Connect to Zama devnet",
+      title: "Connect to Inco testnet",
       content: (
         <div>
           <p>
@@ -81,14 +81,14 @@ export default function Contents() {
             provided by Metamask:
           </p>
           <p>Or connect direclty if you have metamask.</p>
-          <button className={styles.button} onClick={connectToZamaDevnet}>
-            Connect to Zama Devnet
+          <button className={styles.button} onClick={connectToIncoDevnet}>
+            Connect to Inco Devnet
           </button>
         </div>
       ),
     },
     {
-      title: "Get faucet Zama",
+      title: "Get faucet Inco",
       content: (
         <div>
           <div className={styles.centerImage}>
@@ -101,7 +101,7 @@ export default function Contents() {
             />
           </div>
           <p>
-            Get <a href="https://faucet.zama.ai/">here</a>
+            Get <a href="https://faucet.inco.org/">here</a>
           </p>
         </div>
       ),
@@ -141,10 +141,8 @@ export default function Contents() {
             </p>
             <p>
               For now, the game is available and in development on the{" "}
-              <a href="https://docs.zama.ai/fhevm/what-is-zamas-fhevm/readme">
-                Zama{" "}
-              </a>
-              devnet <br />
+              <a href="https://www.inco.org/">Inco </a>
+              testnet <br />
             </p>
           </div>
           <div className={styles.lineBlock}></div>
@@ -153,7 +151,7 @@ export default function Contents() {
              <h1>Guess GeoSpace</h1>
             <p>
               To make a guess request, you will be required to have a minimum of
-              2 Zama. They will be distributed among all the staker of SpaceCoin
+              2 Inco. They will be distributed among all the staker of SpaceCoin
               and the NftGuessr team. <br />A winning tax may be added by the
               GeoSpace creator in play. If the player makes an incorrect guess,
               then the winning tax will be refunded. <br />
@@ -174,7 +172,7 @@ export default function Contents() {
             <p>
               Become a creator for the game as soon as you put a GeoSpace back
               into play. <br />
-              You will earn Zama from valid guesses by other players.
+              You will earn Inco from valid guesses by other players.
               Additionally, you will receive SpaceCoin among all other creators
               during a guess request. <br />
               The more you mint compared to other players, the greater your
@@ -188,7 +186,7 @@ export default function Contents() {
             <h1>Stake SpaceCoin and earn guess fees</h1>
             <p>
               Stake SpaceCoin tokens to earn a share of the guessing fees in
-              Zama. The more you stake compared to other players, the greater
+              Inco. The more you stake compared to other players, the greater
               your rewards will be.
             </p>
           </div>

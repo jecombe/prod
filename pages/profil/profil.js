@@ -1083,7 +1083,7 @@ const Profil = () => {
       await window.ethereum.request({
         method: "wallet_addEthereumChain",
         params: [
-          {
+          /*s {
             chainId: "0x1f49",
             chainName: "Zama Network",
             nativeCurrency: {
@@ -1093,18 +1093,18 @@ const Profil = () => {
             },
             rpcUrls: ["https://devnet.zama.ai"],
             blockExplorerUrls: ["https://main.explorer.zama.ai"],
+          },*/
+          {
+            chainId: "0x2382",
+            chainName: "Inco Network",
+            nativeCurrency: {
+              name: "INCO",
+              symbol: "INCO",
+              decimals: 18,
+            },
+            rpcUrls: ["https://testnet.inco.org"],
+            blockExplorerUrls: ["https://explorer.testnet.inco.org"],
           },
-          // {
-          //   chainId: "0x2382",
-          //   chainName: "Inco Network",
-          //   nativeCurrency: {
-          //     name: "INCO",
-          //     symbol: "INCO",
-          //     decimals: 18,
-          //   },
-          //   rpcUrls: ["https://evm-rpc.inco.network/"],
-          //   blockExplorerUrls: ["https://explorer.inco.network/"],
-          // },
         ],
       });
 
@@ -1120,10 +1120,10 @@ const Profil = () => {
         const networkId = await window.ethereum.request({
           method: "eth_chainId",
         });
-        // if (networkId !== "0x2382") {
-        if (networkId !== "0x1f49") {
+        if (networkId !== "0x2382") {
+          //if (networkId !== "0x1f49") {
           const userResponse = window.confirm(
-            "Please switch to Zama Devnet network to use this application. Do you want to switch now?"
+            "Please switch to Inco testnet network to use this application. Do you want to switch now?"
           );
 
           if (userResponse) {
@@ -1159,7 +1159,7 @@ const Profil = () => {
 
   if (!signer && !isLoading) {
     return (
-      <ErrorMetamask message="Please connect to MetaMask and go to zama devnet" />
+      <ErrorMetamask message="Please connect to MetaMask and go to inco testnet" />
     );
   }
   if (isLoading) return <Loading />;
@@ -1201,7 +1201,7 @@ const Profil = () => {
       </div>
       <div className={styles.balanceAndAddress}>
         <p>{account}</p>
-        <p>{balance} ZAMA</p>
+        <p>{balance} INCO</p>
       </div>
       <div>
         <div className={styles.firstContainer}>
@@ -1209,7 +1209,7 @@ const Profil = () => {
           <h3 style={{ color: "#a88314" }}>
             Your reward owner:{" "}
             <p style={{ display: "inline", margin: 0 }}>
-              {balanceRewardOwner} ZAMA
+              {balanceRewardOwner} INCO
             </p>
           </h3>
 
@@ -1275,7 +1275,7 @@ const Profil = () => {
           <h3 style={{ color: "#a88314" }}>
             Your reward staking:{" "}
             <p style={{ display: "inline", margin: 0 }}>
-              {balanceRewardStake} ZAMA
+              {balanceRewardStake} INCO
             </p>
           </h3>
 
@@ -1317,10 +1317,10 @@ const Profil = () => {
           <p style={{ display: "inline", margin: 0 }}>{balanceStake} SPC</p>
         </h3>
         <div className={styles.centerExplication}>
-          <h2> Stake your SpaceCoin to earn a portion guess fees Zama!</h2>
+          <h2> Stake your SpaceCoin to earn a portion guess fees Inco!</h2>
           <p>
             The more you stake (compared to other stakers), the more shares of
-            the guess tax by other players in ZAMA you will receive.
+            the guess tax by other players in INCO you will receive.
           </p>
         </div>
 
@@ -1560,7 +1560,7 @@ const Profil = () => {
                               }}
                             />
                             GeoSpace: {tokenId} (Fee: {feesNftMap[tokenId]}{" "}
-                            ZAMA)
+                            INCO)
                           </label>
                         </li>
                       ))}
@@ -1602,7 +1602,7 @@ const Profil = () => {
                     {creationNFT.map((tokenId) => (
                       <li key={tokenId.id}>
                         <label>
-                          GeoSpace: {tokenId.id} (Fee: {tokenId.fee} ZAMA)
+                          GeoSpace: {tokenId.id} (Fee: {tokenId.fee} INCO)
                         </label>
                       </li>
                     ))}
@@ -1619,12 +1619,12 @@ const Profil = () => {
             <h1>Create GeoSpace</h1>
 
             <h2>
-              Include your winning tax in ZAMA. Receives a portion of the
+              Include your winning tax in INCO. Receives a portion of the
               creation fees in SpaceCoin along with all other creators.
             </h2>
             <h3>⚠️ Be careful ⚠️</h3>
             <p>
-              For now, Zama does not handle negative integers. So you need to
+              For now, Inco does not handle negative integers. So you need to
               use positive latitude and longitude values.
             </p>
             <p>
