@@ -603,7 +603,7 @@ export default function GamePage() {
         tax: 0,
       });
       alert(
-        "Either no NFT is found, or an error occurs maybe you have reach the rate limit (10 per day) ! Contact support discord / telegram"
+        "Either no NFT is found, or an error occurs maybe you have reach the rate limit (100 per day) ! Contact support discord / telegram"
       );
       setIsLoadingDataGps(false);
 
