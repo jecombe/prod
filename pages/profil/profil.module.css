@@ -46,6 +46,14 @@
   font-size: 100px;
 }
 
+.feesText {
+  color: rgb(
+    58,
+    90,
+    196
+  ); /* Changer la couleur du texte selon vos préférences */
+}
+
 .stakeContainer {
   /* flex-grow: 1; /* Faites en sorte que ce conteneur occupe tout l'espace disponible */
   /* text-align: center; */

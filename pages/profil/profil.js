@@ -1654,12 +1654,17 @@ const Profil = () => {
             <label>
               Fees:
               <input
-                type="number"
+                type="text"
                 value={numberInput}
-                onChange={(e) =>
-                  setNumberInput(Math.max(0, parseInt(e.target.value)))
-                }
+                onChange={(e) => {
+                  const value = e.target.value;
+                  // Vérifier si la valeur saisie est un nombre
+                  if (!isNaN(value)) {
+                    setNumberInput(value);
+                  }
+                }}
                 min="0"
+                className={styles.feesText}
               />
             </label>
             {/* <label>
