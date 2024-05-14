@@ -380,7 +380,7 @@ export default function GamePage() {
           },*/
           {
             chainId: "0x2382",
-            chainName: "Inco Network",
+            chainName: "Inco Gentry Testnet",
             nativeCurrency: {
               name: "INCO",
               symbol: "INCO",
