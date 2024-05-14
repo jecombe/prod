@@ -1471,8 +1471,8 @@ const Profil = () => {
             <div className={`${styles.yourNFTs}`}>
               <h2>Your available GeoSpace</h2>
               <p>
-                Just select nft to stake or to put your NFT back into play with
-                your winning fees. (default is set on 0)
+                Select GeoSpaces to put them back into play with a tax (defualt
+                is 0), and unlock the creation mode.
               </p>
 
               <React.Fragment>
