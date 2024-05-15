@@ -507,7 +507,7 @@ export default function GamePage() {
         lng,
         nft.tokenId,
         {
-          value: ethers.utils.parseEther(`${value}`),
+          value,
           gasLimit,
         }
       );
