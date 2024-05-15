@@ -513,9 +513,7 @@ const Profil = () => {
 
         const nftsCreaFee = creationNFTs.map((id, index) => ({
           id,
-          fee: Math.round(
-            ethers.utils.formatUnits(creationNFTsFees[index], "ether")
-          ),
+          fee: ethers.utils.formatUnits(creationNFTsFees[index], "ether"),
         }));
 
         const feesNftMap = {};
@@ -1601,6 +1599,8 @@ const Profil = () => {
                   <ul>
                     {creationNFT.map((tokenId) => (
                       <li key={tokenId.id}>
+                        {console.log(tokenId)}
+
                         <label>
                           GeoSpace: {tokenId.id} (Fee: {tokenId.fee} INCO)
                         </label>

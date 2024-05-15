@@ -3,6 +3,7 @@ import Link from "next/link";
 import styles from "./ranking.module.css";
 import Loading from "../loading/loading";
 import ErrorMetamask from "../errorPage/metamask";
+import { ethers } from "ethers";
 
 const Ranking = () => {
   const [holders, setHolders] = useState([]);
@@ -56,9 +57,14 @@ const Ranking = () => {
 
   // if (isLoading) return <Loading />;
 
+  const calculeTax = (tax) => {
+    const parseTax = ethers.utils.parseUnits("0.2");
+    const res = parseTax.add(tax);
+    return ethers.utils.formatEther(res.toString()); // Affiche le résultat de l'addition
+  };
   const createList = (nftsArray) => {
     return nftsArray.map((id, index) => (
-      <li key={index}>{`${id.id} | ${0.2 + id.feesWin} Inco`}</li>
+      <li key={index}>{`${id.id} | ${calculeTax(id.feesWin)} Inco`}</li>
     ));
   };
 

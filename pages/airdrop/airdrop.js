@@ -255,7 +255,7 @@ const AirDrop = () => {
           method: "eth_chainId",
         });
         //  if (networkId !== "0x2382") {
-        if (networkId !== "0x1f49") {
+        if (networkId !== "0x2382") {
           const userResponse = window.confirm(
             "Please switch to Inco network testnet to use this application. Do you want to switch now?"
           );

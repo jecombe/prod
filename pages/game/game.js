@@ -470,6 +470,12 @@ export default function GamePage() {
     }
   };
 
+  const calculeTax = (tax) => {
+    const parseTax = ethers.utils.parseUnits("0.2");
+    const res = parseTax.add(tax);
+    return res; // Affiche le résultat de l'addition
+  };
+
   const handleConfirmGps = async () => {
     if (!positionMiniMap.lat || !positionMiniMap.lng) {
       alert("You need to place a pin");
@@ -482,13 +488,13 @@ export default function GamePage() {
 
       const lat = fhevm.encrypt32(attConvert);
       const lng = fhevm.encrypt32(lngConvert);
-      const value = 0.2 + nft.tax;
+      const value = calculeTax(nft.tax);
       const gasEstimation = await contract.estimateGas.checkGps(
         lat,
         lng,
         nft.tokenId,
         {
-          value: ethers.utils.parseEther(`${value}`),
+          value,
         }
       );
       const gasLimit = gasEstimation.mul(120).div(100);
@@ -689,7 +695,7 @@ export default function GamePage() {
 
         <div className={style.infoNft}>
           <p>GeoSpace: {nft.tokenId}</p>
-          <p>Fees: {nft.tax + 0.2} INCO</p>
+          <p>Fees: {ethers.utils.formatEther(calculeTax(nft.tax))} INCO</p>
           {assamblage.includes(nft.tokenId) && (
             <p style={{ color: "red" }}>You cannot have it !</p>
           )}
