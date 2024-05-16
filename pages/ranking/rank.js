@@ -150,10 +150,10 @@ const Ranking = () => {
                 <p>{dataStat.rewardWinner} SPC</p>
               </td>
               <td data-label="Reward stakers">
-                <p>{dataStat.rewardStakers} INCO</p>
+                <p>{dataStat.rewardCreators} INCO</p>
               </td>
               <td data-label="Reward creators">
-                <p>{dataStat.rewardCreators} SPC</p>
+                <p>{dataStat.rewardStakers} SPC</p>
               </td>
               <td data-label="Total number of NFTs">
                 <p>{dataStat.totalNft}</p>
