@@ -486,7 +486,10 @@ export default function GamePage() {
       return;
     }
     setIsLoading(true);
-    if (isBalanceTooLow) {
+    if (
+      BigInt(accountBalanceWei) <
+      BigInt(nft.tax) + BigInt("200000000000000000")
+    ) {
       alert("Your balance Inco is too low");
       setIsLoading(false);
       return;
@@ -605,20 +608,6 @@ export default function GamePage() {
         tokenId: decryptedData.id,
         tax: decryptedData.tax,
       });
-      const res =
-        BigInt(accountBalanceWei) +
-        BigInt(decryptedData.tax) +
-        BigInt("200000000000000000");
-      if (
-        BigInt(accountBalanceWei) <
-        BigInt(decryptedData.tax) + BigInt("200000000000000000")
-      ) {
-        alert("your balance is too low to guess");
-        setIsBalanceTooLow(true);
-      } else {
-        setIsBalanceTooLow(false);
-      }
-      setIsLoadingDataGps(false);
     } catch (error) {
       console.error("::::::::::::::::::::::::::", error);
       setErrorNft(true);
