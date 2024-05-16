@@ -58,11 +58,14 @@ export default function GamePage() {
   const [fhevm, setFhevm] = useState(null);
   const [contract, setContract] = useState(null);
   const [contractGa, setContractGame] = useState(null);
+  const [isBalanceTooLow, setIsBalanceTooLow] = useState(false);
 
   const [signer, setSigner] = useState(null);
   const [nft, setNft] = useState({});
   const [accountAddress, setAccountAddress] = useState("0x");
   const [accountBalance, setAccountBalance] = useState(0);
+  const [accountBalanceWei, setAccountBalanceWei] = useState("0");
+
   const [balanceSpc, setBalanceSPC] = useState(0);
   const [isOver, setIsOver] = useState(true);
 
@@ -286,6 +289,7 @@ export default function GamePage() {
         balanceWeiCoinSpace,
       ] = await Promise.all(promises);
       const balanceEther = ethers.utils.formatUnits(balanceWei, "ether");
+      setAccountBalanceWei(balanceWei);
 
       const balanceCoinSpace = ethers.utils.formatUnits(
         balanceWeiCoinSpace,
@@ -482,6 +486,11 @@ export default function GamePage() {
       return;
     }
     setIsLoading(true);
+    if (isBalanceTooLow) {
+      alert("Your balance Inco is too low");
+      setIsLoading(false);
+      return;
+    }
     try {
       const attConvert = Math.trunc(positionMiniMap.lat * 1e5);
       const lngConvert = Math.trunc(positionMiniMap.lng * 1e5);
@@ -549,7 +558,7 @@ export default function GamePage() {
       //   setIsOver(true);
       //   throw "is over";
       // } else setIsOver(false);
-      alert(`Attention, you have the right to 10 locations per day.`);
+      alert(`Attention, you have the right to 100 locations per day.`);
 
       const gasEstimation = await contract.estimateGas.IsAuthorize({
         from: address,
@@ -596,6 +605,19 @@ export default function GamePage() {
         tokenId: decryptedData.id,
         tax: decryptedData.tax,
       });
+      const res =
+        BigInt(accountBalanceWei) +
+        BigInt(decryptedData.tax) +
+        BigInt("200000000000000000");
+      if (
+        BigInt(accountBalanceWei) <
+        BigInt(decryptedData.tax) + BigInt("200000000000000000")
+      ) {
+        alert("your balance is too low to guess");
+        setIsBalanceTooLow(true);
+      } else {
+        setIsBalanceTooLow(false);
+      }
       setIsLoadingDataGps(false);
     } catch (error) {
       console.error("::::::::::::::::::::::::::", error);
@@ -636,7 +658,7 @@ export default function GamePage() {
   //         </button>
   //       </Link>
   //       <div>
-  //         <p>You are allowed to make 10 location requests per day.</p>
+  //         <p>You are allowed to make 100 location requests per day.</p>
   //       </div>
   //     </div>
   //   );
