@@ -58,14 +58,12 @@ export default function GamePage() {
   const [fhevm, setFhevm] = useState(null);
   const [contract, setContract] = useState(null);
   const [contractGa, setContractGame] = useState(null);
-  const [isBalanceTooLow, setIsBalanceTooLow] = useState(false);
 
   const [signer, setSigner] = useState(null);
   const [nft, setNft] = useState({});
   const [accountAddress, setAccountAddress] = useState("0x");
   const [accountBalance, setAccountBalance] = useState(0);
-  const [accountBalanceWei, setAccountBalanceWei] = useState("0");
-
+  const [accountBalanceWei, setAccountBalanceWei] = useState(BigInt(0));
   const [balanceSpc, setBalanceSPC] = useState(0);
   const [isOver, setIsOver] = useState(true);
 
@@ -289,7 +287,6 @@ export default function GamePage() {
         balanceWeiCoinSpace,
       ] = await Promise.all(promises);
       const balanceEther = ethers.utils.formatUnits(balanceWei, "ether");
-      setAccountBalanceWei(balanceWei);
 
       const balanceCoinSpace = ethers.utils.formatUnits(
         balanceWeiCoinSpace,
@@ -334,6 +331,7 @@ export default function GamePage() {
       );
       // setOwnedNFTs(filteredOwnedNFTs);
       setAccountBalance(balanceEther);
+      setAccountBalanceWei(balanceWei);
       setBalanceSPC(balanceCoinSpace);
       // setStakedNFTs(stakedNFTs);
       // setResetNFT(resetNFTs);
@@ -486,12 +484,11 @@ export default function GamePage() {
       return;
     }
     setIsLoading(true);
-    if (
-      BigInt(accountBalanceWei) <
-      BigInt(nft.tax) + BigInt("200000000000000000")
-    ) {
-      alert("Your balance Inco is too low");
+    if (accountBalanceWei < BigInt("200000000000000000") + BigInt(nft.tax)) {
+      alert("Your balance Inco is too low for guess");
+      // setPositionMiniMap(init)
       setIsLoading(false);
+
       return;
     }
     try {
@@ -561,7 +558,7 @@ export default function GamePage() {
       //   setIsOver(true);
       //   throw "is over";
       // } else setIsOver(false);
-      alert(`Attention, you have the right to 100 locations per day.`);
+      alert(`Attention, you have the right to 10 locations per day.`);
 
       const gasEstimation = await contract.estimateGas.IsAuthorize({
         from: address,
@@ -608,6 +605,7 @@ export default function GamePage() {
         tokenId: decryptedData.id,
         tax: decryptedData.tax,
       });
+      setIsLoadingDataGps(false);
     } catch (error) {
       console.error("::::::::::::::::::::::::::", error);
       setErrorNft(true);
@@ -647,7 +645,7 @@ export default function GamePage() {
   //         </button>
   //       </Link>
   //       <div>
-  //         <p>You are allowed to make 100 location requests per day.</p>
+  //         <p>You are allowed to make 10 location requests per day.</p>
   //       </div>
   //     </div>
   //   );
