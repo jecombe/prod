@@ -27,3 +27,8 @@
   text-align: center;
   margin-top: 20px; /* Ajustez la marge supérieure selon vos besoins */
 }
+
+.footerLogo {
+  width: 100px; /* ajustez la taille selon vos besoins */
+  height: auto; /* permet de conserver les proportions originales */
+}

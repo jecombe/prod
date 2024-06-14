@@ -7,7 +7,9 @@ const Footer = () => {
     <footer className={styles.footer}>
       <div className={styles.footerContainer}>
         <div className={styles.footerLinks}>
-          <a
+        <img src="/inco-logo-black.svg" alt="Logo" className={styles.footerLogo} />
+
+          {/* <a
             href="https://twitter.com/NftGuessr"
             target="_blank"
             rel="noopener noreferrer"
@@ -20,16 +22,16 @@ const Footer = () => {
             rel="noopener noreferrer"
           >
             Discord
-          </a>
+          </a> */}
         </div>
         <div className={styles.footerLinks}>
-          <a
+          {/* <a
             href="https://t.me/NFTGuessr"
             target="_blank"
             rel="noopener noreferrer"
           >
             Telegram
-          </a>
+          </a> */}
           <a
             href="https://nftguessr.gitbook.io/white-paper/"
             target="_blank"
@@ -40,14 +42,10 @@ const Footer = () => {
         </div>
       </div>
       <div className={styles.footerText}>
-        <a
-          href="https://github.com/jecombe"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Made by Jérémy Combe
-        </a>
+    
+
       </div>
+      {/* Intégration du SVG ici */}
     </footer>
   );
 };

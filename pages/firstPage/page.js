@@ -1,9 +1,16 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import styles from "./firstPage.module.css";
 import Link from "next/link";
 
 const FirstPage = () => {
+  useEffect(() => {
+    // Afficher l'alerte lorsque le composant est monté
+    alert(
+      "NFTGuessr is in beta. The smart contract are subject to change as the game is in development."
+    );
+  }, []); // [] assure que cette fonction ne se déclenche qu'une seule fois, lorsque le composant est monté
+
   return (
     <div className={styles.titleGame}>
       <h1 className={styles.title}>NFT Guessr</h1>
